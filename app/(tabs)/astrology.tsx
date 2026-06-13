@@ -5,16 +5,7 @@ import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MessageCircle, MapPin, Book, Gem } from 'lucide-react-native';
 import AstrologyAI from '@/components/AstrologyAI';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface UserProfile {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  timeOfBirth: string;
-  placeOfBirth: string;
-  gender: 'male' | 'female';
-}
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AstrologyData {
   sunSign: string;
@@ -34,33 +25,15 @@ interface AstrologyData {
 
 export default function Astrology() {
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { profile: userProfile, isLoading: loading } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [astrologyData, setAstrologyData] = useState<AstrologyData | null>(null);
-
-  useEffect(() => {
-    loadProfile();
-  }, []);
 
   useEffect(() => {
     if (userProfile) {
       generateAstrologyData();
     }
   }, [userProfile]);
-
-  const loadProfile = async () => {
-    try {
-      const savedProfile = await AsyncStorage.getItem('userProfile');
-      if (savedProfile) {
-        setUserProfile(JSON.parse(savedProfile));
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const generateAstrologyData = () => {
     if (!userProfile) return;
@@ -108,10 +81,10 @@ export default function Astrology() {
           <Text style={styles.noProfileText}>
             Please set up your profile first to access personalized astrology readings.
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.setupProfileButton}
             onPress={() => {
-              router.push('/(tabs)');
+              router.push('/(tabs)/profile');
             }}
             activeOpacity={0.7}
           >

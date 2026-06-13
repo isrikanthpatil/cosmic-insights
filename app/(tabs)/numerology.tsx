@@ -4,45 +4,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { getNumerologyReading } from '@/utils/numerology';
 import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, RefreshCw } from 'lucide-react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface UserProfile {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  timeOfBirth: string;
-  placeOfBirth: string;
-  gender: 'male' | 'female';
-}
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Numerology() {
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { profile: userProfile, isLoading: loading } = useAuth();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
-
-  useEffect(() => {
-    loadProfile();
-  }, []);
 
   useEffect(() => {
     if (userProfile) {
       generateNumerologyReading();
     }
   }, [userProfile]);
-
-  const loadProfile = async () => {
-    try {
-      const savedProfile = await AsyncStorage.getItem('userProfile');
-      if (savedProfile) {
-        setUserProfile(JSON.parse(savedProfile));
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const generateNumerologyReading = () => {
     if (!userProfile) return;
@@ -83,10 +56,10 @@ export default function Numerology() {
           <Text style={styles.noProfileText}>
             Please set up your profile first to access personalized numerology readings.
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.setupProfileButton}
             onPress={() => {
-              router.push('/(tabs)');
+              router.push('/(tabs)/profile');
             }}
             activeOpacity={0.7}
           >

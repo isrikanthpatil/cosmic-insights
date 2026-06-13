@@ -1,6 +1,8 @@
 import React from 'react';
 import AstrologyAI from '@/components/AstrologyAI';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
-  return <AstrologyAI />;
+  const { profile } = useAuth();
+  return <AstrologyAI userProfile={profile ?? undefined} />;
 }

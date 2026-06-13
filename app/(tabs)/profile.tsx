@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, Trash2 } from 'lucide-react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut } from 'lucide-react-native';
 import { searchPlaces } from '@/data/indianPlaces';
 import { SecurityUtils } from '@/utils/security';
-
-interface UserProfile {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  timeOfBirth: string;
-  placeOfBirth: string;
-  gender: 'male' | 'female';
-}
+import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
 
 export default function Profile() {
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const { profile, isLoading: loading, updateProfile, signOut } = useAuth();
+  const userProfile = profile;
+  const profileComplete =
+    !!profile &&
+    !!profile.firstName &&
+    !!profile.lastName &&
+    !!profile.dateOfBirth &&
+    !!profile.placeOfBirth;
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [clearing, setClearing] = useState(false);
   const [editForm, setEditForm] = useState<UserProfile>({
     firstName: '',
     lastName: '',
@@ -33,35 +29,23 @@ export default function Profile() {
   const [showPlaceSuggestions, setShowPlaceSuggestions] = useState(false);
 
   useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      const savedProfile = await AsyncStorage.getItem('userProfile');
-      if (savedProfile) {
-        const profile = JSON.parse(savedProfile);
-        setUserProfile(profile);
-        setEditForm(profile);
-      } else {
-        // No profile exists, show editing mode
-        setIsEditing(true);
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      Alert.alert('Error', 'Failed to load profile');
-    } finally {
-      setLoading(false);
+    // Populate the edit form from the authenticated profile. If the profile
+    // is missing required fields, start in editing mode so the user can
+    // complete it.
+    if (profile) {
+      setEditForm(profile);
     }
-  };
+    if (!loading && !profileComplete) {
+      setIsEditing(true);
+    }
+  }, [profile, loading, profileComplete]);
 
   const saveProfile = async () => {
     try {
       setSaving(true);
 
       // Validate required fields
-      if (!editForm.firstName.trim() || !editForm.lastName.trim() || 
+      if (!editForm.firstName.trim() || !editForm.lastName.trim() ||
           !editForm.dateOfBirth.trim() || !editForm.placeOfBirth.trim()) {
         Alert.alert('Error', 'Please fill in all required fields');
         return;
@@ -106,62 +90,37 @@ export default function Profile() {
         return;
       }
 
-      // Save to AsyncStorage
-      await AsyncStorage.setItem('userProfile', JSON.stringify(sanitizedProfile));
-      
-      setUserProfile(sanitizedProfile);
+      // Save to PocketBase via the auth context
+      await updateProfile(sanitizedProfile);
+
       setIsEditing(false);
       Alert.alert('Success', 'Profile saved successfully!');
-      
-    } catch (error) {
+
+    } catch (error: any) {
       console.error('Error saving profile:', error);
-      Alert.alert('Error', 'Failed to save profile');
+      const message =
+        error?.response?.message ||
+        SecurityUtils.handleSecureError(error, 'profile');
+      Alert.alert('Error', message);
     } finally {
       setSaving(false);
     }
   };
 
-  const clearProfile = async () => {
+  const handleSignOut = () => {
     Alert.alert(
-      'Clear Profile',
-      'Are you sure you want to clear your profile? This action cannot be undone.',
+      'Sign Out',
+      'Are you sure you want to sign out?',
       [
         {
           text: 'Cancel',
           style: 'cancel'
         },
         {
-          text: 'Clear',
+          text: 'Sign Out',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              setClearing(true);
-              
-              // Remove from AsyncStorage
-              await AsyncStorage.removeItem('userProfile');
-              
-              // Clear state
-              setUserProfile(null);
-              setEditForm({
-                firstName: '',
-                lastName: '',
-                dateOfBirth: '',
-                timeOfBirth: '',
-                placeOfBirth: '',
-                gender: 'male'
-              });
-              
-              // Enter editing mode
-              setIsEditing(true);
-              
-              Alert.alert('Success', 'Profile cleared successfully');
-              
-            } catch (error) {
-              console.error('Error clearing profile:', error);
-              Alert.alert('Error', 'Failed to clear profile');
-            } finally {
-              setClearing(false);
-            }
+          onPress: () => {
+            signOut();
           }
         }
       ]
@@ -169,19 +128,21 @@ export default function Profile() {
   };
 
   const cancelEdit = () => {
-    if (userProfile) {
+    if (userProfile && profileComplete) {
       setEditForm(userProfile);
       setIsEditing(false);
     } else {
-      // If no profile exists, keep in editing mode
-      setEditForm({
-        firstName: '',
-        lastName: '',
-        dateOfBirth: '',
-        timeOfBirth: '',
-        placeOfBirth: '',
-        gender: 'male'
-      });
+      // If profile is incomplete, keep in editing mode
+      setEditForm(
+        userProfile ?? {
+          firstName: '',
+          lastName: '',
+          dateOfBirth: '',
+          timeOfBirth: '',
+          placeOfBirth: '',
+          gender: 'male'
+        }
+      );
     }
     setShowPlaceSuggestions(false);
   };
@@ -227,33 +188,26 @@ export default function Profile() {
       <View style={styles.header}>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.headerActions}>
-          {userProfile && !isEditing && (
-            <>
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => setIsEditing(true)}
-              >
-                <Edit3 size={20} color="#FFD700" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.headerButton, styles.clearButton]}
-                onPress={clearProfile}
-                disabled={clearing}
-              >
-                {clearing ? (
-                  <ActivityIndicator size={16} color="#FF6B6B" />
-                ) : (
-                  <Trash2 size={20} color="#FF6B6B" />
-                )}
-              </TouchableOpacity>
-            </>
+          {profileComplete && !isEditing && (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => setIsEditing(true)}
+            >
+              <Edit3 size={20} color="#FFD700" />
+            </TouchableOpacity>
           )}
+          <TouchableOpacity
+            style={[styles.headerButton, styles.clearButton]}
+            onPress={handleSignOut}
+          >
+            <LogOut size={20} color="#FF6B6B" />
+          </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          {!userProfile && !isEditing ? (
+          {!profileComplete && !isEditing ? (
             <View style={styles.noProfileContainer}>
               <User size={64} color="#FFD700" />
               <Text style={styles.noProfileTitle}>No Profile Found</Text>
@@ -270,7 +224,7 @@ export default function Profile() {
           ) : isEditing ? (
             <View style={styles.editContainer}>
               <Text style={styles.sectionTitle}>
-                {userProfile ? 'Edit Profile' : 'Create Profile'}
+                {profileComplete ? 'Edit Profile' : 'Create Profile'}
               </Text>
 
               <View style={styles.inputGroup}>
@@ -392,7 +346,7 @@ export default function Profile() {
                   )}
                 </TouchableOpacity>
 
-                {userProfile && (
+                {profileComplete && (
                   <TouchableOpacity
                     style={styles.cancelButton}
                     onPress={cancelEdit}

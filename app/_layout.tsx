@@ -13,8 +13,29 @@ import {
   Inter_600SemiBold,
 } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import AuthScreen from '@/components/AuthScreen';
 
 SplashScreen.preventAutoHideAsync();
+
+function RootNavigator() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   useFrameworkReady();
@@ -38,9 +59,9 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <AuthProvider>
+      <RootNavigator />
+      <StatusBar style="auto" />
+    </AuthProvider>
   );
 }
