@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut } from 'lucide-react-native';
 import { searchPlaces } from '@/data/indianPlaces';
 import { SecurityUtils } from '@/utils/security';
+import { notify, confirmAction } from '@/utils/notify';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
 
 export default function Profile() {
@@ -47,7 +48,7 @@ export default function Profile() {
       // Validate required fields
       if (!editForm.firstName.trim() || !editForm.lastName.trim() ||
           !editForm.dateOfBirth.trim() || !editForm.placeOfBirth.trim()) {
-        Alert.alert('Error', 'Please fill in all required fields');
+        notify('Error', 'Please fill in all required fields');
         return;
       }
 
@@ -63,30 +64,30 @@ export default function Profile() {
 
       // Validate inputs
       if (!SecurityUtils.validateName(sanitizedProfile.firstName)) {
-        Alert.alert('Error', 'Please enter a valid first name');
+        notify('Error', 'Please enter a valid first name');
         return;
       }
 
       if (!SecurityUtils.validateName(sanitizedProfile.lastName)) {
-        Alert.alert('Error', 'Please enter a valid last name');
+        notify('Error', 'Please enter a valid last name');
         return;
       }
 
       if (!SecurityUtils.validatePlace(sanitizedProfile.placeOfBirth)) {
-        Alert.alert('Error', 'Please enter a valid place of birth');
+        notify('Error', 'Please enter a valid place of birth');
         return;
       }
 
       // Validate date format (DD/MM/YYYY)
       const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       if (!dateRegex.test(sanitizedProfile.dateOfBirth)) {
-        Alert.alert('Error', 'Please enter date in DD/MM/YYYY format');
+        notify('Error', 'Please enter date in DD/MM/YYYY format');
         return;
       }
 
       // Validate time format if provided (HH:MM AM/PM)
       if (sanitizedProfile.timeOfBirth && !SecurityUtils.validateTime(sanitizedProfile.timeOfBirth)) {
-        Alert.alert('Error', 'Please enter time in HH:MM AM/PM format');
+        notify('Error', 'Please enter time in HH:MM AM/PM format');
         return;
       }
 
@@ -94,36 +95,25 @@ export default function Profile() {
       await updateProfile(sanitizedProfile);
 
       setIsEditing(false);
-      Alert.alert('Success', 'Profile saved successfully!');
+      notify('Success', 'Profile saved successfully!');
 
     } catch (error: any) {
       console.error('Error saving profile:', error);
       const message =
         error?.response?.message ||
         SecurityUtils.handleSecureError(error, 'profile');
-      Alert.alert('Error', message);
+      notify('Error', message);
     } finally {
       setSaving(false);
     }
   };
 
   const handleSignOut = () => {
-    Alert.alert(
+    confirmAction(
       'Sign Out',
       'Are you sure you want to sign out?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: () => {
-            signOut();
-          }
-        }
-      ]
+      () => signOut(),
+      'Sign Out'
     );
   };
 

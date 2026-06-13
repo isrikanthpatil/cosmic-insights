@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -15,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { SecurityUtils } from '@/utils/security';
+import { notify } from '@/utils/notify';
 import { searchPlaces } from '@/data/indianPlaces';
 
 type Mode = 'login' | 'signup';
@@ -62,11 +62,15 @@ export default function AuthScreen() {
   const handleSubmit = async () => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password.trim()) {
-      Alert.alert('Error', 'Please enter your email and password');
+      notify('Error', 'Please enter your email and password');
       return;
     }
     if (!SecurityUtils.validateEmail(trimmedEmail)) {
-      Alert.alert('Error', 'Please enter a valid email address');
+      notify('Error', 'Please enter a valid email address');
+      return;
+    }
+    if (mode === 'signup' && password.length < 8) {
+      notify('Error', 'Password must be at least 8 characters long');
       return;
     }
 
@@ -94,26 +98,26 @@ export default function AuthScreen() {
         !sanitizedProfile.dateOfBirth ||
         !sanitizedProfile.placeOfBirth
       ) {
-        Alert.alert('Error', 'Please fill in all required fields');
+        notify('Error', 'Please fill in all required fields');
         return;
       }
 
       if (!SecurityUtils.validateName(sanitizedProfile.firstName)) {
-        Alert.alert('Error', 'Please enter a valid first name');
+        notify('Error', 'Please enter a valid first name');
         return;
       }
       if (!SecurityUtils.validateName(sanitizedProfile.lastName)) {
-        Alert.alert('Error', 'Please enter a valid last name');
+        notify('Error', 'Please enter a valid last name');
         return;
       }
       if (!SecurityUtils.validatePlace(sanitizedProfile.placeOfBirth)) {
-        Alert.alert('Error', 'Please enter a valid place of birth');
+        notify('Error', 'Please enter a valid place of birth');
         return;
       }
 
       const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       if (!dateRegex.test(sanitizedProfile.dateOfBirth)) {
-        Alert.alert('Error', 'Please enter date in DD/MM/YYYY format');
+        notify('Error', 'Please enter date in DD/MM/YYYY format');
         return;
       }
 
@@ -121,7 +125,7 @@ export default function AuthScreen() {
         sanitizedProfile.timeOfBirth &&
         !SecurityUtils.validateTime(sanitizedProfile.timeOfBirth)
       ) {
-        Alert.alert('Error', 'Please enter time in HH:MM AM/PM format');
+        notify('Error', 'Please enter time in HH:MM AM/PM format');
         return;
       }
 
@@ -130,7 +134,7 @@ export default function AuthScreen() {
       const message =
         error?.response?.message ||
         SecurityUtils.handleSecureError(error, 'auth');
-      Alert.alert(
+      notify(
         mode === 'login' ? 'Sign In Failed' : 'Sign Up Failed',
         message
       );

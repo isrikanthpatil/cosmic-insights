@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { pb } from '@/utils/pocketbase';
 
 export type Profile = {
@@ -39,20 +40,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // React to login/logout (and async store hydration) so the UI updates.
     const unsubscribe = pb.authStore.onChange((_token, record) => {
-      setUser(record ?? null);
+      if (mounted) setUser(record ?? null);
     });
 
-    // AsyncAuthStore loads asynchronously; wait a tick for it to hydrate,
-    // then read the current record and finish loading.
-    const timer = setTimeout(() => {
+    // AsyncAuthStore hydrates from AsyncStorage asynchronously. Reading the
+    // same key ourselves resolves after that hydration, so by the time this
+    // promise settles the store has populated its record (if a saved session
+    // exists). This avoids briefly showing the login screen to a logged-in
+    // user on cold start.
+    AsyncStorage.getItem('pb_auth').then(() => {
+      if (!mounted) return;
       setUser(pb.authStore.record ?? null);
       setIsLoading(false);
-    }, 0);
+    });
 
     return () => {
-      clearTimeout(timer);
+      mounted = false;
       unsubscribe();
     };
   }, []);
