@@ -1,0 +1,70 @@
+# =============================================================================
+# Extra services overlay for the self-hosted Astrology backend.
+#
+# This file does NOT redefine the full Supabase stack. The Supabase services
+# (Postgres, GoTrue/auth, PostgREST/rest, Storage, Kong API gateway, etc.) come
+# from the OFFICIAL Supabase self-hosting compose, which you clone separately
+# (see DEPLOYMENT.md). This overlay only adds the two services we run on top:
+#
+#   1. ollama  - local LLM for the app's AI features (no external API cost).
+#   2. caddy   - reverse proxy doing automatic HTTPS in front of everything.
+#
+# Run alongside the Supabase compose, e.g. from the cloned supabase/docker dir:
+#   docker compose -f docker-compose.yml -f /path/to/infra/docker-compose.yml up -d
+#
+# Both stacks must share a Docker network so Caddy can reach Kong by name.
+# The Supabase compose creates a default network; we attach to it as external.
+# Adjust `name:` below to match `docker network ls` (often "supabase_default"
+# or "<projectdir>_default").
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Ollama - local LLM runtime. Only reachable on the internal Docker network;
+  # not published to the host. A model is pulled AFTER the container is up via:
+  #   docker exec -it ollama ollama pull llama3.2:3b
+  # NOTE: needs ~8GB+ RAM (see the callout in DEPLOYMENT.md).
+  # ---------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama      # persist pulled models across restarts
+    expose:
+      - "11434"                          # internal only (Caddy / app reach it here)
+    networks:
+      - default
+
+  # ---------------------------------------------------------------------------
+  # Caddy - reverse proxy + automatic HTTPS (Let's Encrypt). Terminates TLS and
+  # proxies API paths to the Supabase Kong gateway (kong:8000) and AI calls to
+  # ollama:11434. See infra/Caddyfile.
+  # ---------------------------------------------------------------------------
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data                 # certs + ACME state (must persist!)
+      - caddy_config:/config
+      # Optional: serve the exported Expo web build as static files.
+      # - ./web-build:/srv/web:ro
+    networks:
+      - default
+
+volumes:
+  ollama_models:
+  caddy_data:
+  caddy_config:
+
+# Attach to the network created by the official Supabase compose so that the
+# service name "kong" resolves. Update the name to match your environment.
+networks:
+  default:
+    external: true
+    name: supabase_default

@@ -1,0 +1,44 @@
+# =============================================================================
+# Caddyfile - reverse proxy with automatic HTTPS for the Astrology backend.
+#
+# Replace `your-domain.com` with your real domain (DNS A record -> droplet IP).
+# Caddy will automatically provision and renew a Let's Encrypt certificate.
+#
+# All Supabase client traffic (REST, Auth, Storage, Realtime, functions) goes
+# through the single Supabase API gateway, Kong, on port 8000. The Supabase
+# JS client just needs the base URL; Kong routes /rest, /auth, /storage, etc.
+#
+# Upstream choice for Kong:
+#   - "kong:8000"               -> when Caddy shares the Supabase Docker network
+#                                  (recommended; see infra/docker-compose.yml).
+#   - "host.docker.internal:8000" -> if Caddy runs in a separate network and
+#                                  Kong's port 8000 is published on the host.
+# We use the container-name form below.
+# =============================================================================
+
+your-domain.com {
+	# --- Supabase API gateway (Kong) ---------------------------------------
+	# Kong internally routes /rest/v1, /auth/v1, /storage/v1, /realtime/v1, etc.
+	# so we forward the matching path prefixes straight to it.
+	@supabase path /rest/* /auth/* /storage/* /realtime/* /functions/*
+	reverse_proxy @supabase kong:8000
+
+	# --- Local LLM (optional direct exposure) ------------------------------
+	# Usually the app talks to Ollama only via server-side code, not directly
+	# from the browser. Uncomment to expose it under /ai (consider auth!).
+	# handle_path /ai/* {
+	#	reverse_proxy ollama:11434
+	# }
+
+	# --- Exported Expo web app (static files) ------------------------------
+	# Build with `npx expo export --platform web` (outputs to ./dist), copy to
+	# the path mounted in docker-compose.yml (e.g. ./web-build), then serve it
+	# for any path not matched above. Uncomment to enable:
+	# handle {
+	#	root * /srv/web
+	#	try_files {path} /index.html      # SPA fallback for client-side routing
+	#	file_server
+	# }
+
+	encode gzip zstd
+}
