@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MessageCircle, Send, Sparkles, Book } from 'lucide-react-native';
-import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights } from '@/utils/astrology';
+import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
+import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
 import { pb } from '@/utils/pocketbase';
 
@@ -19,6 +20,8 @@ interface AstrologyAIProps {
     dateOfBirth: string;
     placeOfBirth: string;
     timeOfBirth?: string;
+    lastName?: string;
+    gender?: 'male' | 'female';
   };
 }
 
@@ -464,14 +467,42 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
-      const context = userProfile
-        ? {
-            firstName: userProfile.firstName,
-            sunSign: calculateSunSign(userProfile.dateOfBirth, userProfile.timeOfBirth),
-            moonSign: calculateMoonSign(userProfile.dateOfBirth, userProfile.placeOfBirth),
-            ascendant: calculateAscendant(userProfile.dateOfBirth, userProfile.placeOfBirth, userProfile.timeOfBirth),
-          }
-        : { firstName: 'there', sunSign: '', moonSign: '', ascendant: '' };
+      let context: Record<string, string | number>;
+      if (userProfile) {
+        const sunSign = calculateSunSign(userProfile.dateOfBirth, userProfile.timeOfBirth);
+        const moonSign = calculateMoonSign(userProfile.dateOfBirth, userProfile.placeOfBirth);
+        const ascendant = calculateAscendant(userProfile.dateOfBirth, userProfile.placeOfBirth, userProfile.timeOfBirth);
+
+        context = { firstName: userProfile.firstName, sunSign, moonSign, ascendant };
+
+        // Enrich with sign element/quality/ruler — never break the chat on failure.
+        try {
+          const signDetails = getSignDetails(sunSign);
+          context.element = signDetails?.element ?? '';
+          context.quality = signDetails?.quality ?? '';
+          context.ruler = signDetails?.ruler ?? '';
+        } catch {
+          // omit sign-detail fields on failure
+        }
+
+        // Enrich with numerology numbers — lastName/gender may be absent on the
+        // prop, so fall back to safe defaults.
+        try {
+          const numerology = getNumerologyReading(
+            userProfile.firstName,
+            userProfile.lastName ?? '',
+            userProfile.dateOfBirth,
+            userProfile.gender ?? 'male'
+          );
+          context.birthNumber = numerology.birthNumber;
+          context.destinyNumber = numerology.destinyNumber;
+          context.kuaNumber = numerology.kuaNumber;
+        } catch {
+          // omit numerology fields on failure
+        }
+      } else {
+        context = { firstName: 'there', sunSign: '', moonSign: '', ascendant: '' };
+      }
 
       const result = await pb.send('/api/ask', {
         method: 'POST',
