@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut } from 'lucide-react-native';
+import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2 } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { searchPlaces } from '@/data/indianPlaces';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
+import { pb } from '@/utils/pocketbase';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 
+const NOTIFICATIONS_KEY = 'settings_notifications';
+
 export default function Profile() {
-  const { profile, isLoading: loading, updateProfile, signOut } = useAuth();
+  const { profile, user, isLoading: loading, updateProfile, signOut, requestPasswordReset } = useAuth();
   const userProfile = profile;
   const profileComplete =
     !!profile &&
@@ -30,6 +34,66 @@ export default function Profile() {
   });
   const [placeSuggestions, setPlaceSuggestions] = useState<string[]>([]);
   const [showPlaceSuggestions, setShowPlaceSuggestions] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  useEffect(() => {
+    // Load the persisted daily-horoscope reminder preference on mount.
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem(NOTIFICATIONS_KEY);
+        if (stored !== null) {
+          setNotificationsEnabled(stored === 'true');
+        }
+      } catch {
+        // Ignore read errors; default to off.
+      }
+    })();
+  }, []);
+
+  const toggleNotifications = async (value: boolean) => {
+    setNotificationsEnabled(value);
+    try {
+      await AsyncStorage.setItem(NOTIFICATIONS_KEY, value ? 'true' : 'false');
+    } catch {
+      // Non-critical: the toggle still reflects in-session.
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const email = user?.email;
+    if (!email) {
+      notify('Change Password', 'No email address is associated with your account.');
+      return;
+    }
+    try {
+      await requestPasswordReset(email);
+      notify('Change Password', `Password reset link sent to ${email}`);
+    } catch (error: any) {
+      const message =
+        error?.response?.message ||
+        SecurityUtils.handleSecureError(error, 'auth');
+      notify('Error', message);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    confirmAction(
+      'Delete Account',
+      'This will permanently delete your account and all associated data. This action cannot be undone.',
+      async () => {
+        try {
+          await pb.collection('users').delete(user.id);
+          signOut();
+        } catch (error: any) {
+          const message =
+            error?.response?.message ||
+            SecurityUtils.handleSecureError(error, 'profile');
+          notify('Error', message);
+        }
+      },
+      'Delete'
+    );
+  };
 
   useEffect(() => {
     // Populate the edit form from the authenticated profile. If the profile
@@ -394,6 +458,78 @@ export default function Profile() {
                   </View>
                 </View>
               </View>
+
+              {/* Settings */}
+              <View style={styles.card}>
+                <View style={styles.cardTitleRow}>
+                  <Settings size={20} color="#FFD700" />
+                  <Text style={styles.cardTitle}>Settings</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.settingRow}
+                  onPress={handleChangePassword}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.settingIcon}>
+                    <KeyRound size={18} color="#2196F3" />
+                  </View>
+                  <Text style={styles.settingLabel}>Change Password</Text>
+                </TouchableOpacity>
+
+                <View style={styles.settingRow}>
+                  <View style={styles.settingIcon}>
+                    <Bell size={18} color="#FFD700" />
+                  </View>
+                  <Text style={styles.settingLabel}>Daily Horoscope Reminders</Text>
+                  <Switch
+                    value={notificationsEnabled}
+                    onValueChange={toggleNotifications}
+                    trackColor={{ false: 'rgba(255,255,255,0.2)', true: '#FFD700' }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={styles.settingRow}
+                  onPress={handleSignOut}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.settingIcon}>
+                    <LogOut size={18} color="#B8B8B8" />
+                  </View>
+                  <Text style={styles.settingLabel}>Sign Out</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.settingRow, styles.settingRowLast]}
+                  onPress={handleDeleteAccount}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.settingIcon}>
+                    <Trash2 size={18} color="#FF6B6B" />
+                  </View>
+                  <Text style={[styles.settingLabel, styles.settingLabelDanger]}>
+                    Delete Account
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* About */}
+              <View style={styles.card}>
+                <View style={styles.cardTitleRow}>
+                  <Info size={20} color="#FFD700" />
+                  <Text style={styles.cardTitle}>About</Text>
+                </View>
+                <Text style={styles.aboutAppName}>Cosmic Insights</Text>
+                <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+                <Text style={styles.aboutDescription}>
+                  Personalized astrology & numerology guidance.
+                </Text>
+                <Text style={styles.aboutDisclaimer}>
+                  Readings are for guidance and entertainment.
+                </Text>
+              </View>
             </View>
           ) : null}
         </View>
@@ -641,5 +777,74 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     color: '#FFFFFF',
+  },
+  card: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 16,
+  },
+  cardTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
+    color: '#FFFFFF',
+  },
+  settingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  settingRowLast: {
+    borderBottomWidth: 0,
+  },
+  settingIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingLabel: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: 'Inter-Medium',
+    color: '#FFFFFF',
+  },
+  settingLabelDanger: {
+    color: '#FF6B6B',
+  },
+  aboutAppName: {
+    fontSize: 18,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#FFFFFF',
+    marginTop: 2,
+  },
+  aboutVersion: {
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#FFD700',
+    marginTop: 2,
+  },
+  aboutDescription: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#E0E0E0',
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  aboutDisclaimer: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#888',
+    marginTop: 8,
   },
 });

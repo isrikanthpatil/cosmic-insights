@@ -18,6 +18,38 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { calculateSunSign, generateDailyHoroscope, DailyHoroscope } from '@/utils/astrology';
 
+// Maps a lucky-color name to a displayable swatch hex. Falls back to gold.
+const COLOR_MAP: Record<string, string> = {
+  red: '#FF6B6B',
+  crimson: '#DC143C',
+  pink: '#FF8FB1',
+  orange: '#FF9800',
+  gold: '#FFD700',
+  golden: '#FFD700',
+  yellow: '#FFE066',
+  green: '#4CAF50',
+  emerald: '#2ECC71',
+  blue: '#2196F3',
+  navy: '#1A237E',
+  turquoise: '#1ABC9C',
+  purple: '#8A2BE2',
+  violet: '#7C4DFF',
+  white: '#F5F5F5',
+  silver: '#C0C0C0',
+  grey: '#9E9E9E',
+  gray: '#9E9E9E',
+  black: '#2B2B2B',
+  brown: '#8D6E63',
+};
+
+const colorToHex = (name: string): string => {
+  if (!name) return '#FFD700';
+  const key = name.trim().toLowerCase();
+  if (COLOR_MAP[key]) return COLOR_MAP[key];
+  const match = Object.keys(COLOR_MAP).find((c) => key.includes(c));
+  return match ? COLOR_MAP[match] : '#FFD700';
+};
+
 export default function Home() {
   const router = useRouter();
   const { profile } = useAuth();
@@ -98,7 +130,7 @@ export default function Home() {
             {horoscope && (
               <View style={styles.horoscopeCard}>
                 <View style={styles.cardHeader}>
-                  <Sparkles size={20} color="#FFD700" />
+                  <Sparkles size={18} color="#FFD700" />
                   <Text style={styles.cardTitle}>Today's Horoscope</Text>
                 </View>
                 <Text style={styles.horoscopeText}>{horoscope.mainPrediction}</Text>
@@ -112,7 +144,15 @@ export default function Home() {
                   </View>
                   <View style={styles.metaItem}>
                     <Text style={styles.metaLabel}>Lucky Color</Text>
-                    <Text style={styles.metaValue}>{horoscope.luckyColor}</Text>
+                    <View style={styles.colorValueRow}>
+                      <View
+                        style={[
+                          styles.colorSwatch,
+                          { backgroundColor: colorToHex(horoscope.luckyColor) },
+                        ]}
+                      />
+                      <Text style={styles.metaValue}>{horoscope.luckyColor}</Text>
+                    </View>
                   </View>
                 </View>
 
@@ -150,6 +190,16 @@ export default function Home() {
                 <Text style={styles.quickLabel}>AskAstro</Text>
               </TouchableOpacity>
             </View>
+
+            {sunSign && (
+              <View style={styles.tipRow}>
+                <Sparkles size={16} color="#FFD700" />
+                <Text style={styles.tipText}>
+                  The stars align for {sunSign} today. Trust your intuition and
+                  embrace what the universe sends your way.
+                </Text>
+              </View>
+            )}
           </>
         )}
       </ScrollView>
@@ -166,14 +216,14 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 48,
     paddingBottom: 100,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    marginBottom: 24,
+    marginBottom: 18,
   },
   brandIcon: {
     width: 56,
@@ -231,13 +281,13 @@ const styles = StyleSheet.create({
   signCard: {
     borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   signGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    padding: 20,
+    padding: 16,
   },
   signInfo: {
     flex: 1,
@@ -255,9 +305,21 @@ const styles = StyleSheet.create({
   horoscopeCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 16,
-    padding: 18,
-    marginBottom: 24,
-    gap: 14,
+    padding: 16,
+    marginBottom: 18,
+    gap: 12,
+  },
+  colorValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  colorSwatch: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -319,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Inter-SemiBold',
     color: '#FFFFFF',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   quickRow: {
     flexDirection: 'row',
@@ -329,11 +391,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 16,
-    paddingVertical: 22,
+    paddingVertical: 18,
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  tipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(255, 215, 0, 0.08)',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 18,
+  },
+  tipText: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#D8D8D8',
+    lineHeight: 17,
   },
   quickLabel: {
     fontSize: 13,

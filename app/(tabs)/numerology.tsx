@@ -128,6 +128,12 @@ export default function Numerology() {
                 const isStrong = count > 1;
                 const isKuaPosition = number === kuaNumber;
                 
+                const badgeColor = isStrong
+                  ? '#FFD700'
+                  : isKuaPosition
+                  ? '#8A2BE2'
+                  : '#4CAF50';
+
                 return (
                   <View key={colIndex} style={[
                     styles.gridCell,
@@ -136,7 +142,7 @@ export default function Numerology() {
                     isKuaPosition && styles.kuaCellBorder
                   ]}>
                     <LinearGradient
-                      colors={isEmpty ? 
+                      colors={isEmpty ?
                         ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.1)'] :
                         isStrong ?
                         ['rgba(255, 215, 0, 0.3)', 'rgba(255, 215, 0, 0.1)'] :
@@ -146,32 +152,24 @@ export default function Numerology() {
                       }
                       style={styles.cellGradient}
                     >
-                      <Text style={styles.gridNumber}>{number}</Text>
-                      <Text style={[
-                        styles.gridElement,
-                        { color: meaning.color }
-                      ]}>
+                      {count > 0 ? (
+                        <View style={[styles.countBadge, { backgroundColor: badgeColor }]}>
+                          <Text style={styles.countBadgeText}>{count}</Text>
+                        </View>
+                      ) : (
+                        <View style={styles.emptyBadge} />
+                      )}
+
+                      <Text style={[styles.gridNumber, isEmpty && styles.gridNumberEmpty]}>
+                        {number}
+                      </Text>
+                      <Text style={[styles.gridElement, { color: meaning.color }]}>
                         {meaning.element}
                       </Text>
-                      <View style={styles.countContainer}>
-                        {count > 0 ? (
-                          <>
-                            <Text style={styles.gridCount}>
-                              {'●'.repeat(Math.min(count, 5))}
-                              {count > 5 && ` +${count - 5}`}
-                            </Text>
-                            <Text style={styles.countNumber}>({count})</Text>
-                            {isKuaPosition && (
-                              <Text style={styles.kuaIndicator}>Kua</Text>
-                            )}
-                          </>
-                        ) : (
-                          <Text style={styles.emptyIndicator}>○</Text>
-                        )}
-                      </View>
-                      <Text style={styles.gridMeaning} numberOfLines={2}>
-                        {meaning.meaning.split(' - ')[1] || meaning.meaning}
-                      </Text>
+
+                      {isKuaPosition && (
+                        <Text style={styles.kuaIndicator}>Kua</Text>
+                      )}
                     </LinearGradient>
                   </View>
                 );
@@ -522,17 +520,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gridWrapper: {
-    gap: 2,
+    gap: 6,
     marginBottom: 16,
   },
   gridRow: {
     flexDirection: 'row',
-    gap: 2,
+    gap: 6,
   },
   gridCell: {
-    width: 80,
-    height: 100,
-    borderRadius: 10,
+    width: 88,
+    height: 88,
+    borderRadius: 12,
     overflow: 'hidden',
   },
   emptyCellBorder: {
@@ -550,51 +548,53 @@ const styles = StyleSheet.create({
   },
   cellGradient: {
     flex: 1,
-    padding: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  countBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#0F0C29',
+  },
+  emptyBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 18,
+    height: 18,
   },
   gridNumber: {
-    fontSize: 20,
+    fontSize: 28,
     fontFamily: 'Inter-Bold',
     color: '#FFFFFF',
   },
+  gridNumberEmpty: {
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
   gridElement: {
-    fontSize: 9,
-    fontFamily: 'Inter-Medium',
-    textAlign: 'center',
-  },
-  countContainer: {
-    alignItems: 'center',
-    minHeight: 20,
-  },
-  gridCount: {
     fontSize: 10,
     fontFamily: 'Inter-Medium',
-    color: '#4CAF50',
-  },
-  countNumber: {
-    fontSize: 9,
-    fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    textAlign: 'center',
   },
   kuaIndicator: {
-    fontSize: 7,
+    fontSize: 8,
     fontFamily: 'Inter-Bold',
     color: '#8A2BE2',
-    marginTop: 2,
-  },
-  emptyIndicator: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#FF6B6B',
-  },
-  gridMeaning: {
-    fontSize: 7,
-    fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    textAlign: 'center',
-    lineHeight: 9,
+    letterSpacing: 0.5,
   },
   gridLegend: {
     flexDirection: 'row',
