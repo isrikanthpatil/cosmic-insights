@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MessageCircle, Send, Sparkles, Book } from 'lucide-react-native';
@@ -33,6 +33,75 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Refs for the typewriter reveal: the active interval timer and the
+  // ScrollView so we can keep the view pinned to the bottom as text grows.
+  const typingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const isMountedRef = useRef(true);
+
+  // Clean up any in-flight typing interval on unmount to avoid
+  // state-update-after-unmount warnings.
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+        typingIntervalRef.current = null;
+      }
+    };
+  }, []);
+
+  // Appends an assistant message with empty text, then progressively fills its
+  // `text` field word-by-word via setInterval until the full reply is shown.
+  const revealAssistantMessage = (fullText: string) => {
+    const messageId = (Date.now() + 1).toString();
+    const aiMessage: Message = {
+      id: messageId,
+      text: '',
+      isUser: false,
+      timestamp: new Date(),
+    };
+
+    // Stop the loader and show the (empty) bubble immediately.
+    setIsLoading(false);
+    setMessages(prev => [...prev, aiMessage]);
+
+    // Split into words while preserving the whitespace between them so the
+    // reassembled text matches the original exactly.
+    const tokens = fullText.match(/\S+\s*/g) ?? [fullText];
+    let index = 0;
+
+    // Clear any previous reveal still running.
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+
+    typingIntervalRef.current = setInterval(() => {
+      if (!isMountedRef.current) {
+        if (typingIntervalRef.current) {
+          clearInterval(typingIntervalRef.current);
+          typingIntervalRef.current = null;
+        }
+        return;
+      }
+
+      index += 1;
+      const partial = tokens.slice(0, index).join('');
+      setMessages(prev =>
+        prev.map(m => (m.id === messageId ? { ...m, text: partial } : m))
+      );
+
+      if (index >= tokens.length) {
+        if (typingIntervalRef.current) {
+          clearInterval(typingIntervalRef.current);
+          typingIntervalRef.current = null;
+        }
+      }
+    }, 35);
+  };
 
   // Enhanced astrology knowledge base with coordinate-based insights
   const astrologyKnowledge = {
@@ -464,15 +533,9 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         ? llmReply
         : generateResponse(sanitizedInput);
 
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      text: response,
-      isUser: false,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, aiMessage]);
-    setIsLoading(false);
+    // Reveal the reply with a typewriter animation (turns off the loader as
+    // it begins). Applies equally to LLM and local-fallback replies.
+    revealAssistantMessage(response);
 
     securityMonitor.logEvent('AI query processed', {
       userId,
@@ -512,7 +575,12 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         <Book size={20} color="#B8B8B8" />
       </View>
 
-      <ScrollView style={styles.messagesContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.messagesContainer}
+        showsVerticalScrollIndicator={false}
+        onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+      >
         {messages.map((message) => (
           <View
             key={message.id}
