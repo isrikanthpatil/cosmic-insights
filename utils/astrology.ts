@@ -48,6 +48,40 @@ const zodiacSigns = [
   'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
 ];
 
+// --- Deterministic seeded selection helpers ---
+// A simple, stable string hash (no crypto). Same string -> same number.
+const hashString = (seed: string): number => {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) | 0; // 32-bit wrap
+  }
+  return Math.abs(hash);
+};
+
+// Pick a stable index into an array from a seed string.
+const seededIndex = (seed: string, length: number): number => {
+  if (length <= 0) return 0;
+  return hashString(seed) % length;
+};
+
+// Today's date as 'YYYY-MM-DD' (local).
+const getTodayKey = (date: Date = new Date()): string => {
+  const y = date.getFullYear();
+  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const d = date.getDate().toString().padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
+// ISO week key 'YYYY-Www' for stable weekly seeding.
+const getISOWeekKey = (date: Date = new Date()): string => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7; // Mon=1..Sun=7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum); // nearest Thursday
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${d.getUTCFullYear()}-W${week.toString().padStart(2, '0')}`;
+};
+
 // Function to get coordinates for Indian places
 export const getCoordinatesForPlace = (place: string): { latitude: number; longitude: number } | null => {
   // This is a simplified mapping. In a real app, you'd use a geocoding service
@@ -362,12 +396,16 @@ export const generateDailyHoroscope = (firstName: string, dateOfBirth: string, p
   const colorIndex = dayNumber % signColors.length;
   const todaysLuckyColor = signColors[colorIndex];
 
+  // Deterministic selection: same sun sign + same day always yields the same
+  // horoscope, and it changes the next day.
+  const daySeed = `${sunSign}-${getTodayKey(today)}`;
+
   return {
-    mainPrediction: mainPredictions[Math.floor(Math.random() * mainPredictions.length)],
+    mainPrediction: mainPredictions[seededIndex(`${daySeed}-main`, mainPredictions.length)],
     luckyNumbers: todaysLuckyNumbers,
     luckyColor: todaysLuckyColor,
-    positiveEnergy: positiveEnergies[Math.floor(Math.random() * positiveEnergies.length)],
-    advice: advices[Math.floor(Math.random() * advices.length)]
+    positiveEnergy: positiveEnergies[seededIndex(`${daySeed}-energy`, positiveEnergies.length)],
+    advice: advices[seededIndex(`${daySeed}-advice`, advices.length)]
   };
 };
 
@@ -419,10 +457,14 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
     `Spiritual growth and meditation`
   ];
 
+  // Deterministic selection seeded on sun sign + ISO week, so the weekly
+  // overview is stable for the whole week and changes the next week.
+  const weekSeed = `${sunSign}-${getISOWeekKey(today)}`;
+
   return {
     weekStart,
     weekEnd,
-    overview: weeklyOverviews[Math.floor(Math.random() * weeklyOverviews.length)],
+    overview: weeklyOverviews[seededIndex(`${weekSeed}-overview`, weeklyOverviews.length)],
     highlights: weeklyHighlights.slice(0, 3),
     luckyDays: luckyDays.slice(0, 2),
     focusAreas: focusAreas.slice(0, 3)

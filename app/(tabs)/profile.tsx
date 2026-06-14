@@ -6,6 +6,8 @@ import { searchPlaces } from '@/data/indianPlaces';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
+import DateField from '@/components/DateField';
+import TimeField from '@/components/TimeField';
 
 export default function Profile() {
   const { profile, isLoading: loading, updateProfile, signOut } = useAuth();
@@ -243,25 +245,17 @@ export default function Profile() {
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Date of Birth * (DD/MM/YYYY)</Text>
-                <TextInput
-                  style={styles.input}
+                <DateField
                   value={editForm.dateOfBirth}
                   onChangeText={(text) => setEditForm({ ...editForm, dateOfBirth: text })}
-                  placeholder="15/06/1990"
-                  placeholderTextColor="#666"
-                  maxLength={10}
                 />
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Time of Birth (HH:MM AM/PM)</Text>
-                <TextInput
-                  style={styles.input}
-                  value={editForm.timeOfBirth}
+                <Text style={styles.inputLabel}>Time of Birth (HH:MM, 24-hour)</Text>
+                <TimeField
+                  value={editForm.timeOfBirth ?? ''}
                   onChangeText={(text) => setEditForm({ ...editForm, timeOfBirth: text })}
-                  placeholder="10:30 AM"
-                  placeholderTextColor="#666"
-                  maxLength={20}
                 />
               </View>
 

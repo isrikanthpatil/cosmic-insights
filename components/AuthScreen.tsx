@@ -11,11 +11,13 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Sparkles } from 'lucide-react-native';
+import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
 import { searchPlaces } from '@/data/indianPlaces';
+import DateField from '@/components/DateField';
+import TimeField from '@/components/TimeField';
 
 type Mode = 'login' | 'signup';
 
@@ -26,6 +28,7 @@ export default function AuthScreen() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -188,16 +191,29 @@ export default function AuthScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Password *</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Enter your password"
-                placeholderTextColor="#666"
-                secureTextEntry
-                autoCapitalize="none"
-                maxLength={100}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#666"
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  maxLength={100}
+                />
+                <TouchableOpacity
+                  style={styles.eyeButton}
+                  onPress={() => setShowPassword((s) => !s)}
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} color="#B8B8B8" />
+                  ) : (
+                    <Eye size={20} color="#B8B8B8" />
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
 
             {mode === 'signup' && (
@@ -228,26 +244,12 @@ export default function AuthScreen() {
 
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>Date of Birth * (DD/MM/YYYY)</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={dateOfBirth}
-                    onChangeText={setDateOfBirth}
-                    placeholder="15/06/1990"
-                    placeholderTextColor="#666"
-                    maxLength={10}
-                  />
+                  <DateField value={dateOfBirth} onChangeText={setDateOfBirth} />
                 </View>
 
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Time of Birth (HH:MM AM/PM)</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={timeOfBirth}
-                    onChangeText={setTimeOfBirth}
-                    placeholder="10:30 AM"
-                    placeholderTextColor="#666"
-                    maxLength={20}
-                  />
+                  <Text style={styles.inputLabel}>Time of Birth (HH:MM, 24-hour)</Text>
+                  <TimeField value={timeOfBirth} onChangeText={setTimeOfBirth} />
                 </View>
 
                 <View style={styles.inputGroup}>
@@ -406,6 +408,25 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 16,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#FFFFFF',
+  },
+  eyeButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
   suggestionsContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',

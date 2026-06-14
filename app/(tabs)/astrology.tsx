@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
-import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MessageCircle, MapPin, Book, Gem } from 'lucide-react-native';
-import AstrologyAI from '@/components/AstrologyAI';
+import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AstrologyData {
@@ -111,17 +110,6 @@ export default function Astrology() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'askastro':
-        return (
-          <AstrologyAI 
-            userProfile={{
-              firstName: userProfile.firstName,
-              dateOfBirth: userProfile.dateOfBirth,
-              placeOfBirth: userProfile.placeOfBirth,
-            }}
-          />
-        );
-
       case 'overview':
         return (
           <View style={styles.content}>
@@ -390,7 +378,6 @@ export default function Astrology() {
         contentContainerStyle={styles.tabContent}
       >
         {[
-          { key: 'askastro', label: 'AskAstro', icon: MessageCircle },
           { key: 'overview', label: 'Overview', icon: Star },
           { key: 'positive', label: 'Strengths', icon: TrendingUp },
           { key: 'negative', label: 'Growth', icon: AlertTriangle },
@@ -410,13 +397,9 @@ export default function Astrology() {
         ))}
       </ScrollView>
 
-      {activeTab === 'askastro' ? (
-        renderContent()
-      ) : (
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {renderContent()}
-        </ScrollView>
-      )}
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {renderContent()}
+      </ScrollView>
     </LinearGradient>
   );
 }
