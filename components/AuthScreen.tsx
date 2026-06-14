@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
-import { searchPlaces } from '@/data/indianPlaces';
+import { searchPlaces } from '@/utils/places';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 
@@ -41,16 +41,36 @@ export default function AuthScreen() {
   const [placeSuggestions, setPlaceSuggestions] = useState<string[]>([]);
   const [showPlaceSuggestions, setShowPlaceSuggestions] = useState(false);
 
+  const placeSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (placeSearchTimer.current) {
+        clearTimeout(placeSearchTimer.current);
+      }
+    };
+  }, []);
+
   const handlePlaceSearch = (text: string) => {
+    // Update the input immediately so typing stays responsive.
     setPlaceOfBirth(text);
-    if (text.length >= 2) {
-      const suggestions = searchPlaces(text);
-      setPlaceSuggestions(suggestions);
-      setShowPlaceSuggestions(suggestions.length > 0);
-    } else {
+
+    if (placeSearchTimer.current) {
+      clearTimeout(placeSearchTimer.current);
+    }
+
+    if (text.trim().length < 2) {
       setPlaceSuggestions([]);
       setShowPlaceSuggestions(false);
+      return;
     }
+
+    // Debounce the live PocketBase query by ~250ms.
+    placeSearchTimer.current = setTimeout(async () => {
+      const suggestions = await searchPlaces(text);
+      setPlaceSuggestions(suggestions);
+      setShowPlaceSuggestions(suggestions.length > 0);
+    }, 250);
   };
 
   const selectPlace = (place: string) => {

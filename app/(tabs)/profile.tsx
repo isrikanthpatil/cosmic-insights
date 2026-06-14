@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2 } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { searchPlaces } from '@/data/indianPlaces';
+import { searchPlaces } from '@/utils/places';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
@@ -203,17 +203,36 @@ export default function Profile() {
     setShowPlaceSuggestions(false);
   };
 
+  const placeSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (placeSearchTimer.current) {
+        clearTimeout(placeSearchTimer.current);
+      }
+    };
+  }, []);
+
   const handlePlaceSearch = (text: string) => {
+    // Update the input immediately so typing stays responsive.
     setEditForm({ ...editForm, placeOfBirth: text });
-    
-    if (text.length >= 2) {
-      const suggestions = searchPlaces(text);
-      setPlaceSuggestions(suggestions);
-      setShowPlaceSuggestions(suggestions.length > 0);
-    } else {
+
+    if (placeSearchTimer.current) {
+      clearTimeout(placeSearchTimer.current);
+    }
+
+    if (text.trim().length < 2) {
       setPlaceSuggestions([]);
       setShowPlaceSuggestions(false);
+      return;
     }
+
+    // Debounce the live PocketBase query by ~250ms.
+    placeSearchTimer.current = setTimeout(async () => {
+      const suggestions = await searchPlaces(text);
+      setPlaceSuggestions(suggestions);
+      setShowPlaceSuggestions(suggestions.length > 0);
+    }, 250);
   };
 
   const selectPlace = (place: string) => {
