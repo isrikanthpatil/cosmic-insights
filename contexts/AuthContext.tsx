@@ -19,6 +19,7 @@ interface AuthContextValue {
   signUp: (email: string, password: string, profile: Profile) => Promise<void>;
   signOut: () => void;
   updateProfile: (profile: Profile) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -77,6 +78,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...profile,
     });
     await pb.collection('users').authWithPassword(email, password);
+    // Send a verification email (best-effort: don't block signup if mail fails).
+    try {
+      await pb.collection('users').requestVerification(email);
+    } catch (e) {
+      console.warn('Verification email could not be sent:', e);
+    }
+  };
+
+  const requestPasswordReset = async (email: string) => {
+    await pb.collection('users').requestPasswordReset(email);
   };
 
   const updateProfile = async (profile: Profile) => {
@@ -97,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     updateProfile,
+    requestPasswordReset,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

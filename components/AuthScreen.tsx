@@ -22,7 +22,7 @@ import TimeField from '@/components/TimeField';
 type Mode = 'login' | 'signup';
 
 export default function AuthScreen() {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, requestPasswordReset } = useAuth();
   const [mode, setMode] = useState<Mode>('login');
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,6 +60,26 @@ export default function AuthScreen() {
   const switchMode = () => {
     setMode((m) => (m === 'login' ? 'signup' : 'login'));
     setShowPlaceSuggestions(false);
+  };
+
+  const handleForgotPassword = async () => {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !SecurityUtils.validateEmail(trimmedEmail)) {
+      notify('Reset Password', 'Enter your email address above first, then tap "Forgot password?" again.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await requestPasswordReset(trimmedEmail);
+      notify('Check your email', `If an account exists for ${trimmedEmail}, a password reset link has been sent.`);
+    } catch (error: any) {
+      const message =
+        error?.response?.message ||
+        SecurityUtils.handleSecureError(error, 'auth');
+      notify('Reset Failed', message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -331,6 +351,16 @@ export default function AuthScreen() {
               )}
             </TouchableOpacity>
 
+            {mode === 'login' && (
+              <TouchableOpacity
+                style={styles.forgotButton}
+                onPress={handleForgotPassword}
+                disabled={submitting}
+              >
+                <Text style={styles.forgotText}>Forgot password?</Text>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity style={styles.switchButton} onPress={switchMode}>
               <Text style={styles.switchText}>
                 {mode === 'login'
@@ -483,6 +513,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
     color: '#FFFFFF',
+  },
+  forgotButton: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  forgotText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#FFD700',
   },
   switchButton: {
     alignItems: 'center',
