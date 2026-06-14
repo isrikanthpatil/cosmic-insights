@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MessageCircle, Send, Sparkles, Book } from 'lucide-react-native';
 import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights } from '@/utils/astrology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
+import { pb } from '@/utils/pocketbase';
 
 interface Message {
   id: string;
@@ -385,6 +386,39 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     return "I can help you with questions about zodiac signs, planets, houses, aspects, and general astrological concepts. Try asking about specific signs, planetary influences, or astrological terms. For personalized insights, ask about 'my chart', 'my sun sign', or 'my compatibility'. For example: 'Tell me about Leo' or 'What does Mercury represent?' or 'What's my moon sign?'";
   };
 
+  // Calls the server-side LLM proxy. Returns the reply string on success,
+  // or null on timeout / any error / empty reply (never throws).
+  const askLLM = async (question: string): Promise<string | null> => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000);
+    try {
+      const context = userProfile
+        ? {
+            firstName: userProfile.firstName,
+            sunSign: calculateSunSign(userProfile.dateOfBirth, userProfile.timeOfBirth),
+            moonSign: calculateMoonSign(userProfile.dateOfBirth, userProfile.placeOfBirth),
+            ascendant: calculateAscendant(userProfile.dateOfBirth, userProfile.placeOfBirth, userProfile.timeOfBirth),
+          }
+        : { firstName: 'there', sunSign: '', moonSign: '', ascendant: '' };
+
+      const result = await pb.send('/api/ask', {
+        method: 'POST',
+        body: { question, context },
+        signal: controller.signal,
+      });
+
+      const reply = result?.reply;
+      if (typeof reply === 'string' && reply.trim().length > 0) {
+        return reply;
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
+
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
@@ -412,25 +446,28 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     setInputText('');
     setIsLoading(true);
 
-    // Simulate AI processing time
-    setTimeout(() => {
-      const response = generateResponse(sanitizedInput);
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: response,
-        isUser: false,
-        timestamp: new Date(),
-      };
+    // Try the server-side LLM proxy first; fall back to the offline engine.
+    const llmReply = await askLLM(sanitizedInput);
+    const response =
+      typeof llmReply === 'string' && llmReply.trim().length > 0
+        ? llmReply
+        : generateResponse(sanitizedInput);
 
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
-      
-      securityMonitor.logEvent('AI query processed', { 
-        userId,
-        questionLength: sanitizedInput.length,
-        responseLength: response.length
-      });
-    }, 1000);
+    const aiMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      text: response,
+      isUser: false,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, aiMessage]);
+    setIsLoading(false);
+
+    securityMonitor.logEvent('AI query processed', {
+      userId,
+      questionLength: sanitizedInput.length,
+      responseLength: response.length,
+    });
   };
 
   const suggestedQuestions = userProfile ? [
