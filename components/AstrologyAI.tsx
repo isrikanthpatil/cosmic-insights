@@ -388,7 +388,10 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
   // Calls the server-side LLM proxy. Returns the reply string on success,
   // or null on timeout / any error / empty reply (never throws).
-  const askLLM = async (question: string): Promise<string | null> => {
+  const askLLM = async (
+    question: string,
+    history: { role: string; content: string }[]
+  ): Promise<string | null> => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
@@ -403,7 +406,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
       const result = await pb.send('/api/ask', {
         method: 'POST',
-        body: { question, context },
+        body: { question, context, history },
         signal: controller.signal,
       });
 
@@ -442,12 +445,20 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
       timestamp: new Date(),
     };
 
+    // Build conversation history from prior turns BEFORE appending the new
+    // user message, so the brand-new question isn't duplicated in `history`.
+    // Exclude the initial greeting (id '1') and keep only the last 6 turns.
+    const history = messages
+      .filter(m => m.id !== '1')
+      .slice(-6)
+      .map(m => ({ role: m.isUser ? 'user' : 'assistant', content: m.text }));
+
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
 
     // Try the server-side LLM proxy first; fall back to the offline engine.
-    const llmReply = await askLLM(sanitizedInput);
+    const llmReply = await askLLM(sanitizedInput, history);
     const response =
       typeof llmReply === 'string' && llmReply.trim().length > 0
         ? llmReply
