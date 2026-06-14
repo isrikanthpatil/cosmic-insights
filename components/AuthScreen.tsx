@@ -11,8 +11,10 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as WebBrowser from 'expo-web-browser';
 import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
+import { pb } from '@/utils/pocketbase';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
 import { searchPlaces } from '@/data/indianPlaces';
@@ -161,6 +163,33 @@ export default function AuthScreen() {
         mode === 'login' ? 'Sign In Failed' : 'Sign Up Failed',
         message
       );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    try {
+      setSubmitting(true);
+      await pb.collection('users').authWithOAuth2({
+        provider: 'google',
+        urlCallback:
+          Platform.OS === 'web'
+            ? undefined
+            : async (url: string) => {
+                await WebBrowser.openAuthSessionAsync(url, 'cosmic-insights://');
+              },
+      });
+      // No manual navigation needed; AuthContext reacts to authStore change.
+    } catch (error: any) {
+      const rawMessage =
+        error?.response?.message || error?.message || '';
+      // User closed/cancelled the popup — fail quietly, no scary error.
+      if (/cancel|closed/i.test(rawMessage)) {
+        return;
+      }
+      const message = rawMessage || SecurityUtils.handleSecureError(error, 'auth');
+      notify('Google Sign-In Failed', message);
     } finally {
       setSubmitting(false);
     }
@@ -361,6 +390,27 @@ export default function AuthScreen() {
               </TouchableOpacity>
             )}
 
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogle}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator size={20} color="#1A1A2E" />
+              ) : (
+                <>
+                  <Text style={styles.googleG}>G</Text>
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.switchButton} onPress={switchMode}>
               <Text style={styles.switchText}>
                 {mode === 'login'
@@ -513,6 +563,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
     color: '#FFFFFF',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+    gap: 12,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  dividerText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#B8B8B8',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
+    borderRadius: 12,
+    gap: 10,
+  },
+  googleG: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#4285F4',
+  },
+  googleButtonText: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#1A1A2E',
   },
   forgotButton: {
     alignItems: 'center',
