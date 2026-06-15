@@ -169,7 +169,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
     mythology: "Taurus represents the bull that carried Europa across the sea in Greek mythology. It symbolizes strength, fertility, and the connection between earthly pleasures and divine beauty.",
     bodyParts: ["Neck", "Throat", "Thyroid", "Vocal cords"],
     colors: ["Green", "Pink", "White", "Pastel shades"],
-    gemstones: ["White Pearl", "Emerald", "Rose Quartz", "Green Aventurine"],
+    gemstones: ["Diamond", "White Sapphire", "Emerald", "Rose Quartz"],
     numbers: [2, 6, 9, 12, 24],
     mantras: ["Om Shukraya Namaha", "Om Shreem Mahalakshmiyei Namaha"]
   },

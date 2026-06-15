@@ -500,6 +500,34 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         } catch {
           // omit numerology fields on failure
         }
+
+        // Build a compact CURATED KNOWLEDGE string so the LLM can be grounded in
+        // the user's own reading. Any failure here just omits `knowledge`; it
+        // must never break the chat.
+        try {
+          const sun = getSignDetails(sunSign);      // may be null
+          const moon = getSignDetails(moonSign);
+          const asc = getSignDetails(ascendant);
+          const numero = getNumerologyReading(
+            userProfile.firstName,
+            userProfile.lastName ?? '',
+            userProfile.dateOfBirth,
+            userProfile.gender ?? 'male'
+          );
+          const parts: string[] = [];
+          if (sun) parts.push(
+            `SUN ${sunSign}: element ${sun.element}, quality ${sun.quality}, ruler ${sun.ruler}. ` +
+            `Traits: ${sun.traits.slice(0, 4).join('; ')}. Strengths: ${sun.strengths.slice(0, 4).join('; ')}. ` +
+            `Challenges: ${sun.challenges.slice(0, 4).join('; ')}. Remedies: ${sun.remedies.slice(0, 2).join('; ')}. ` +
+            `Gemstone: ${sun.gemstones?.[0] ?? ''}. Lucky colors: ${(sun.colors || []).slice(0, 2).join(', ')}. Mantra: ${sun.mantras?.[0] ?? ''}.`
+          );
+          if (moon) parts.push(`MOON ${moonSign} (emotional nature): ${moon.traits.slice(0, 3).join('; ')}.`);
+          if (asc) parts.push(`ASCENDANT ${ascendant} (outward style): ${asc.traits.slice(0, 3).join('; ')}.`);
+          parts.push(`NUMEROLOGY: Birth Number ${numero.birthNumber} (${numero.birthNumberMeaning}); Destiny Number ${numero.destinyNumber} (${numero.destinyNumberMeaning}); Kua ${numero.kuaNumber} (${numero.kuaNumberMeaning}).`);
+          context.knowledge = parts.join('\n');
+        } catch {
+          // omit curated knowledge on failure
+        }
       } else {
         context = { firstName: 'there', sunSign: '', moonSign: '', ascendant: '' };
       }
