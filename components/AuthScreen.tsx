@@ -10,16 +10,18 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from 'expo-web-browser';
 import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
+import { showToast } from '@/utils/toast';
+import { tap } from '@/utils/haptics';
 import { searchPlaces } from '@/utils/places';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
+import ScreenBackground from '@/components/ScreenBackground';
 
 type Mode = 'login' | 'signup';
 
@@ -93,7 +95,7 @@ export default function AuthScreen() {
     try {
       setSubmitting(true);
       await requestPasswordReset(trimmedEmail);
-      notify('Check your email', `If an account exists for ${trimmedEmail}, a password reset link has been sent.`);
+      showToast(`If an account exists for ${trimmedEmail}, a reset link has been sent.`, 'info');
     } catch (error: any) {
       const message =
         error?.response?.message ||
@@ -105,6 +107,7 @@ export default function AuthScreen() {
   };
 
   const handleSubmit = async () => {
+    tap();
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password.trim()) {
       notify('Error', 'Please enter your email and password');
@@ -189,6 +192,7 @@ export default function AuthScreen() {
   };
 
   const handleGoogle = async () => {
+    tap();
     try {
       setSubmitting(true);
       await pb.collection('users').authWithOAuth2({
@@ -216,10 +220,7 @@ export default function AuthScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#24243e', '#302B63']}
-      style={styles.container}
-    >
+    <ScreenBackground style={styles.container}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -444,7 +445,7 @@ export default function AuthScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </ScreenBackground>
   );
 }
 

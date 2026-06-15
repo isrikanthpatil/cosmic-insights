@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { getNumerologyReading } from '@/utils/numerology';
@@ -7,12 +7,25 @@ import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, Refres
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
+import ScreenBackground from '@/components/ScreenBackground';
+import SectionHeader from '@/components/SectionHeader';
+import Skeleton from '@/components/Skeleton';
 
 export default function Numerology() {
   const router = useRouter();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring } = useChart();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    generateNumerologyReading();
+    // Brief refresh window so the indicator is visible; reading regenerates
+    // synchronously above.
+    setTimeout(() => setRefreshing(false), 600);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile]);
 
   useEffect(() => {
     if (userProfile) {
@@ -37,24 +50,18 @@ export default function Numerology() {
 
   if (loading) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
           <Sparkles size={64} color="#FFD700" />
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
   if (!userProfile && !isExploring) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.exploreBarWrap}>
             <ExploreBar />
@@ -76,26 +83,49 @@ export default function Numerology() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
   if (!userProfile || !numerologyReading) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.exploreBarWrap}>
             <ExploreBar />
           </View>
-          <View style={styles.loadingContainer}>
-            <Sparkles size={64} color="#FFD700" />
-            <Text style={styles.loadingText}>Calculating your numbers...</Text>
+          <View style={styles.skeletonWrap}>
+            <View style={styles.skeletonCaptionRow}>
+              <Sparkles size={18} color="#FFD700" />
+              <Text style={styles.skeletonCaption}>Calculating your numbers…</Text>
+            </View>
+
+            {/* Three number cards */}
+            <View style={styles.skeletonRow}>
+              {[0, 1, 2].map((i) => (
+                <View key={i} style={[styles.skeletonCard, styles.skeletonThird]}>
+                  <Skeleton width={40} height={12} />
+                  <Skeleton width={32} height={24} style={styles.skeletonGap} />
+                  <Skeleton width={'90%'} height={10} style={styles.skeletonGapSm} />
+                </View>
+              ))}
+            </View>
+
+            {/* Lo Shu grid placeholder */}
+            <View style={styles.skeletonCard}>
+              <Skeleton width={160} height={16} />
+              <Skeleton width={'100%'} height={120} style={styles.skeletonGap} borderRadius={12} />
+            </View>
+
+            {/* Analysis lines */}
+            <View style={styles.skeletonCard}>
+              <Skeleton width={'100%'} height={14} />
+              <Skeleton width={'95%'} height={14} style={styles.skeletonGap} />
+              <Skeleton width={'85%'} height={14} style={styles.skeletonGap} />
+            </View>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
@@ -216,16 +246,24 @@ export default function Numerology() {
   };
 
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#24243e', '#302B63']}
-      style={styles.container}
-    >
+    <ScreenBackground style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Numerology Analysis</Text>
         <Text style={styles.subtitle}>Numbers that define {userProfile.firstName}</Text>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFD700"
+            colors={['#FFD700']}
+          />
+        }
+      >
         <View style={styles.exploreBarWrap}>
           <ExploreBar />
         </View>
@@ -267,10 +305,7 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Grid3X3 size={24} color="#4CAF50" />
-              <Text style={styles.sectionTitle}>Lo Shu Grid Analysis</Text>
-            </View>
+            <SectionHeader icon={Grid3X3} title="Lo Shu Grid Analysis" iconColor="#4CAF50" />
             <View style={styles.loshuCard}>
               {renderLoshuGrid()}
             </View>
@@ -297,10 +332,7 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Star size={24} color="#FFD700" />
-              <Text style={styles.sectionTitle}>Lucky Numbers</Text>
-            </View>
+            <SectionHeader icon={Star} title="Lucky Numbers" iconColor="#FFD700" />
             <View style={styles.luckyNumbers}>
               {numerologyReading.luckyNumbers.map((number: number, index: number) => (
                 <View key={index} style={styles.luckyNumberCard}>
@@ -320,7 +352,7 @@ export default function Numerology() {
           </View>
         </View>
       </ScrollView>
-    </LinearGradient>
+    </ScreenBackground>
   );
 }
 
@@ -374,6 +406,42 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#FFFFFF',
     marginTop: 20,
+  },
+  skeletonWrap: {
+    paddingHorizontal: 12,
+    paddingBottom: 40,
+    gap: 14,
+  },
+  skeletonCaptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 2,
+  },
+  skeletonCaption: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#B8B8B8',
+  },
+  skeletonCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 12,
+    gap: 4,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  skeletonThird: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  skeletonGap: {
+    marginTop: 10,
+  },
+  skeletonGapSm: {
+    marginTop: 6,
   },
   header: {
     paddingHorizontal: 20,
@@ -642,8 +710,8 @@ const styles = StyleSheet.create({
   analysisCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 8,
+    padding: 14,
+    marginBottom: 10,
     borderLeftWidth: 4,
     borderLeftColor: '#4CAF50',
   },
@@ -651,7 +719,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#E0E0E0',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   luckyNumbers: {
     flexDirection: 'row',
@@ -674,8 +742,8 @@ const styles = StyleSheet.create({
   remedyCard: {
     backgroundColor: 'rgba(255, 142, 83, 0.1)',
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 8,
+    padding: 14,
+    marginBottom: 10,
     borderLeftWidth: 4,
     borderLeftColor: '#FF8E53',
   },
@@ -683,6 +751,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#E0E0E0',
-    lineHeight: 20,
+    lineHeight: 21,
   },
 });

@@ -16,6 +16,7 @@ import { Profile } from '@/contexts/AuthContext';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
 import { searchPlaces } from '@/utils/places';
+import { tap } from '@/utils/haptics';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 
@@ -88,6 +89,7 @@ export default function ExploreBar() {
   };
 
   const handleSubmit = () => {
+    tap();
     const sanitized: Profile = {
       firstName: SecurityUtils.sanitizeInput(firstName.trim()),
       lastName: SecurityUtils.sanitizeInput(lastName.trim()),
@@ -142,7 +144,10 @@ export default function ExploreBar() {
           </View>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={clearExplore}
+            onPress={() => {
+              tap();
+              clearExplore();
+            }}
             activeOpacity={0.7}
           >
             <X size={16} color="#FFFFFF" />
@@ -152,7 +157,10 @@ export default function ExploreBar() {
       ) : (
         <TouchableOpacity
           style={styles.exploreButton}
-          onPress={() => setModalVisible(true)}
+          onPress={() => {
+            tap();
+            setModalVisible(true);
+          }}
           activeOpacity={0.7}
         >
           <UserPlus size={18} color="#FFD700" />

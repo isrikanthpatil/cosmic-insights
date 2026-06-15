@@ -16,6 +16,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ChartProvider } from '@/contexts/ChartContext';
 import AuthScreen from '@/components/AuthScreen';
+import ToastHost from '@/components/ToastHost';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -64,6 +65,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <RootNavigator />
+      <ToastHost />
       <StatusBar style="auto" />
     </AuthProvider>
   );

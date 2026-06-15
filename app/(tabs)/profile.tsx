@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2 } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { searchPlaces } from '@/utils/places';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
+import { showToast } from '@/utils/toast';
+import { tap, success } from '@/utils/haptics';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
+import ScreenBackground from '@/components/ScreenBackground';
 
 const NOTIFICATIONS_KEY = 'settings_notifications';
 
@@ -60,6 +62,7 @@ export default function Profile() {
   };
 
   const handleChangePassword = async () => {
+    tap();
     const email = user?.email;
     if (!email) {
       notify('Change Password', 'No email address is associated with your account.');
@@ -67,7 +70,7 @@ export default function Profile() {
     }
     try {
       await requestPasswordReset(email);
-      notify('Change Password', `Password reset link sent to ${email}`);
+      showToast(`Password reset link sent to ${email}`, 'info');
     } catch (error: any) {
       const message =
         error?.response?.message ||
@@ -108,6 +111,7 @@ export default function Profile() {
   }, [profile, loading, profileComplete]);
 
   const saveProfile = async () => {
+    tap();
     try {
       setSaving(true);
 
@@ -161,7 +165,8 @@ export default function Profile() {
       await updateProfile(sanitizedProfile);
 
       setIsEditing(false);
-      notify('Success', 'Profile saved successfully!');
+      success();
+      showToast('Profile saved successfully!', 'success');
 
     } catch (error: any) {
       console.error('Error saving profile:', error);
@@ -175,6 +180,7 @@ export default function Profile() {
   };
 
   const handleSignOut = () => {
+    tap();
     confirmAction(
       'Sign Out',
       'Are you sure you want to sign out?',
@@ -243,23 +249,17 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#FFD700" />
           <Text style={styles.loadingText}>Loading profile...</Text>
         </View>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#24243e', '#302B63']}
-      style={styles.container}
-    >
+    <ScreenBackground style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.headerActions}>
@@ -553,7 +553,7 @@ export default function Profile() {
           ) : null}
         </View>
       </ScrollView>
-    </LinearGradient>
+    </ScreenBackground>
   );
 }
 

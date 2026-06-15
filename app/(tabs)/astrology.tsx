@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
@@ -7,6 +7,11 @@ import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Spa
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
+import ScreenBackground from '@/components/ScreenBackground';
+import SectionHeader from '@/components/SectionHeader';
+import Skeleton from '@/components/Skeleton';
+import { getZodiacGlyph } from '@/utils/zodiac';
+import { tap } from '@/utils/haptics';
 
 interface AstrologyData {
   sunSign: string;
@@ -30,6 +35,16 @@ export default function Astrology() {
   const { activeProfile: userProfile, isExploring } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
   const [astrologyData, setAstrologyData] = useState<AstrologyData | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    generateAstrologyData();
+    // Brief refresh window so the indicator is visible; reading regenerates
+    // synchronously above.
+    setTimeout(() => setRefreshing(false), 600);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile]);
 
   useEffect(() => {
     if (userProfile) {
@@ -61,24 +76,18 @@ export default function Astrology() {
 
   if (loading) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
           <Sparkles size={64} color="#FFD700" />
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
   if (!userProfile && !isExploring) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.exploreBarWrap}>
             <ExploreBar />
@@ -100,26 +109,51 @@ export default function Astrology() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
   if (!userProfile || !astrologyData) {
     return (
-      <LinearGradient
-        colors={['#0F0C29', '#24243e', '#302B63']}
-        style={styles.container}
-      >
+      <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.exploreBarWrap}>
             <ExploreBar />
           </View>
-          <View style={styles.loadingContainer}>
-            <Sparkles size={64} color="#FFD700" />
-            <Text style={styles.loadingText}>Calculating your cosmic blueprint...</Text>
+          <View style={styles.skeletonWrap}>
+            <View style={styles.skeletonCaptionRow}>
+              <Sparkles size={18} color="#FFD700" />
+              <Text style={styles.skeletonCaption}>Calculating your cosmic blueprint…</Text>
+            </View>
+
+            {/* Sun-sign hero card */}
+            <View style={styles.skeletonCard}>
+              <Skeleton width={140} height={20} />
+              <Skeleton width={'70%'} height={14} style={styles.skeletonGap} />
+              <Skeleton width={'50%'} height={12} style={styles.skeletonGapSm} />
+            </View>
+
+            {/* Two half cards */}
+            <View style={styles.skeletonRow}>
+              <View style={[styles.skeletonCard, styles.skeletonHalf]}>
+                <Skeleton width={90} height={14} />
+                <Skeleton width={'60%'} height={16} style={styles.skeletonGap} />
+              </View>
+              <View style={[styles.skeletonCard, styles.skeletonHalf]}>
+                <Skeleton width={90} height={14} />
+                <Skeleton width={'60%'} height={16} style={styles.skeletonGap} />
+              </View>
+            </View>
+
+            {/* Traits list */}
+            <View style={styles.skeletonCard}>
+              <Skeleton width={'100%'} height={14} />
+              <Skeleton width={'90%'} height={14} style={styles.skeletonGap} />
+              <Skeleton width={'95%'} height={14} style={styles.skeletonGap} />
+            </View>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </ScreenBackground>
     );
   }
 
@@ -137,7 +171,10 @@ export default function Astrology() {
                   <Sun size={32} color="#FFD700" />
                   <View style={styles.signInfo}>
                     <Text style={styles.signTitle}>Sun Sign</Text>
-                    <Text style={styles.signValue}>{astrologyData.sunSign}</Text>
+                    <View style={styles.signValueRow}>
+                      <Text style={styles.signValue}>{astrologyData.sunSign}</Text>
+                      <Text style={styles.signGlyph}>{getZodiacGlyph(astrologyData.sunSign)}</Text>
+                    </View>
                     <Text style={styles.signDescription}>Your core identity and life purpose</Text>
                     <Text style={styles.signDates}>
                       {astrologyData.detailedAnalysis.sunSignData.dates}
@@ -238,10 +275,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <TrendingUp size={24} color="#4CAF50" />
-                <Text style={styles.sectionTitle}>Your Cosmic Strengths</Text>
-              </View>
+              <SectionHeader icon={TrendingUp} title="Your Cosmic Strengths" iconColor="#4CAF50" />
               <Text style={styles.sectionDescription}>
                 Based on authentic astrological knowledge from classical texts and verified sources
               </Text>
@@ -292,10 +326,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Heart size={24} color="#E91E63" />
-                <Text style={styles.sectionTitle}>Sacred Remedies & Practices</Text>
-              </View>
+              <SectionHeader icon={Heart} title="Sacred Remedies & Practices" iconColor="#E91E63" />
               <Text style={styles.sectionDescription}>
                 Time-tested remedies from Vedic astrology and ancient wisdom traditions
               </Text>
@@ -377,10 +408,7 @@ export default function Astrology() {
   };
 
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#24243e', '#302B63']}
-      style={styles.container}
-    >
+    <ScreenBackground style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Astrology Reading</Text>
         <Text style={styles.subtitle}>Ancient wisdom for {userProfile.firstName}</Text>
@@ -402,7 +430,10 @@ export default function Astrology() {
           <TouchableOpacity
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
-            onPress={() => setActiveTab(tab.key)}
+            onPress={() => {
+              tap();
+              setActiveTab(tab.key);
+            }}
           >
             <tab.icon size={20} color={activeTab === tab.key ? '#FFFFFF' : '#B8B8B8'} />
             <Text style={[styles.tabText, activeTab === tab.key && styles.activeTabText]}>
@@ -412,13 +443,24 @@ export default function Astrology() {
         ))}
       </ScrollView>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFD700"
+            colors={['#FFD700']}
+          />
+        }
+      >
         <View style={styles.exploreBarWrap}>
           <ExploreBar />
         </View>
         {renderContent()}
       </ScrollView>
-    </LinearGradient>
+    </ScreenBackground>
   );
 }
 
@@ -473,6 +515,41 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginTop: 20,
   },
+  skeletonWrap: {
+    paddingHorizontal: 16,
+    paddingBottom: 40,
+    gap: 14,
+  },
+  skeletonCaptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 2,
+  },
+  skeletonCaption: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#B8B8B8',
+  },
+  skeletonCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 16,
+    gap: 4,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  skeletonHalf: {
+    flex: 1,
+  },
+  skeletonGap: {
+    marginTop: 10,
+  },
+  skeletonGapSm: {
+    marginTop: 6,
+  },
   header: {
     paddingHorizontal: 20,
     paddingTop: 50,
@@ -490,23 +567,31 @@ const styles = StyleSheet.create({
     color: '#B8B8B8',
   },
   tabContainer: {
-    maxHeight: 70,
+    maxHeight: 76,
   },
   tabContent: {
     paddingHorizontal: 20,
-    gap: 8,
+    paddingVertical: 4,
+    gap: 10,
+    alignItems: 'center',
   },
   tab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'transparent',
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
     gap: 6,
   },
   activeTab: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: 'rgba(255, 107, 107, 0.25)',
+    borderColor: 'rgba(255, 215, 0, 0.5)',
+    borderBottomColor: '#FFD700',
   },
   tabText: {
     fontSize: 12,
@@ -515,6 +600,7 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: '#FFFFFF',
+    fontFamily: 'Inter-SemiBold',
   },
   scrollView: {
     flex: 1,
@@ -545,11 +631,21 @@ const styles = StyleSheet.create({
     color: '#B8B8B8',
     marginBottom: 4,
   },
+  signValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   signValue: {
     fontSize: 20,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#FFFFFF',
-    marginBottom: 4,
+  },
+  signGlyph: {
+    fontSize: 26,
+    color: '#FFD700',
+    marginTop: -2,
   },
   signDescription: {
     fontSize: 12,
@@ -708,14 +804,14 @@ const styles = StyleSheet.create({
   pointCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 8,
+    padding: 14,
+    marginBottom: 10,
   },
   pointText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#E0E0E0',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   mythologyCard: {
     backgroundColor: 'rgba(255, 215, 0, 0.1)',
@@ -761,8 +857,8 @@ const styles = StyleSheet.create({
   remedyCard: {
     backgroundColor: 'rgba(233, 30, 99, 0.1)',
     borderRadius: 10,
-    padding: 12,
-    marginBottom: 8,
+    padding: 14,
+    marginBottom: 10,
     borderLeftWidth: 4,
     borderLeftColor: '#E91E63',
   },
@@ -770,7 +866,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#E0E0E0',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   gemstoneCard: {
     backgroundColor: 'rgba(156, 39, 176, 0.1)',

@@ -1,18 +1,15 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import AstrologyAI from '@/components/AstrologyAI';
 import { useAuth } from '@/contexts/AuthContext';
+import ScreenBackground from '@/components/ScreenBackground';
 
 export default function AskAstro() {
   const { profile } = useAuth();
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#24243e', '#302B63']}
-      style={styles.container}
-    >
+    <ScreenBackground style={styles.container}>
       <AstrologyAI userProfile={profile ?? undefined} />
-    </LinearGradient>
+    </ScreenBackground>
   );
 }
 

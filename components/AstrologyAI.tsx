@@ -6,6 +6,7 @@ import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinates
 import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
 import { pb } from '@/utils/pocketbase';
+import { tap } from '@/utils/haptics';
 
 interface Message {
   id: string;
@@ -552,6 +553,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
+    tap();
 
     // Security: Validate and sanitize input
     const sanitizedInput = sanitizeInput.text(inputText);

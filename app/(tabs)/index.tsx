@@ -1,13 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { tap } from '@/utils/haptics';
 import {
   Star,
   Hash,
@@ -17,6 +19,8 @@ import {
 } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { calculateSunSign, generateDailyHoroscope, DailyHoroscope } from '@/utils/astrology';
+import ScreenBackground from '@/components/ScreenBackground';
+import { getZodiacGlyph } from '@/utils/zodiac';
 
 // Maps a lucky-color name to a displayable swatch hex. Falls back to gold.
 const COLOR_MAP: Record<string, string> = {
@@ -53,6 +57,9 @@ const colorToHex = (name: string): string => {
 export default function Home() {
   const router = useRouter();
   const { profile } = useAuth();
+  const [refreshing, setRefreshing] = useState(false);
+  // Bumped on pull-to-refresh to re-derive the daily horoscope.
+  const [refreshNonce, setRefreshNonce] = useState(0);
 
   const sunSign = useMemo(
     () => (profile ? calculateSunSign(profile.dateOfBirth, profile.timeOfBirth) : null),
@@ -64,18 +71,37 @@ export default function Home() {
       profile
         ? generateDailyHoroscope(profile.firstName, profile.dateOfBirth, profile.placeOfBirth)
         : null,
-    [profile]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [profile, refreshNonce]
   );
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setRefreshNonce((n) => n + 1);
+    // Brief refresh window so the indicator is visible; the reading re-derives
+    // synchronously via the memo above.
+    setTimeout(() => setRefreshing(false), 600);
+  }, []);
+
+  const goTo = (path: '/(tabs)/astrology' | '/(tabs)/numerology' | '/(tabs)/askastro' | '/(tabs)/profile') => {
+    tap();
+    router.push(path);
+  };
+
   return (
-    <LinearGradient
-      colors={['#0F0C29', '#24243e', '#302B63']}
-      style={styles.container}
-    >
+    <ScreenBackground style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFD700"
+            colors={['#FFD700']}
+          />
+        }
       >
         <View style={styles.headerRow}>
           <View style={styles.brandIcon}>
@@ -106,7 +132,7 @@ export default function Home() {
             </Text>
             <TouchableOpacity
               style={styles.setupButton}
-              onPress={() => router.push('/(tabs)/profile')}
+              onPress={() => goTo('/(tabs)/profile')}
               activeOpacity={0.8}
             >
               <Text style={styles.setupButtonText}>Set Up Profile</Text>
@@ -122,7 +148,12 @@ export default function Home() {
                 <Sun size={32} color="#FFD700" />
                 <View style={styles.signInfo}>
                   <Text style={styles.signLabel}>Your Sun Sign</Text>
-                  <Text style={styles.signValue}>{sunSign}</Text>
+                  <View style={styles.signValueRow}>
+                    <Text style={styles.signValue}>{sunSign}</Text>
+                    {sunSign ? (
+                      <Text style={styles.signGlyph}>{getZodiacGlyph(sunSign)}</Text>
+                    ) : null}
+                  </View>
                 </View>
               </LinearGradient>
             </View>
@@ -167,7 +198,7 @@ export default function Home() {
             <View style={styles.quickRow}>
               <TouchableOpacity
                 style={styles.quickCard}
-                onPress={() => router.push('/(tabs)/astrology')}
+                onPress={() => goTo('/(tabs)/astrology')}
                 activeOpacity={0.8}
               >
                 <Star size={26} color="#FFD700" />
@@ -175,7 +206,7 @@ export default function Home() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.quickCard}
-                onPress={() => router.push('/(tabs)/numerology')}
+                onPress={() => goTo('/(tabs)/numerology')}
                 activeOpacity={0.8}
               >
                 <Hash size={26} color="#FF6B6B" />
@@ -183,7 +214,7 @@ export default function Home() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.quickCard}
-                onPress={() => router.push('/(tabs)/askastro')}
+                onPress={() => goTo('/(tabs)/askastro')}
                 activeOpacity={0.8}
               >
                 <MessageCircle size={26} color="#FFD700" />
@@ -203,7 +234,7 @@ export default function Home() {
           </>
         )}
       </ScrollView>
-    </LinearGradient>
+    </ScreenBackground>
   );
 }
 
@@ -297,10 +328,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#B8B8B8',
   },
+  signValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   signValue: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#FFFFFF',
+  },
+  signGlyph: {
+    fontSize: 26,
+    color: '#FFD700',
+    marginTop: -2,
   },
   horoscopeCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
