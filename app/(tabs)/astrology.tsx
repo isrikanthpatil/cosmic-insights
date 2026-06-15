@@ -5,6 +5,8 @@ import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChart } from '@/contexts/ChartContext';
+import ExploreBar from '@/components/ExploreBar';
 
 interface AstrologyData {
   sunSign: string;
@@ -24,13 +26,16 @@ interface AstrologyData {
 
 export default function Astrology() {
   const router = useRouter();
-  const { profile: userProfile, isLoading: loading } = useAuth();
+  const { isLoading: loading } = useAuth();
+  const { activeProfile: userProfile, isExploring } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
   const [astrologyData, setAstrologyData] = useState<AstrologyData | null>(null);
 
   useEffect(() => {
     if (userProfile) {
       generateAstrologyData();
+    } else {
+      setAstrologyData(null);
     }
   }, [userProfile]);
 
@@ -68,42 +73,52 @@ export default function Astrology() {
     );
   }
 
-  if (!userProfile) {
+  if (!userProfile && !isExploring) {
     return (
       <LinearGradient
         colors={['#0F0C29', '#24243e', '#302B63']}
         style={styles.container}
       >
-        <View style={styles.noProfileContainer}>
-          <Star size={64} color="#FFD700" />
-          <Text style={styles.noProfileTitle}>Profile Required</Text>
-          <Text style={styles.noProfileText}>
-            Please set up your profile first to access personalized astrology readings.
-          </Text>
-          <TouchableOpacity
-            style={styles.setupProfileButton}
-            onPress={() => {
-              router.push('/(tabs)/profile');
-            }}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.setupProfileButtonText}>Set Up Profile</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.exploreBarWrap}>
+            <ExploreBar />
+          </View>
+          <View style={styles.noProfileContainer}>
+            <Star size={64} color="#FFD700" />
+            <Text style={styles.noProfileTitle}>Profile Required</Text>
+            <Text style={styles.noProfileText}>
+              Please set up your profile first to access personalized astrology readings.
+            </Text>
+            <TouchableOpacity
+              style={styles.setupProfileButton}
+              onPress={() => {
+                router.push('/(tabs)/profile');
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.setupProfileButtonText}>Set Up Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </LinearGradient>
     );
   }
 
-  if (!astrologyData) {
+  if (!userProfile || !astrologyData) {
     return (
       <LinearGradient
         colors={['#0F0C29', '#24243e', '#302B63']}
         style={styles.container}
       >
-        <View style={styles.loadingContainer}>
-          <Sparkles size={64} color="#FFD700" />
-          <Text style={styles.loadingText}>Calculating your cosmic blueprint...</Text>
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.exploreBarWrap}>
+            <ExploreBar />
+          </View>
+          <View style={styles.loadingContainer}>
+            <Sparkles size={64} color="#FFD700" />
+            <Text style={styles.loadingText}>Calculating your cosmic blueprint...</Text>
+          </View>
+        </ScrollView>
       </LinearGradient>
     );
   }
@@ -398,6 +413,9 @@ export default function Astrology() {
       </ScrollView>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={styles.exploreBarWrap}>
+          <ExploreBar />
+        </View>
         {renderContent()}
       </ScrollView>
     </LinearGradient>
@@ -407,6 +425,10 @@ export default function Astrology() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  exploreBarWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   noProfileContainer: {
     flex: 1,

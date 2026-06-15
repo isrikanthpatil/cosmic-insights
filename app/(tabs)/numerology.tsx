@@ -5,15 +5,20 @@ import { useRouter } from 'expo-router';
 import { getNumerologyReading } from '@/utils/numerology';
 import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, RefreshCw } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChart } from '@/contexts/ChartContext';
+import ExploreBar from '@/components/ExploreBar';
 
 export default function Numerology() {
   const router = useRouter();
-  const { profile: userProfile, isLoading: loading } = useAuth();
+  const { isLoading: loading } = useAuth();
+  const { activeProfile: userProfile, isExploring } = useChart();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
 
   useEffect(() => {
     if (userProfile) {
       generateNumerologyReading();
+    } else {
+      setNumerologyReading(null);
     }
   }, [userProfile]);
 
@@ -44,42 +49,52 @@ export default function Numerology() {
     );
   }
 
-  if (!userProfile) {
+  if (!userProfile && !isExploring) {
     return (
       <LinearGradient
         colors={['#0F0C29', '#24243e', '#302B63']}
         style={styles.container}
       >
-        <View style={styles.noProfileContainer}>
-          <Hash size={64} color="#FFD700" />
-          <Text style={styles.noProfileTitle}>Profile Required</Text>
-          <Text style={styles.noProfileText}>
-            Please set up your profile first to access personalized numerology readings.
-          </Text>
-          <TouchableOpacity
-            style={styles.setupProfileButton}
-            onPress={() => {
-              router.push('/(tabs)/profile');
-            }}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.setupProfileButtonText}>Set Up Profile</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.exploreBarWrap}>
+            <ExploreBar />
+          </View>
+          <View style={styles.noProfileContainer}>
+            <Hash size={64} color="#FFD700" />
+            <Text style={styles.noProfileTitle}>Profile Required</Text>
+            <Text style={styles.noProfileText}>
+              Please set up your profile first to access personalized numerology readings.
+            </Text>
+            <TouchableOpacity
+              style={styles.setupProfileButton}
+              onPress={() => {
+                router.push('/(tabs)/profile');
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.setupProfileButtonText}>Set Up Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </LinearGradient>
     );
   }
 
-  if (!numerologyReading) {
+  if (!userProfile || !numerologyReading) {
     return (
       <LinearGradient
         colors={['#0F0C29', '#24243e', '#302B63']}
         style={styles.container}
       >
-        <View style={styles.loadingContainer}>
-          <Sparkles size={64} color="#FFD700" />
-          <Text style={styles.loadingText}>Calculating your numbers...</Text>
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.exploreBarWrap}>
+            <ExploreBar />
+          </View>
+          <View style={styles.loadingContainer}>
+            <Sparkles size={64} color="#FFD700" />
+            <Text style={styles.loadingText}>Calculating your numbers...</Text>
+          </View>
+        </ScrollView>
       </LinearGradient>
     );
   }
@@ -211,6 +226,9 @@ export default function Numerology() {
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={styles.exploreBarWrap}>
+          <ExploreBar />
+        </View>
         <View style={styles.content}>
           <View style={styles.numbersRow}>
             <View style={styles.compactNumberCard}>
@@ -309,6 +327,10 @@ export default function Numerology() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  exploreBarWrap: {
+    paddingHorizontal: 12,
+    paddingTop: 16,
   },
   noProfileContainer: {
     flex: 1,
