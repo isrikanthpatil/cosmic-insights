@@ -312,19 +312,27 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
   // Generate location-based insights
   const locationInsights = coordinates ? getLocationBasedInsights(coordinates) : [];
 
-  // Generate personalized predictions
+  // Helpers to safely pull a curated attribute (bounds-safe, lower-cased for
+  // natural mid-sentence insertion).
+  const pick = (arr: string[] | undefined, i: number, fallback: string): string => {
+    if (!arr || arr.length === 0) return fallback;
+    return arr[i % arr.length];
+  };
+  const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+
+  // Generate personalized predictions grounded in curated attributes.
   const pastPredictions = [
-    `Your ${sunSign} nature helped you overcome challenges in the past year`,
-    `The influence of ${moonSign} moon brought emotional growth and understanding`,
-    `Your ${ascendant} ascendant guided you through important life decisions`,
-    `Planetary positions in your birth location favored personal development`
+    `Your ${sunSign} Sun gave you ${lower(pick(sunSignData?.strengths, 0, 'inner strength'))}, which carried you through the past year.`,
+    `With the Moon in ${moonSign}, you grew by working through ${lower(pick(moonSignData?.challenges, 1, 'old emotional patterns'))}; ${lower(pick(moonSignData?.remedies, 1, 'tending to your feelings'))} steadied you.`,
+    `Your ${ascendant} Rising shaped how others saw you, leaning on ${lower(pick(ascendantData?.strengths, 2, 'your social poise'))} when it mattered most.`,
+    `Drawing on ${lower(pick(sunSignData?.strengths, 3, 'your core gifts'))}, you turned recent setbacks into lasting lessons.`
   ];
 
   const futurePredictions = [
-    `The next 6 months will bring opportunities aligned with your ${sunSign} energy`,
-    `Your ${moonSign} moon sign indicates positive changes in relationships`,
-    `Financial stability will improve through your ${ascendant} rising sign influence`,
-    `Career growth is indicated by favorable planetary transits for your location`
+    `The months ahead favor your ${sunSign} gift of ${lower(pick(sunSignData?.strengths, 1, 'steady focus'))} — let it lead your biggest decisions.`,
+    `Your ${moonSign} Moon points to warmer relationships; watch for ${lower(pick(moonSignData?.challenges, 0, 'guardedness'))}, and ${lower(pick(moonSignData?.remedies, 0, 'stay open'))}.`,
+    `Career momentum builds where you apply ${lower(pick(sunSignData?.strengths, 2, 'your determination'))}; growth in ${lower(pick(sunSignData?.career, 0, 'your chosen field'))} is well-aspected.`,
+    `To keep the ${ascendant} Rising challenge of ${lower(pick(ascendantData?.challenges, 2, 'self-doubt'))} in check, ${lower(pick(ascendantData?.remedies, 2, 'align your actions with your values'))}.`
   ];
 
   return {
@@ -355,29 +363,37 @@ export const generateDailyHoroscope = (firstName: string, dateOfBirth: string, p
   const sunSign = calculateSunSign(dateOfBirth);
   const coordinates = placeOfBirth ? getCoordinatesForPlace(placeOfBirth) : null;
   const signData = ZODIAC_KNOWLEDGE[sunSign.toLowerCase()];
-  
+
+  // Bounds-safe accessors that lower-case for natural mid-sentence insertion.
+  const pick = (arr: string[] | undefined, i: number, fallback: string): string => {
+    if (!arr || arr.length === 0) return fallback;
+    return arr[i % arr.length];
+  };
+  const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+  const element = signData?.element || 'Cosmic';
+
   const mainPredictions = [
-    `Today brings wonderful cosmic energy for ${firstName}. Your ${sunSign} nature will shine brightly, attracting positive opportunities and meaningful connections. The planetary alignments favor your natural ${signData?.keywords[0].toLowerCase()} abilities.`,
-    `The stars are beautifully aligned for you today, ${firstName}. Your ${sunSign} traits will help you navigate the day with grace and confidence. Focus on ${signData?.keywords[1].toLowerCase()} and ${signData?.keywords[2].toLowerCase()} for maximum benefit.`,
-    `${firstName}, your ${sunSign} energy is particularly strong today. The universe supports your endeavors in ${signData?.career[0].toLowerCase()} and personal growth. Trust your instincts and embrace new possibilities.`,
-    `A day of positive transformation awaits you, ${firstName}. Your ${sunSign} wisdom will guide you toward beneficial decisions. The cosmic energies favor creativity, relationships, and personal development.`,
-    `Today's planetary positions enhance your ${sunSign} strengths, ${firstName}. Expect pleasant surprises and opportunities for growth. Your natural ${signData?.keywords[3].toLowerCase()} will attract abundance and joy.`
+    `${firstName}, your ${sunSign} strength of ${lower(pick(signData?.strengths, 0, 'inner resolve'))} is well-supported today. Lean on it and put ${lower(pick(signData?.traits, 0, 'your natural drive'))} to good use.`,
+    `Today rewards your ${element}-sign focus, ${firstName}. Your knack for ${lower(pick(signData?.strengths, 1, 'staying centered'))} will smooth the way; channel it into ${lower(pick(signData?.career, 0, 'your work'))}.`,
+    `${firstName}, ${lower(pick(signData?.traits, 1, 'your steady approach'))} sets the tone today. If ${lower(pick(signData?.challenges, 0, 'restlessness'))} surfaces, ${lower(pick(signData?.remedies, 0, 'pause and breathe'))}.`,
+    `A productive day for you, ${firstName}: your ${sunSign} gift for ${lower(pick(signData?.strengths, 2, 'clear thinking'))} pairs well with ${lower(pick(signData?.traits, 2, 'your initiative'))}. Use it where decisions count.`,
+    `Your ${element} energy runs strong today, ${firstName}. Build on ${lower(pick(signData?.strengths, 3, 'your resilience'))}, and keep ${lower(pick(signData?.challenges, 1, 'impatience'))} from steering — ${lower(pick(signData?.remedies, 1, 'slow down when it does'))}.`
   ];
 
   const positiveEnergies = [
-    `Your ${sunSign} charisma is magnetic today, drawing positive people and opportunities into your life.`,
-    `The universe amplifies your natural ${signData?.keywords[0].toLowerCase()} abilities, making this an excellent day for new beginnings.`,
-    `Cosmic energies support your emotional well-being and strengthen your connections with loved ones.`,
-    `Your intuitive powers are heightened, helping you make wise decisions that benefit your future.`,
-    `The stars bless you with increased confidence and the ability to manifest your desires.`
+    `Your ${sunSign} talent for ${lower(pick(signData?.strengths, 0, 'connection'))} draws the right people toward you today.`,
+    `${element}-sign vitality favors ${lower(pick(signData?.career, 0, 'meaningful work'))} — a good day to make real progress there.`,
+    `${lower(pick(signData?.traits, 0, 'your warmth'))} is especially magnetic today, deepening the bonds that matter.`,
+    `Your knack for ${lower(pick(signData?.strengths, 1, 'sound judgment'))} is heightened, sharpening the decisions ahead.`,
+    `Confidence rooted in ${lower(pick(signData?.strengths, 2, 'your experience'))} helps you turn intentions into action.`
   ];
 
   const advices = [
-    `Embrace your ${sunSign} nature and trust in your abilities. The universe is conspiring in your favor today.`,
-    `Practice gratitude for the blessings in your life. Your positive energy will attract even more abundance.`,
-    `Stay open to new opportunities and connections. Your ${sunSign} charm will open many doors today.`,
-    `Focus on activities that bring you joy and align with your natural talents. Success follows passion.`,
-    `Trust your instincts and take inspired action. The cosmic timing is perfect for your endeavors.`
+    `Lean into ${lower(pick(signData?.strengths, 0, 'your strengths'))} today, ${firstName} — that is where your ${sunSign} energy works best.`,
+    `If ${lower(pick(signData?.challenges, 0, 'doubt'))} creeps in, ${lower(pick(signData?.remedies, 0, 'take a grounding moment'))} before you respond.`,
+    `Put your ${sunSign} gift for ${lower(pick(signData?.strengths, 1, 'follow-through'))} toward ${lower(pick(signData?.career, 0, 'what matters most'))} today.`,
+    `Watch for ${lower(pick(signData?.challenges, 1, 'overcommitting'))}; a simple remedy is to ${lower(pick(signData?.remedies, 1, 'set one clear priority'))}.`,
+    `Honor your ${element} nature: ${lower(pick(signData?.remedies, 2, 'spend a few quiet minutes resetting'))}, then act with intention.`
   ];
 
   // Generate today's lucky numbers based on sign and date
@@ -425,20 +441,28 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
   const weekStart = monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const weekEnd = sunday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
+  // Bounds-safe accessors; lower-case for natural mid-sentence insertion.
+  const pick = (arr: string[] | undefined, i: number, fallback: string): string => {
+    if (!arr || arr.length === 0) return fallback;
+    return arr[i % arr.length];
+  };
+  const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+  const element = signData?.element || 'Cosmic';
+
   const weeklyOverviews = [
-    `This week brings exceptional opportunities for ${firstName}. Your ${sunSign} energy is perfectly aligned with cosmic forces, creating a harmonious flow of positive events. Expect growth in both personal and professional spheres.`,
-    `A transformative week awaits you, ${firstName}. The planetary positions favor your ${sunSign} nature, bringing clarity to important decisions and opening new pathways for success. Your natural ${signData?.keywords[0].toLowerCase()} will be your greatest asset.`,
-    `The stars shine favorably upon you this week, ${firstName}. Your ${sunSign} traits will help you navigate challenges with grace and attract meaningful opportunities. Focus on ${signData?.keywords[1].toLowerCase()} and ${signData?.keywords[2].toLowerCase()} for optimal results.`,
-    `This week promises to be particularly rewarding for your ${sunSign} spirit, ${firstName}. The universe supports your endeavors and blesses you with increased intuition and positive energy. Trust in your abilities and embrace new possibilities.`
+    `This week plays to your ${sunSign} strength of ${lower(pick(signData?.strengths, 0, 'steady resolve'))}, ${firstName}. Your ${element} drive helps you make headway, while gently working on ${lower(pick(signData?.challenges, 0, 'patience'))} keeps things balanced.`,
+    `A constructive week for you, ${firstName}. Build on ${lower(pick(signData?.strengths, 1, 'your focus'))} and your ${element}-sign momentum; the growth edge to watch is ${lower(pick(signData?.challenges, 1, 'overextending'))}.`,
+    `Your ${sunSign} gift for ${lower(pick(signData?.strengths, 2, 'clear judgment'))} shapes the week ahead, ${firstName}. Channel that ${element} energy into your goals, and ease ${lower(pick(signData?.challenges, 0, 'tension'))} as it arises.`,
+    `This week favors your ${element} nature, ${firstName}. Trust ${lower(pick(signData?.strengths, 3, 'your instincts'))} in key moments, and grow by tempering ${lower(pick(signData?.challenges, 2, 'rigidity'))}.`
   ];
 
   const weeklyHighlights = [
-    `Career advancement and recognition for your talents`,
-    `Strengthening of important relationships and new connections`,
-    `Financial opportunities and improved stability`,
-    `Creative breakthroughs and artistic inspiration`,
-    `Health improvements and increased vitality`,
-    `Spiritual growth and deeper self-understanding`
+    `Progress in ${lower(pick(signData?.career, 0, 'your work'))}, powered by ${lower(pick(signData?.strengths, 0, 'your drive'))}`,
+    `Your ${sunSign} strength of ${lower(pick(signData?.strengths, 1, 'follow-through'))} earns recognition`,
+    `Openings in ${lower(pick(signData?.career, 1, 'a new project'))} reward initiative`,
+    `Stronger relationships and meaningful new connections`,
+    `Steady wellbeing as you apply ${lower(pick(signData?.strengths, 2, 'good habits'))}`,
+    `Quiet self-understanding and renewed focus`
   ];
 
   const luckyDays = [
@@ -449,12 +473,12 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
   ];
 
   const focusAreas = [
-    `${signData?.career[0]} and professional development`,
+    `${pick(signData?.career, 0, 'Professional development')} and growing your craft`,
+    `Applying your strength of ${lower(pick(signData?.strengths, 0, 'determination'))}`,
+    `${pick(signData?.career, 1, 'New opportunities')} worth exploring`,
     `Relationships and emotional connections`,
-    `Health and wellness practices`,
-    `Creative expression and artistic pursuits`,
-    `Financial planning and investments`,
-    `Spiritual growth and meditation`
+    `Health and wellbeing practices`,
+    `Reflection and personal growth`
   ];
 
   // Deterministic selection seeded on sun sign + ISO week, so the weekly
