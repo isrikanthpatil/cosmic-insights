@@ -47,11 +47,11 @@ const COLOR_MAP: Record<string, string> = {
 };
 
 const colorToHex = (name: string): string => {
-  if (!name) return '#FFD700';
+  if (!name) return '#E8C87E';
   const key = name.trim().toLowerCase();
   if (COLOR_MAP[key]) return COLOR_MAP[key];
   const match = Object.keys(COLOR_MAP).find((c) => key.includes(c));
-  return match ? COLOR_MAP[match] : '#FFD700';
+  return match ? COLOR_MAP[match] : '#E8C87E';
 };
 
 export default function Home() {
@@ -98,14 +98,14 @@ export default function Home() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFD700"
-            colors={['#FFD700']}
+            tintColor="#E8C87E"
+            colors={['#E8C87E']}
           />
         }
       >
         <View style={styles.headerRow}>
           <View style={styles.brandIcon}>
-            <Sparkles size={28} color="#FFD700" />
+            <Sparkles size={28} color="#E8C87E" />
           </View>
           <View style={styles.headerText}>
             {profile ? (
@@ -124,7 +124,7 @@ export default function Home() {
 
         {!profile ? (
           <View style={styles.setupCard}>
-            <Star size={48} color="#FFD700" />
+            <Star size={48} color="#E8C87E" />
             <Text style={styles.setupTitle}>Set up your profile</Text>
             <Text style={styles.setupText}>
               Add your birth details to unlock personalized astrology readings,
@@ -142,10 +142,10 @@ export default function Home() {
           <>
             <View style={styles.signCard}>
               <LinearGradient
-                colors={['rgba(255, 107, 107, 0.25)', 'rgba(255, 215, 0, 0.15)']}
+                colors={['rgba(232, 200, 126, 0.10)', 'rgba(232, 200, 126, 0.03)']}
                 style={styles.signGradient}
               >
-                <Sun size={32} color="#FFD700" />
+                <Sun size={32} color="#E8C87E" />
                 <View style={styles.signInfo}>
                   <Text style={styles.signLabel}>Your Sun Sign</Text>
                   <View style={styles.signValueRow}>
@@ -161,7 +161,7 @@ export default function Home() {
             {horoscope && (
               <View style={styles.horoscopeCard}>
                 <View style={styles.cardHeader}>
-                  <Sparkles size={18} color="#FFD700" />
+                  <Sparkles size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>Today's Horoscope</Text>
                 </View>
                 <Text style={styles.horoscopeText}>{horoscope.mainPrediction}</Text>
@@ -201,7 +201,7 @@ export default function Home() {
                 onPress={() => goTo('/(tabs)/astrology')}
                 activeOpacity={0.8}
               >
-                <Star size={26} color="#FFD700" />
+                <Star size={26} color="#E8C87E" />
                 <Text style={styles.quickLabel}>Astrology</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -217,14 +217,14 @@ export default function Home() {
                 onPress={() => goTo('/(tabs)/askastro')}
                 activeOpacity={0.8}
               >
-                <MessageCircle size={26} color="#FFD700" />
+                <MessageCircle size={26} color="#E8C87E" />
                 <Text style={styles.quickLabel}>AskAstro</Text>
               </TouchableOpacity>
             </View>
 
             {sunSign && (
               <View style={styles.tipRow}>
-                <Sparkles size={16} color="#FFD700" />
+                <Sparkles size={16} color="#E8C87E" />
                 <Text style={styles.tipText}>
                   The stars align for {sunSign} today. Trust your intuition and
                   embrace what the universe sends your way.
@@ -254,13 +254,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    marginBottom: 18,
+    marginBottom: 28,
   },
   brandIcon: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -270,30 +272,32 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   name: {
     fontSize: 26,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   setupCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     borderRadius: 16,
     padding: 28,
     alignItems: 'center',
     gap: 16,
-    marginTop: 20,
+    marginTop: 24,
   },
   setupTitle: {
     fontSize: 22,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   setupText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -312,7 +316,9 @@ const styles = StyleSheet.create({
   signCard: {
     borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
   },
   signGradient: {
     flexDirection: 'row',
@@ -324,31 +330,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   signLabel: {
-    fontSize: 13,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   signValueRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    marginTop: 4,
   },
   signValue: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   signGlyph: {
     fontSize: 26,
-    color: '#FFD700',
+    color: '#E8C87E',
     marginTop: -2,
   },
   horoscopeCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 16,
     padding: 16,
-    marginBottom: 18,
-    gap: 12,
+    marginBottom: 28,
+    gap: 14,
   },
   colorValueRow: {
     flexDirection: 'row',
@@ -369,13 +380,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   horoscopeText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     lineHeight: 22,
   },
   metaRow: {
@@ -384,45 +395,51 @@ const styles = StyleSheet.create({
   },
   metaItem: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 12,
     padding: 12,
   },
   metaLabel: {
     fontSize: 11,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
-    marginBottom: 4,
+    fontFamily: 'Inter-SemiBold',
+    color: '#7E7B92',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 6,
   },
   metaValue: {
     fontSize: 15,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFD700',
+    color: '#E8C87E',
   },
   adviceBox: {
-    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    backgroundColor: 'rgba(232, 200, 126, 0.06)',
     borderRadius: 12,
     padding: 14,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FFD700',
+    borderLeftWidth: 2,
+    borderLeftColor: '#E8C87E',
   },
   adviceLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFD700',
-    marginBottom: 4,
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 6,
   },
   adviceText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     lineHeight: 20,
   },
   quickTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
-    marginBottom: 10,
+    fontSize: 20,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+    marginBottom: 14,
   },
   quickRow: {
     flexDirection: 'row',
@@ -430,33 +447,35 @@ const styles = StyleSheet.create({
   },
   quickCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
-    paddingVertical: 18,
+    paddingVertical: 20,
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   tipRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(255, 215, 0, 0.08)',
+    gap: 10,
+    backgroundColor: 'rgba(232, 200, 126, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     borderRadius: 12,
-    padding: 12,
-    marginTop: 18,
+    padding: 14,
+    marginTop: 28,
   },
   tipText: {
     flex: 1,
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#D8D8D8',
-    lineHeight: 17,
+    color: '#C7C4D6',
+    lineHeight: 18,
   },
   quickLabel: {
     fontSize: 13,
     fontFamily: 'Inter-Medium',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
 });

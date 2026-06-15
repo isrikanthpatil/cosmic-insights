@@ -1,30 +1,41 @@
-// Centralized design tokens for the app. Mirrors the existing dark + gold
-// palette so new components stay visually consistent. Existing screens keep
-// their literals; use these tokens for new components and where convenient.
+// Centralized design tokens for the app — "Celestial Minimal" visual style.
+// Dark celestial navy + champagne gold + serif headings. Other screens import
+// from here so the palette stays consistent.
 
 export const colors = {
   // Brand / accents
-  gold: '#FFD700',
-  coral: '#FF6B6B',
+  gold: '#E8C87E', // champagne gold accent (replaces the old bright #FFD700)
+  coral: '#FF6B6B', // missing / secondary
+  green: '#69C779', // present
+  purple: '#B49BE6', // Kua (Lo Shu)
 
   // Text
-  text: '#FFFFFF',
-  textSecondary: '#E0E0E0',
-  muted: '#B8B8B8',
+  text: '#F4F1E8', // primary
+  textSecondary: '#C7C4D6', // secondary
+  muted: '#7E7B92', // muted
+  faint: '#56536A', // faint (inactive tabs etc.)
 
-  // Surfaces (translucent over the gradient)
-  surface: 'rgba(255, 255, 255, 0.05)',
-  surfaceStrong: 'rgba(255, 255, 255, 0.1)',
-  border: 'rgba(255, 255, 255, 0.1)',
+  // Surfaces — fine hairline borders over lots of negative space
+  surface: 'rgba(255, 255, 255, 0.03)',
+  surfaceStrong: 'rgba(255, 255, 255, 0.05)',
+  border: 'rgba(255, 255, 255, 0.10)',
 
-  // Gradient stops
-  bgStart: '#0F0C29',
-  bgMid: '#24243e',
-  bgEnd: '#302B63',
+  // Hairline border colors
+  goldHairline: 'rgba(232, 200, 126, 0.25)',
+  neutralHairline: 'rgba(255, 255, 255, 0.10)',
+
+  // Gradient stops (dark celestial navy)
+  bgStart: '#0B0B1A',
+  bgMid: '#0E0B22',
+  bgEnd: '#140F2A',
 } as const;
 
-// The standard screen background gradient (top -> bottom).
-export const gradientColors = ['#0F0C29', '#24243e', '#302B63'] as const;
+// Standard screen background gradient (top -> bottom).
+export const gradientColors = ['#0B0B1A', '#0E0B22', '#140F2A'] as const;
+
+// Hairline border tokens (re-exported for convenience).
+export const goldHairline = colors.goldHairline;
+export const neutralHairline = colors.neutralHairline;
 
 // Spacing scale. Names encode the pixel value for quick reference.
 export const spacing = {

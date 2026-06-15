@@ -52,7 +52,7 @@ export default function Numerology() {
     return (
       <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Sparkles size={64} color="#FFD700" />
+          <Sparkles size={64} color="#E8C87E" />
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
       </ScreenBackground>
@@ -67,7 +67,7 @@ export default function Numerology() {
             <ExploreBar />
           </View>
           <View style={styles.noProfileContainer}>
-            <Hash size={64} color="#FFD700" />
+            <Hash size={64} color="#E8C87E" />
             <Text style={styles.noProfileTitle}>Profile Required</Text>
             <Text style={styles.noProfileText}>
               Please set up your profile first to access personalized numerology readings.
@@ -96,7 +96,7 @@ export default function Numerology() {
           </View>
           <View style={styles.skeletonWrap}>
             <View style={styles.skeletonCaptionRow}>
-              <Sparkles size={18} color="#FFD700" />
+              <Sparkles size={18} color="#E8C87E" />
               <Text style={styles.skeletonCaption}>Calculating your numbers…</Text>
             </View>
 
@@ -148,7 +148,7 @@ export default function Numerology() {
         <Text style={styles.gridSubtitle}>Based on FEAT Theory ABC + Kua Number</Text>
         
         <View style={styles.kuaInfo}>
-          <Info size={16} color="#8A2BE2" />
+          <Info size={16} color="#B49BE6" />
           <Text style={styles.kuaInfoText}>
             Your Birth Number {numerologyReading.birthNumber}, Destiny Number {numerologyReading.destinyNumber}, and Kua Number {kuaNumber} have been added to the grid for enhanced analysis
           </Text>
@@ -174,26 +174,27 @@ export default function Numerology() {
                 const isKuaPosition = number === kuaNumber;
                 
                 const badgeColor = isStrong
-                  ? '#FFD700'
+                  ? '#E8C87E'
                   : isKuaPosition
-                  ? '#8A2BE2'
-                  : '#4CAF50';
+                  ? '#B49BE6'
+                  : '#69C779';
 
                 return (
                   <View key={colIndex} style={[
                     styles.gridCell,
                     isEmpty && styles.emptyCellBorder,
+                    !isEmpty && styles.presentCellBorder,
                     isStrong && styles.strongCellBorder,
                     isKuaPosition && styles.kuaCellBorder
                   ]}>
                     <LinearGradient
                       colors={isEmpty ?
-                        ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.1)'] :
+                        ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.03)'] :
                         isStrong ?
-                        ['rgba(255, 215, 0, 0.3)', 'rgba(255, 215, 0, 0.1)'] :
+                        ['rgba(232, 200, 126, 0.08)', 'rgba(232, 200, 126, 0.03)'] :
                         isKuaPosition ?
-                        ['rgba(138, 43, 226, 0.3)', 'rgba(138, 43, 226, 0.1)'] :
-                        ['rgba(76, 175, 80, 0.2)', 'rgba(76, 175, 80, 0.1)']
+                        ['rgba(180, 155, 230, 0.08)', 'rgba(180, 155, 230, 0.03)'] :
+                        ['rgba(105, 199, 121, 0.06)', 'rgba(105, 199, 121, 0.03)']
                       }
                       style={styles.cellGradient}
                     >
@@ -225,15 +226,15 @@ export default function Numerology() {
 
         <View style={styles.gridLegend}>
           <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#4CAF50' }]} />
+            <View style={[styles.legendDot, { backgroundColor: '#69C779' }]} />
             <Text style={styles.legendText}>Present numbers</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#FFD700' }]} />
+            <View style={[styles.legendDot, { backgroundColor: '#E8C87E' }]} />
             <Text style={styles.legendText}>Strong numbers (2+)</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: '#8A2BE2' }]} />
+            <View style={[styles.legendDot, { backgroundColor: '#B49BE6' }]} />
             <Text style={styles.legendText}>Kua number</Text>
           </View>
           <View style={styles.legendItem}>
@@ -259,8 +260,8 @@ export default function Numerology() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFD700"
-            colors={['#FFD700']}
+            tintColor="#E8C87E"
+            colors={['#E8C87E']}
           />
         }
       >
@@ -279,7 +280,7 @@ export default function Numerology() {
             </View>
 
             <View style={styles.compactNumberCard}>
-              <Target size={16} color="#FFD700" />
+              <Target size={16} color="#E8C87E" />
               <Text style={styles.compactNumberLabel}>Destiny</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.destinyNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={2}>
@@ -288,7 +289,7 @@ export default function Numerology() {
             </View>
 
             <View style={styles.compactNumberCard}>
-              <Compass size={16} color="#8A2BE2" />
+              <Compass size={16} color="#B49BE6" />
               <Text style={styles.compactNumberLabel}>Kua</Text>
               <View style={styles.compactKuaContainer}>
                 <Text style={styles.compactNumberValue}>{numerologyReading.kuaNumber}</Text>
@@ -305,7 +306,7 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <SectionHeader icon={Grid3X3} title="Lo Shu Grid Analysis" iconColor="#4CAF50" />
+            <SectionHeader icon={Grid3X3} title="Lo Shu Grid Analysis" iconColor="#69C779" />
             <View style={styles.loshuCard}>
               {renderLoshuGrid()}
             </View>
@@ -313,7 +314,7 @@ export default function Numerology() {
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Sparkles size={24} color="#FF8E53" />
+              <Sparkles size={20} color="#E8C87E" />
               <Text style={styles.sectionTitle}>Detailed Analysis</Text>
             </View>
             {numerologyReading.loshuAnalysis.length > 0 ? (
@@ -332,7 +333,7 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <SectionHeader icon={Star} title="Lucky Numbers" iconColor="#FFD700" />
+            <SectionHeader icon={Star} title="Lucky Numbers" iconColor="#E8C87E" />
             <View style={styles.luckyNumbers}>
               {numerologyReading.luckyNumbers.map((number: number, index: number) => (
                 <View key={index} style={styles.luckyNumberCard}>
@@ -373,14 +374,14 @@ const styles = StyleSheet.create({
   noProfileTitle: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginTop: 20,
     marginBottom: 10,
   },
   noProfileText: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 30,
@@ -404,7 +405,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 18,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginTop: 20,
   },
   skeletonWrap: {
@@ -421,11 +422,13 @@ const styles = StyleSheet.create({
   skeletonCaption: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   skeletonCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 16,
     padding: 12,
     gap: 4,
   },
@@ -451,13 +454,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   scrollView: {
     flex: 1,
@@ -468,27 +471,31 @@ const styles = StyleSheet.create({
   },
   numbersRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
+    gap: 10,
+    marginBottom: 24,
   },
   compactNumberCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 10,
-    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
+    borderRadius: 16,
+    padding: 14,
     alignItems: 'center',
-    gap: 4,
-    minHeight: 120,
+    gap: 6,
+    minHeight: 130,
   },
   compactNumberLabel: {
     fontSize: 10,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    fontFamily: 'Inter-SemiBold',
+    color: '#7E7B92',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   compactNumberValue: {
-    fontSize: 20,
+    fontSize: 28,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   compactKuaContainer: {
     alignItems: 'center',
@@ -502,7 +509,7 @@ const styles = StyleSheet.create({
   compactNumberMeaning: {
     fontSize: 9,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     textAlign: 'center',
     lineHeight: 12,
   },
@@ -542,71 +549,73 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   section: {
-    marginBottom: 16,
+    marginBottom: 28,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 10,
+    marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    fontSize: 20,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   loshuCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 16,
+    padding: 16,
   },
   gridContainer: {
     alignItems: 'center',
   },
   gridTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
-    marginBottom: 3,
+    fontSize: 16,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+    marginBottom: 4,
   },
   gridSubtitle: {
     fontSize: 10,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
-    marginBottom: 8,
+    color: '#7E7B92',
+    marginBottom: 12,
   },
   kuaInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(138, 43, 226, 0.1)',
-    borderRadius: 10,
+    backgroundColor: 'rgba(180, 155, 230, 0.06)',
+    borderRadius: 12,
     padding: 12,
     marginBottom: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#8A2BE2',
+    borderLeftWidth: 2,
+    borderLeftColor: '#B49BE6',
   },
   kuaInfoText: {
     fontSize: 11,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     flex: 1,
   },
   conversionInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255, 152, 0, 0.1)',
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 152, 0, 0.06)',
+    borderRadius: 12,
     padding: 12,
     marginBottom: 16,
-    borderLeftWidth: 3,
+    borderLeftWidth: 2,
     borderLeftColor: '#FF9800',
   },
   conversionInfoText: {
     fontSize: 11,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     flex: 1,
   },
   gridWrapper: {
@@ -620,21 +629,27 @@ const styles = StyleSheet.create({
   gridCell: {
     width: 88,
     height: 88,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  presentCellBorder: {
+    borderWidth: 1,
+    borderColor: 'rgba(105, 199, 121, 0.45)',
   },
   emptyCellBorder: {
-    borderWidth: 1.5,
-    borderColor: '#FF6B6B',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 107, 0.4)',
     borderStyle: 'dashed',
   },
   strongCellBorder: {
-    borderWidth: 1.5,
-    borderColor: '#FFD700',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.55)',
   },
   kuaCellBorder: {
-    borderWidth: 1.5,
-    borderColor: '#8A2BE2',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 155, 230, 0.55)',
   },
   cellGradient: {
     flex: 1,
@@ -658,7 +673,7 @@ const styles = StyleSheet.create({
   countBadgeText: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#0F0C29',
+    color: '#0B0B1A',
   },
   emptyBadge: {
     position: 'absolute',
@@ -668,22 +683,24 @@ const styles = StyleSheet.create({
     height: 18,
   },
   gridNumber: {
-    fontSize: 28,
-    fontFamily: 'Inter-Bold',
-    color: '#FFFFFF',
+    fontSize: 30,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   gridNumberEmpty: {
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#56536A',
   },
   gridElement: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: 'Inter-Medium',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
     textAlign: 'center',
   },
   kuaIndicator: {
     fontSize: 8,
-    fontFamily: 'Inter-Bold',
-    color: '#8A2BE2',
+    fontFamily: 'Inter-SemiBold',
+    color: '#B49BE6',
     letterSpacing: 0.5,
   },
   gridLegend: {
@@ -705,52 +722,58 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 10,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#7E7B92',
   },
   analysisCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: '#69C779',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   analysisText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     lineHeight: 21,
   },
   luckyNumbers: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
     flexWrap: 'wrap',
   },
   luckyNumberCard: {
     width: 44,
     height: 44,
-    backgroundColor: '#FFD700',
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.45)',
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
   },
   luckyNumber: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#0F0C29',
+    fontSize: 18,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#E8C87E',
   },
   remedyCard: {
-    backgroundColor: 'rgba(255, 142, 83, 0.1)',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF8E53',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: '#E8C87E',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   remedyText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     lineHeight: 21,
   },
 });

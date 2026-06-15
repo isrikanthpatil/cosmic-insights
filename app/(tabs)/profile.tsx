@@ -251,7 +251,7 @@ export default function Profile() {
     return (
       <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FFD700" />
+          <ActivityIndicator size="large" color="#E8C87E" />
           <Text style={styles.loadingText}>Loading profile...</Text>
         </View>
       </ScreenBackground>
@@ -268,7 +268,7 @@ export default function Profile() {
               style={styles.headerButton}
               onPress={() => setIsEditing(true)}
             >
-              <Edit3 size={20} color="#FFD700" />
+              <Edit3 size={20} color="#E8C87E" />
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -284,7 +284,7 @@ export default function Profile() {
         <View style={styles.content}>
           {!profileComplete && !isEditing ? (
             <View style={styles.noProfileContainer}>
-              <User size={64} color="#FFD700" />
+              <User size={64} color="#E8C87E" />
               <Text style={styles.noProfileTitle}>No Profile Found</Text>
               <Text style={styles.noProfileText}>
                 Create your profile to get personalized astrology and numerology readings.
@@ -309,7 +309,7 @@ export default function Profile() {
                   value={editForm.firstName}
                   onChangeText={(text) => setEditForm({ ...editForm, firstName: text })}
                   placeholder="Enter your first name"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
                   maxLength={50}
                 />
               </View>
@@ -321,7 +321,7 @@ export default function Profile() {
                   value={editForm.lastName}
                   onChangeText={(text) => setEditForm({ ...editForm, lastName: text })}
                   placeholder="Enter your last name"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
                   maxLength={50}
                 />
               </View>
@@ -349,7 +349,7 @@ export default function Profile() {
                   value={editForm.placeOfBirth}
                   onChangeText={handlePlaceSearch}
                   placeholder="Mumbai, Maharashtra"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
                   maxLength={200}
                 />
                 {showPlaceSuggestions && (
@@ -418,7 +418,7 @@ export default function Profile() {
                     style={styles.cancelButton}
                     onPress={cancelEdit}
                   >
-                    <X size={20} color="#B8B8B8" />
+                    <X size={20} color="#C7C4D6" />
                     <Text style={styles.cancelButtonText}>Cancel</Text>
                   </TouchableOpacity>
                 )}
@@ -428,7 +428,7 @@ export default function Profile() {
             <View style={styles.profileContainer}>
               <View style={styles.profileHeader}>
                 <View style={styles.avatarContainer}>
-                  <User size={48} color="#FFD700" />
+                  <User size={48} color="#E8C87E" />
                 </View>
                 <View style={styles.profileInfo}>
                   <Text style={styles.profileName}>
@@ -442,7 +442,7 @@ export default function Profile() {
 
               <View style={styles.profileDetails}>
                 <View style={styles.detailItem}>
-                  <Calendar size={20} color="#4CAF50" />
+                  <Calendar size={20} color="#E8C87E" />
                   <View style={styles.detailContent}>
                     <Text style={styles.detailLabel}>Date of Birth</Text>
                     <Text style={styles.detailValue}>{userProfile.dateOfBirth}</Text>
@@ -451,7 +451,7 @@ export default function Profile() {
 
                 {userProfile.timeOfBirth && (
                   <View style={styles.detailItem}>
-                    <Clock size={20} color="#2196F3" />
+                    <Clock size={20} color="#E8C87E" />
                     <View style={styles.detailContent}>
                       <Text style={styles.detailLabel}>Time of Birth</Text>
                       <Text style={styles.detailValue}>{userProfile.timeOfBirth}</Text>
@@ -460,7 +460,7 @@ export default function Profile() {
                 )}
 
                 <View style={styles.detailItem}>
-                  <MapPin size={20} color="#FF9800" />
+                  <MapPin size={20} color="#E8C87E" />
                   <View style={styles.detailContent}>
                     <Text style={styles.detailLabel}>Place of Birth</Text>
                     <Text style={styles.detailValue}>{userProfile.placeOfBirth}</Text>
@@ -468,7 +468,7 @@ export default function Profile() {
                 </View>
 
                 <View style={styles.detailItem}>
-                  <Users size={20} color="#9C27B0" />
+                  <Users size={20} color="#E8C87E" />
                   <View style={styles.detailContent}>
                     <Text style={styles.detailLabel}>Gender</Text>
                     <Text style={styles.detailValue}>
@@ -481,7 +481,7 @@ export default function Profile() {
               {/* Settings */}
               <View style={styles.card}>
                 <View style={styles.cardTitleRow}>
-                  <Settings size={20} color="#FFD700" />
+                  <Settings size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>Settings</Text>
                 </View>
 
@@ -491,21 +491,21 @@ export default function Profile() {
                   activeOpacity={0.7}
                 >
                   <View style={styles.settingIcon}>
-                    <KeyRound size={18} color="#2196F3" />
+                    <KeyRound size={18} color="#E8C87E" />
                   </View>
                   <Text style={styles.settingLabel}>Change Password</Text>
                 </TouchableOpacity>
 
                 <View style={styles.settingRow}>
                   <View style={styles.settingIcon}>
-                    <Bell size={18} color="#FFD700" />
+                    <Bell size={18} color="#E8C87E" />
                   </View>
                   <Text style={styles.settingLabel}>Daily Horoscope Reminders</Text>
                   <Switch
                     value={notificationsEnabled}
                     onValueChange={toggleNotifications}
-                    trackColor={{ false: 'rgba(255,255,255,0.2)', true: '#FFD700' }}
-                    thumbColor="#FFFFFF"
+                    trackColor={{ false: 'rgba(255,255,255,0.10)', true: '#E8C87E' }}
+                    thumbColor="#F4F1E8"
                   />
                 </View>
 
@@ -515,7 +515,7 @@ export default function Profile() {
                   activeOpacity={0.7}
                 >
                   <View style={styles.settingIcon}>
-                    <LogOut size={18} color="#B8B8B8" />
+                    <LogOut size={18} color="#C7C4D6" />
                   </View>
                   <Text style={styles.settingLabel}>Sign Out</Text>
                 </TouchableOpacity>
@@ -537,7 +537,7 @@ export default function Profile() {
               {/* About */}
               <View style={styles.card}>
                 <View style={styles.cardTitleRow}>
-                  <Info size={20} color="#FFD700" />
+                  <Info size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
                 <Text style={styles.aboutAppName}>Cosmic Insights</Text>
@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#C7C4D6',
   },
   header: {
     flexDirection: 'row',
@@ -583,7 +583,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   headerActions: {
     flexDirection: 'row',
@@ -593,12 +593,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   clearButton: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    backgroundColor: 'rgba(255, 107, 107, 0.10)',
+    borderColor: 'rgba(255, 107, 107, 0.35)',
   },
   scrollView: {
     flex: 1,
@@ -617,12 +620,12 @@ const styles = StyleSheet.create({
   noProfileTitle: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   noProfileText: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
     textAlign: 'center',
     lineHeight: 24,
     paddingHorizontal: 20,
@@ -644,42 +647,46 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 10,
   },
   inputGroup: {
     gap: 8,
   },
   inputLabel: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#FFFFFF',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   suggestionsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     marginTop: 4,
     maxHeight: 200,
   },
   suggestionItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   suggestionText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   genderContainer: {
     flexDirection: 'row',
@@ -690,9 +697,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     alignItems: 'center',
   },
   genderButtonActive: {
@@ -702,7 +709,7 @@ const styles = StyleSheet.create({
   genderButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   genderButtonTextActive: {
     color: '#FFFFFF',
@@ -729,7 +736,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
@@ -737,7 +746,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   profileContainer: {
     gap: 24,
@@ -746,7 +755,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     padding: 20,
     borderRadius: 16,
   },
@@ -754,7 +765,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -764,13 +777,13 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 4,
   },
   profileSubtitle: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   profileDetails: {
     gap: 16,
@@ -779,7 +792,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     padding: 16,
     borderRadius: 12,
   },
@@ -787,18 +802,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   detailLabel: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#7E7B92',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
     marginBottom: 4,
   },
   detailValue: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 16,
     padding: 16,
   },
@@ -810,8 +829,8 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   settingRow: {
     flexDirection: 'row',
@@ -828,7 +847,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -836,7 +857,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontFamily: 'Inter-Medium',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   settingLabelDanger: {
     color: '#FF6B6B',
@@ -844,26 +865,26 @@ const styles = StyleSheet.create({
   aboutAppName: {
     fontSize: 18,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginTop: 2,
   },
   aboutVersion: {
     fontSize: 13,
     fontFamily: 'Inter-Medium',
-    color: '#FFD700',
+    color: '#E8C87E',
     marginTop: 2,
   },
   aboutDescription: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     marginTop: 8,
     lineHeight: 20,
   },
   aboutDisclaimer: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#888',
+    color: '#7E7B92',
     marginTop: 8,
   },
 });

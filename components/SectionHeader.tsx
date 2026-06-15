@@ -31,8 +31,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md16,
   },
   title: {
-    fontSize: 18,
+    fontSize: 11,
     fontFamily: fonts.semiBold,
-    color: colors.text,
+    color: colors.gold,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
 });

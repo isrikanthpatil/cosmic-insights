@@ -78,7 +78,7 @@ export default function Astrology() {
     return (
       <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Sparkles size={64} color="#FFD700" />
+          <Sparkles size={64} color="#E8C87E" />
           <Text style={styles.loadingText}>Loading...</Text>
         </View>
       </ScreenBackground>
@@ -93,7 +93,7 @@ export default function Astrology() {
             <ExploreBar />
           </View>
           <View style={styles.noProfileContainer}>
-            <Star size={64} color="#FFD700" />
+            <Star size={64} color="#E8C87E" />
             <Text style={styles.noProfileTitle}>Profile Required</Text>
             <Text style={styles.noProfileText}>
               Please set up your profile first to access personalized astrology readings.
@@ -122,7 +122,7 @@ export default function Astrology() {
           </View>
           <View style={styles.skeletonWrap}>
             <View style={styles.skeletonCaptionRow}>
-              <Sparkles size={18} color="#FFD700" />
+              <Sparkles size={18} color="#E8C87E" />
               <Text style={styles.skeletonCaption}>Calculating your cosmic blueprint…</Text>
             </View>
 
@@ -164,11 +164,11 @@ export default function Astrology() {
           <View style={styles.content}>
             <View style={styles.signCard}>
               <LinearGradient
-                colors={['rgba(255, 107, 107, 0.2)', 'rgba(255, 142, 83, 0.2)']}
+                colors={['rgba(232, 200, 126, 0.10)', 'rgba(232, 200, 126, 0.03)']}
                 style={styles.cardGradient}
               >
                 <View style={styles.signHeader}>
-                  <Sun size={32} color="#FFD700" />
+                  <Sun size={32} color="#E8C87E" />
                   <View style={styles.signInfo}>
                     <Text style={styles.signTitle}>Sun Sign</Text>
                     <View style={styles.signValueRow}>
@@ -208,7 +208,7 @@ export default function Astrology() {
             {astrologyData.coordinates && (
               <View style={styles.coordinatesCard}>
                 <View style={styles.coordinatesHeader}>
-                  <MapPin size={20} color="#4CAF50" />
+                  <MapPin size={20} color="#69C779" />
                   <Text style={styles.coordinatesTitle}>Birth Location Influence</Text>
                 </View>
                 <Text style={styles.coordinatesText}>
@@ -228,7 +228,7 @@ export default function Astrology() {
               <View style={styles.traitsList}>
                 {astrologyData.traits.map((trait, index) => (
                   <View key={index} style={styles.traitItem}>
-                    <Sparkles size={16} color="#FFD700" />
+                    <Sparkles size={16} color="#E8C87E" />
                     <Text style={styles.traitText}>{trait}</Text>
                   </View>
                 ))}
@@ -237,7 +237,7 @@ export default function Astrology() {
 
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Book size={20} color="#8A2BE2" />
+                <Book size={20} color="#B49BE6" />
                 <Text style={styles.sectionTitle}>Astrological Elements</Text>
               </View>
               <View style={styles.elementsGrid}>
@@ -275,7 +275,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={TrendingUp} title="Your Cosmic Strengths" iconColor="#4CAF50" />
+              <SectionHeader icon={TrendingUp} title="Your Cosmic Strengths" iconColor="#69C779" />
               <Text style={styles.sectionDescription}>
                 Based on authentic astrological knowledge from classical texts and verified sources
               </Text>
@@ -435,7 +435,7 @@ export default function Astrology() {
               setActiveTab(tab.key);
             }}
           >
-            <tab.icon size={20} color={activeTab === tab.key ? '#FFFFFF' : '#B8B8B8'} />
+            <tab.icon size={20} color={activeTab === tab.key ? '#E8C87E' : '#56536A'} />
             <Text style={[styles.tabText, activeTab === tab.key && styles.activeTabText]}>
               {tab.label}
             </Text>
@@ -450,8 +450,8 @@ export default function Astrology() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFD700"
-            colors={['#FFD700']}
+            tintColor="#E8C87E"
+            colors={['#E8C87E']}
           />
         }
       >
@@ -481,14 +481,14 @@ const styles = StyleSheet.create({
   noProfileTitle: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginTop: 20,
     marginBottom: 10,
   },
   noProfileText: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 30,
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 18,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginTop: 20,
   },
   skeletonWrap: {
@@ -529,10 +529,12 @@ const styles = StyleSheet.create({
   skeletonCaption: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   skeletonCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 16,
     padding: 16,
     gap: 4,
@@ -553,18 +555,18 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingTop: 50,
-    paddingBottom: 16,
+    paddingBottom: 20,
   },
   title: {
     fontSize: 28,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   tabContainer: {
     maxHeight: 76,
@@ -572,34 +574,28 @@ const styles = StyleSheet.create({
   tabContent: {
     paddingHorizontal: 20,
     paddingVertical: 4,
-    gap: 10,
+    gap: 18,
     alignItems: 'center',
   },
   tab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 4,
     paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderColor: 'transparent',
-    borderBottomWidth: 2,
+    borderBottomWidth: 1.5,
     borderBottomColor: 'transparent',
     gap: 6,
   },
   activeTab: {
-    backgroundColor: 'rgba(255, 107, 107, 0.25)',
-    borderColor: 'rgba(255, 215, 0, 0.5)',
-    borderBottomColor: '#FFD700',
+    borderBottomColor: '#E8C87E',
   },
   tabText: {
     fontSize: 12,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#56536A',
   },
   activeTabText: {
-    color: '#FFFFFF',
+    color: '#E8C87E',
     fontFamily: 'Inter-SemiBold',
   },
   scrollView: {
@@ -610,9 +606,11 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   signCard: {
-    marginBottom: 16,
+    marginBottom: 24,
     borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
   },
   cardGradient: {
     padding: 16,
@@ -626,10 +624,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   signTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
-    marginBottom: 4,
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 6,
   },
   signValueRow: {
     flexDirection: 'row',
@@ -638,69 +638,75 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   signValue: {
-    fontSize: 20,
+    fontSize: 22,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   signGlyph: {
     fontSize: 26,
-    color: '#FFD700',
+    color: '#E8C87E',
     marginTop: -2,
   },
   signDescription: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     marginBottom: 4,
   },
   signDates: {
     fontSize: 11,
     fontFamily: 'Inter-Regular',
-    color: '#FFD700',
+    color: '#E8C87E',
   },
   row: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   halfCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
     gap: 4,
   },
   halfCardTitle: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#7E7B92',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   halfCardValue: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
     textAlign: 'center',
   },
   halfCardDesc: {
     fontSize: 11,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#7E7B92',
     textAlign: 'center',
   },
   halfCardElement: {
     fontSize: 9,
     fontFamily: 'Inter-Regular',
-    color: '#FFD700',
+    color: '#E8C87E',
     textAlign: 'center',
   },
   coordinatesCard: {
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderLeftWidth: 2,
+    borderLeftColor: '#69C779',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   coordinatesHeader: {
     flexDirection: 'row',
@@ -711,212 +717,239 @@ const styles = StyleSheet.create({
   coordinatesTitle: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
-    color: '#4CAF50',
+    color: '#69C779',
   },
   coordinatesText: {
     fontSize: 12,
     fontFamily: 'Inter-Medium',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 4,
   },
   coordinatesDescription: {
     fontSize: 11,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
-    lineHeight: 14,
+    color: '#7E7B92',
+    lineHeight: 15,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 28,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    fontSize: 20,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   sectionDescription: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
-    marginBottom: 12,
-    lineHeight: 16,
+    color: '#7E7B92',
+    marginBottom: 14,
+    lineHeight: 17,
   },
   traitsList: {
-    gap: 8,
+    gap: 10,
   },
   traitItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 10,
-    padding: 12,
+    gap: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 16,
+    padding: 14,
   },
   traitText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     flex: 1,
   },
   elementsGrid: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
   },
   elementCard: {
     flex: 1,
-    backgroundColor: 'rgba(138, 43, 226, 0.1)',
-    borderRadius: 10,
-    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 155, 230, 0.25)',
+    borderRadius: 16,
+    padding: 14,
     alignItems: 'center',
   },
   elementLabel: {
-    fontSize: 11,
-    fontFamily: 'Inter-Medium',
-    color: '#8A2BE2',
-    marginBottom: 4,
+    fontSize: 10,
+    fontFamily: 'Inter-SemiBold',
+    color: '#B49BE6',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+    textAlign: 'center',
   },
   elementValue: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   insightsList: {
-    gap: 8,
+    gap: 10,
   },
   insightItem: {
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-    borderRadius: 10,
-    padding: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#4CAF50',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 14,
+    borderLeftWidth: 2,
+    borderLeftColor: '#69C779',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   insightText: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    lineHeight: 18,
+    color: '#C7C4D6',
+    lineHeight: 19,
   },
   pointCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
   },
   pointText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     lineHeight: 21,
   },
   mythologyCard: {
-    backgroundColor: 'rgba(255, 215, 0, 0.1)',
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FFD700',
+    backgroundColor: 'rgba(232, 200, 126, 0.06)',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 14,
+    borderLeftWidth: 2,
+    borderLeftColor: '#E8C87E',
   },
   mythologyTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFD700',
-    marginBottom: 6,
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 8,
   },
   mythologyText: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    lineHeight: 18,
+    color: '#C7C4D6',
+    lineHeight: 19,
     fontStyle: 'italic',
   },
   balanceCard: {
-    backgroundColor: 'rgba(255, 152, 0, 0.1)',
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 12,
-    borderLeftWidth: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 14,
+    borderLeftWidth: 2,
     borderLeftColor: '#FF9800',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   balanceTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#FF9800',
-    marginBottom: 6,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 8,
   },
   balanceText: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    lineHeight: 18,
+    color: '#C7C4D6',
+    lineHeight: 19,
   },
   remedyCard: {
-    backgroundColor: 'rgba(233, 30, 99, 0.1)',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#E91E63',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: '#E8C87E',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   remedyText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
+    color: '#C7C4D6',
     lineHeight: 21,
   },
   gemstoneCard: {
-    backgroundColor: 'rgba(156, 39, 176, 0.1)',
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#9C27B0',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 14,
+    borderLeftWidth: 2,
+    borderLeftColor: '#B49BE6',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 155, 230, 0.25)',
   },
   gemstoneHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   gemstoneTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#9C27B0',
+    color: '#B49BE6',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   gemstoneText: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 6,
   },
   gemstoneDescription: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    lineHeight: 18,
+    color: '#C7C4D6',
+    lineHeight: 19,
   },
   mantraCard: {
-    backgroundColor: 'rgba(103, 58, 183, 0.1)',
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#673AB7',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 14,
+    borderLeftWidth: 2,
+    borderLeftColor: '#B49BE6',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 155, 230, 0.25)',
   },
   mantraTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#673AB7',
-    marginBottom: 8,
+    color: '#B49BE6',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 10,
   },
   mantraText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: 'PlayfairDisplay-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     marginBottom: 6,
     textAlign: 'center',
     fontStyle: 'italic',
@@ -924,28 +957,30 @@ const styles = StyleSheet.create({
   mantraDescription: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    lineHeight: 18,
-    marginTop: 6,
+    color: '#C7C4D6',
+    lineHeight: 19,
+    marginTop: 8,
   },
   predictionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 10,
-    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF6B6B',
+    borderLeftWidth: 2,
+    borderLeftColor: '#E8C87E',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   predictionTitle: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFD700',
-    marginBottom: 6,
+    color: '#E8C87E',
+    marginBottom: 8,
   },
   predictionText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    lineHeight: 20,
+    color: '#C7C4D6',
+    lineHeight: 21,
   },
 });

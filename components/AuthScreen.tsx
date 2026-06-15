@@ -233,7 +233,7 @@ export default function AuthScreen() {
         >
           <View style={styles.brandContainer}>
             <View style={styles.brandIcon}>
-              <Sparkles size={40} color="#FFD700" />
+              <Sparkles size={40} color="#E8C87E" />
             </View>
             <Text style={styles.brandTitle}>Cosmic Insights</Text>
             <Text style={styles.brandSubtitle}>
@@ -251,7 +251,8 @@ export default function AuthScreen() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder="you@example.com"
-                placeholderTextColor="#666"
+                placeholderTextColor="#7E7B92"
+                selectionColor="#E8C87E"
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoCorrect={false}
@@ -267,7 +268,8 @@ export default function AuthScreen() {
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Enter your password"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
+                  selectionColor="#E8C87E"
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
                   maxLength={100}
@@ -278,9 +280,9 @@ export default function AuthScreen() {
                   accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeOff size={20} color="#B8B8B8" />
+                    <EyeOff size={20} color="#C7C4D6" />
                   ) : (
-                    <Eye size={20} color="#B8B8B8" />
+                    <Eye size={20} color="#C7C4D6" />
                   )}
                 </TouchableOpacity>
               </View>
@@ -295,7 +297,7 @@ export default function AuthScreen() {
                     value={firstName}
                     onChangeText={setFirstName}
                     placeholder="Enter your first name"
-                    placeholderTextColor="#666"
+                    placeholderTextColor="#7E7B92"
                     maxLength={50}
                   />
                 </View>
@@ -307,7 +309,7 @@ export default function AuthScreen() {
                     value={lastName}
                     onChangeText={setLastName}
                     placeholder="Enter your last name"
-                    placeholderTextColor="#666"
+                    placeholderTextColor="#7E7B92"
                     maxLength={50}
                   />
                 </View>
@@ -329,7 +331,7 @@ export default function AuthScreen() {
                     value={placeOfBirth}
                     onChangeText={handlePlaceSearch}
                     placeholder="Mumbai, Maharashtra"
-                    placeholderTextColor="#666"
+                    placeholderTextColor="#7E7B92"
                     maxLength={200}
                   />
                   {showPlaceSuggestions && (
@@ -473,19 +475,21 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   brandTitle: {
-    fontSize: 28,
+    fontSize: 32,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   brandSubtitle: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
     textAlign: 'center',
     paddingHorizontal: 20,
   },
@@ -496,54 +500,58 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   inputLabel: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#FFFFFF',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   passwordInput: {
     flex: 1,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   eyeButton: {
     paddingHorizontal: 16,
     paddingVertical: 16,
   },
   suggestionsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     marginTop: 4,
     maxHeight: 200,
   },
   suggestionItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   suggestionText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   genderContainer: {
     flexDirection: 'row',
@@ -554,9 +562,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     alignItems: 'center',
   },
   genderButtonActive: {
@@ -566,7 +574,7 @@ const styles = StyleSheet.create({
   genderButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   genderButtonTextActive: {
     color: '#FFFFFF',
@@ -594,12 +602,12 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
   },
   dividerText: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#7E7B92',
   },
   googleButton: {
     flexDirection: 'row',
@@ -627,7 +635,7 @@ const styles = StyleSheet.create({
   forgotText: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-    color: '#FFD700',
+    color: '#E8C87E',
   },
   switchButton: {
     alignItems: 'center',
@@ -636,10 +644,10 @@ const styles = StyleSheet.create({
   switchText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   switchTextAccent: {
-    color: '#FFD700',
+    color: '#E8C87E',
     fontFamily: 'Inter-SemiBold',
   },
 });

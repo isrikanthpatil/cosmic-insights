@@ -45,23 +45,24 @@ export default function DateField({
       value={value}
       onChangeText={handleChange}
       placeholder={placeholder}
-      placeholderTextColor="#666"
+      placeholderTextColor="#7E7B92"
       keyboardType="number-pad"
       maxLength={10}
       autoCorrect={false}
+      selectionColor="#E8C87E"
     />
   );
 }
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
 });

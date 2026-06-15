@@ -163,7 +163,7 @@ export default function ExploreBar() {
           }}
           activeOpacity={0.7}
         >
-          <UserPlus size={18} color="#FFD700" />
+          <UserPlus size={18} color="#E8C87E" />
           <Text style={styles.exploreButtonText}>🔭 Explore another chart</Text>
         </TouchableOpacity>
       )}
@@ -182,7 +182,7 @@ export default function ExploreBar() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Explore another chart</Text>
               <TouchableOpacity onPress={closeModal} accessibilityLabel="Close">
-                <X size={24} color="#B8B8B8" />
+                <X size={24} color="#C7C4D6" />
               </TouchableOpacity>
             </View>
 
@@ -199,7 +199,7 @@ export default function ExploreBar() {
                   value={firstName}
                   onChangeText={setFirstName}
                   placeholder="Enter first name"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
                   maxLength={50}
                 />
               </View>
@@ -211,7 +211,7 @@ export default function ExploreBar() {
                   value={lastName}
                   onChangeText={setLastName}
                   placeholder="Enter last name (optional)"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
                   maxLength={50}
                 />
               </View>
@@ -233,7 +233,7 @@ export default function ExploreBar() {
                   value={placeOfBirth}
                   onChangeText={handlePlaceSearch}
                   placeholder="Mumbai, Maharashtra"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#7E7B92"
                   maxLength={200}
                 />
                 {showPlaceSuggestions && (
@@ -310,9 +310,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.4)',
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -321,18 +321,19 @@ const styles = StyleSheet.create({
   exploreButtonText: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFD700',
+    color: '#E8C87E',
   },
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
-    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+    backgroundColor: 'rgba(255, 107, 107, 0.12)',
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: 'rgba(255, 107, 107, 0.35)',
     borderLeftWidth: 4,
-    borderRadius: 12,
+    borderLeftColor: '#FF6B6B',
+    borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 14,
     marginBottom: 16,
@@ -341,17 +342,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bannerEyebrow: {
-    fontSize: 10,
-    fontFamily: 'Inter-Medium',
-    color: '#FFD700',
-    letterSpacing: 1,
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 2,
     textTransform: 'uppercase',
     marginBottom: 2,
   },
   bannerTitle: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   backButton: {
     flexDirection: 'row',
@@ -373,12 +374,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalCard: {
-    backgroundColor: '#1A152E',
+    backgroundColor: '#140F2A',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: '90%',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(232, 200, 126, 0.25)',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -391,7 +392,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   modalScroll: {
     flexGrow: 0,
@@ -405,35 +406,39 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   inputLabel: {
-    fontSize: 14,
-    fontFamily: 'Inter-Medium',
-    color: '#FFFFFF',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   suggestionsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     marginTop: 4,
     maxHeight: 200,
   },
   suggestionItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
   suggestionText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   genderContainer: {
     flexDirection: 'row',
@@ -444,9 +449,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     alignItems: 'center',
   },
   genderButtonActive: {
@@ -456,7 +461,7 @@ const styles = StyleSheet.create({
   genderButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   genderButtonTextActive: {
     color: '#FFFFFF',
@@ -481,6 +486,6 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
 });

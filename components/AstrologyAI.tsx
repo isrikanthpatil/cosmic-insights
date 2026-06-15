@@ -625,7 +625,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerIcon}>
-          <Sparkles size={24} color="#FFD700" />
+          <Sparkles size={24} color="#E8C87E" />
         </View>
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>AskAstro</Text>
@@ -633,7 +633,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             {userProfile ? `Personalized insights for ${userProfile.firstName}` : 'Ask me anything about astrology'}
           </Text>
         </View>
-        <Book size={20} color="#B8B8B8" />
+        <Book size={20} color="#7E7B92" />
       </View>
 
       <ScrollView
@@ -672,7 +672,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         {isLoading && (
           <View style={styles.loadingWrapper}>
             <View style={styles.loadingBubble}>
-              <ActivityIndicator size="small" color="#FFD700" />
+              <ActivityIndicator size="small" color="#E8C87E" />
               <Text style={styles.loadingText}>Consulting the stars...</Text>
             </View>
           </View>
@@ -701,7 +701,8 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             value={inputText}
             onChangeText={setInputText}
             placeholder={userProfile ? "Ask about your chart..." : "Ask about astrology..."}
-            placeholderTextColor="#666"
+            placeholderTextColor="#7E7B92"
+            selectionColor="#E8C87E"
             multiline
             maxLength={500}
           />
@@ -710,7 +711,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             onPress={handleSend}
             disabled={!inputText.trim() || isLoading}
           >
-            <Send size={20} color={!inputText.trim() ? "#666" : "#FFFFFF"} />
+            <Send size={20} color={!inputText.trim() ? "#7E7B92" : "#0B0B1A"} />
           </TouchableOpacity>
         </View>
       </View>
@@ -721,8 +722,10 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     margin: 20,
     overflow: 'hidden',
   },
@@ -731,13 +734,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.10)',
   },
   headerIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -746,21 +751,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   headerSubtitle: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#C7C4D6',
   },
   messagesContainer: {
     flex: 1,
     padding: 16,
   },
   messageWrapper: {
-    marginBottom: 12,
+    marginBottom: 14,
   },
   userMessageWrapper: {
     alignItems: 'flex-end',
@@ -770,16 +775,19 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '80%',
-    padding: 10,
-    borderRadius: 12,
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
   },
   userMessage: {
-    backgroundColor: '#FF6B6B',
-    borderBottomRightRadius: 3,
+    backgroundColor: 'rgba(232, 200, 126, 0.12)',
+    borderColor: 'rgba(232, 200, 126, 0.35)',
+    borderBottomRightRadius: 4,
   },
   aiMessage: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderBottomLeftRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderBottomLeftRadius: 4,
   },
   messageText: {
     fontSize: 14,
@@ -787,66 +795,72 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   userMessageText: {
-    color: '#FFFFFF',
+    color: '#F4F1E8',
   },
   aiMessageText: {
-    color: '#E0E0E0',
+    color: '#C7C4D6',
   },
   timestamp: {
     fontSize: 11,
     fontFamily: 'Inter-Regular',
-    color: '#888',
-    marginTop: 3,
+    color: '#7E7B92',
+    marginTop: 4,
   },
   loadingWrapper: {
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   loadingBubble: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 10,
-    borderRadius: 12,
-    borderBottomLeftRadius: 3,
-    gap: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    padding: 12,
+    borderRadius: 16,
+    borderBottomLeftRadius: 4,
+    gap: 8,
   },
   loadingText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#B8B8B8',
+    color: '#E8C87E',
   },
   suggestionsContainer: {
     marginTop: 16,
   },
   suggestionsTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
-    marginBottom: 10,
+    color: '#E8C87E',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 12,
   },
   suggestionButton: {
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.3)',
+    borderColor: 'rgba(232, 200, 126, 0.25)',
   },
   suggestionText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: 'Inter-Regular',
-    color: '#FF6B6B',
+    color: '#F4F1E8',
   },
   inputContainer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: 'rgba(255, 255, 255, 0.10)',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -856,7 +870,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#FFFFFF',
+    color: '#F4F1E8',
     maxHeight: 80,
     paddingVertical: 6,
   },
@@ -864,11 +878,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     justifyContent: 'center',
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
 });
