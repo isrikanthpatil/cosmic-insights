@@ -116,17 +116,10 @@ export default function Home() {
             <Sparkles size={28} color="#E8C87E" />
           </View>
           <View style={styles.headerText}>
-            {profile ? (
-              <>
-                <Text style={styles.greeting}>Welcome back,</Text>
-                <Text style={styles.name}>{profile.firstName}</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.greeting}>Welcome to</Text>
-                <Text style={styles.name}>Cosmic Insights</Text>
-              </>
-            )}
+            <Text style={styles.greeting}>
+              {profile ? `Welcome back, ${profile.firstName}` : 'Welcome to'}
+            </Text>
+            <Text style={styles.name}>Astropanth</Text>
           </View>
           {isGuest && (
             <TouchableOpacity

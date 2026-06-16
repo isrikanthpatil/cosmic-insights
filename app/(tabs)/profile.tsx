@@ -357,7 +357,7 @@ export default function Profile() {
                   <Info size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
-                <Text style={styles.aboutAppName}>Cosmic Insights</Text>
+                <Text style={styles.aboutAppName}>Astropanth</Text>
                 <Text style={styles.aboutVersion}>Version 1.0.0</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
@@ -625,7 +625,7 @@ export default function Profile() {
                   <Info size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
-                <Text style={styles.aboutAppName}>Cosmic Insights</Text>
+                <Text style={styles.aboutAppName}>Astropanth</Text>
                 <Text style={styles.aboutVersion}>Version 1.0.0</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.

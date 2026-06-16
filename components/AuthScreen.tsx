@@ -251,7 +251,7 @@ export default function AuthScreen() {
             <View style={styles.brandIcon}>
               <Sparkles size={40} color="#E8C87E" />
             </View>
-            <Text style={styles.brandTitle}>Cosmic Insights</Text>
+            <Text style={styles.brandTitle}>Astropanth</Text>
             <Text style={styles.brandSubtitle}>
               {mode === 'login'
                 ? 'Sign in to access your cosmic blueprint'
