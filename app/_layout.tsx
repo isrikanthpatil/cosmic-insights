@@ -15,26 +15,29 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ChartProvider } from '@/contexts/ChartContext';
-import AuthScreen from '@/components/AuthScreen';
 import ToastHost from '@/components/ToastHost';
 
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { user, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
+  // Wait for the auth store to hydrate so logged-in users don't briefly see
+  // the guest dashboard on cold start. Guests fall through to the tabs.
   if (isLoading) {
     return null;
   }
 
-  if (!user) {
-    return <AuthScreen />;
-  }
-
+  // GUEST-OPEN: always render the tabs. There is no hard auth gate; signing
+  // in is reachable via the `login` modal route below.
   return (
     <ChartProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="login"
+          options={{ presentation: 'modal', headerShown: false }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ChartProvider>

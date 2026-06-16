@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
-import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2 } from 'lucide-react-native';
+import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 import { searchPlaces } from '@/utils/places';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
 import { showToast } from '@/utils/toast';
 import { tap, success } from '@/utils/haptics';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
+import { useChart } from '@/contexts/ChartContext';
 import { pb } from '@/utils/pocketbase';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
@@ -16,7 +18,9 @@ import ScreenBackground from '@/components/ScreenBackground';
 const NOTIFICATIONS_KEY = 'settings_notifications';
 
 export default function Profile() {
+  const router = useRouter();
   const { profile, user, isLoading: loading, updateProfile, signOut, requestPasswordReset } = useAuth();
+  const { isGuest, guestProfile } = useChart();
   const userProfile = profile;
   const profileComplete =
     !!profile &&
@@ -105,10 +109,12 @@ export default function Profile() {
     if (profile) {
       setEditForm(profile);
     }
-    if (!loading && !profileComplete) {
+    // Only auto-open the editor for authenticated users with an incomplete
+    // profile. Guests see the sign-up state instead (no editable account UI).
+    if (!loading && !isGuest && !profileComplete) {
       setIsEditing(true);
     }
-  }, [profile, loading, profileComplete]);
+  }, [profile, loading, profileComplete, isGuest]);
 
   const saveProfile = async () => {
     tap();
@@ -263,7 +269,7 @@ export default function Profile() {
       <View style={styles.header}>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.headerActions}>
-          {profileComplete && !isEditing && (
+          {!isGuest && profileComplete && !isEditing && (
             <TouchableOpacity
               style={styles.headerButton}
               onPress={() => setIsEditing(true)}
@@ -271,18 +277,97 @@ export default function Profile() {
               <Edit3 size={20} color="#E8C87E" />
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            style={[styles.headerButton, styles.clearButton]}
-            onPress={handleSignOut}
-          >
-            <LogOut size={20} color="#FF6B6B" />
-          </TouchableOpacity>
+          {!isGuest && (
+            <TouchableOpacity
+              style={[styles.headerButton, styles.clearButton]}
+              onPress={handleSignOut}
+            >
+              <LogOut size={20} color="#FF6B6B" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          {!profileComplete && !isEditing ? (
+          {isGuest ? (
+            <View style={styles.guestContainer}>
+              <View style={styles.avatarContainer}>
+                <User size={48} color="#E8C87E" />
+              </View>
+              <Text style={styles.noProfileTitle}>Create an account to save your details</Text>
+              <Text style={styles.noProfileText}>
+                {guestProfile
+                  ? 'Your birth details are saved on this device. Sign in or create an account to save them to the cloud and unlock unlimited AskAstro.'
+                  : 'Sign in or create a free account to save your birth details across devices and unlock unlimited AskAstro.'}
+              </Text>
+
+              {guestProfile && (
+                <View style={styles.guestDetails}>
+                  <View style={styles.detailItem}>
+                    <User size={20} color="#E8C87E" />
+                    <View style={styles.detailContent}>
+                      <Text style={styles.detailLabel}>Name</Text>
+                      <Text style={styles.detailValue}>
+                        {guestProfile.firstName} {guestProfile.lastName}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <Calendar size={20} color="#E8C87E" />
+                    <View style={styles.detailContent}>
+                      <Text style={styles.detailLabel}>Date of Birth</Text>
+                      <Text style={styles.detailValue}>{guestProfile.dateOfBirth}</Text>
+                    </View>
+                  </View>
+                  {!!guestProfile.timeOfBirth && (
+                    <View style={styles.detailItem}>
+                      <Clock size={20} color="#E8C87E" />
+                      <View style={styles.detailContent}>
+                        <Text style={styles.detailLabel}>Time of Birth</Text>
+                        <Text style={styles.detailValue}>{guestProfile.timeOfBirth}</Text>
+                      </View>
+                    </View>
+                  )}
+                  <View style={styles.detailItem}>
+                    <MapPin size={20} color="#E8C87E" />
+                    <View style={styles.detailContent}>
+                      <Text style={styles.detailLabel}>Place of Birth</Text>
+                      <Text style={styles.detailValue}>{guestProfile.placeOfBirth}</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              <TouchableOpacity
+                style={styles.guestSignInButton}
+                onPress={() => {
+                  tap();
+                  router.push('/login');
+                }}
+                activeOpacity={0.85}
+              >
+                <UserPlus size={20} color="#FFFFFF" />
+                <Text style={styles.createProfileButtonText}>Sign in / Sign up</Text>
+              </TouchableOpacity>
+
+              {/* About */}
+              <View style={styles.guestAboutCard}>
+                <View style={styles.cardTitleRow}>
+                  <Info size={18} color="#E8C87E" />
+                  <Text style={styles.cardTitle}>About</Text>
+                </View>
+                <Text style={styles.aboutAppName}>Cosmic Insights</Text>
+                <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+                <Text style={styles.aboutDescription}>
+                  Personalized astrology & numerology guidance.
+                </Text>
+                <Text style={styles.aboutDisclaimer}>
+                  Readings are for guidance and entertainment.
+                </Text>
+              </View>
+            </View>
+          ) : !profileComplete && !isEditing ? (
             <View style={styles.noProfileContainer}>
               <User size={64} color="#E8C87E" />
               <Text style={styles.noProfileTitle}>No Profile Found</Text>
@@ -616,6 +701,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 60,
     gap: 20,
+  },
+  guestContainer: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    gap: 18,
+  },
+  guestDetails: {
+    alignSelf: 'stretch',
+    gap: 12,
+  },
+  guestSignInButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+  },
+  guestAboutCard: {
+    alignSelf: 'stretch',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 8,
   },
   noProfileTitle: {
     fontSize: 24,

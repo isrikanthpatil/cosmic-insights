@@ -1,12 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MessageCircle, Send, Sparkles, Book } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { MessageCircle, Send, Sparkles, Book, LogIn } from 'lucide-react-native';
 import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
 import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
 import { pb } from '@/utils/pocketbase';
 import { tap } from '@/utils/haptics';
+import { showToast } from '@/utils/toast';
+
+// Sentinel error thrown by askLLM when the server returns HTTP 429 for a guest
+// who has exhausted their free daily questions. handleSend surfaces this as a
+// sign-in nudge rather than silently falling back to the offline engine.
+const GUEST_LIMIT = 'guest_limit';
+const DEFAULT_GUEST_LIMIT_MESSAGE =
+  "You've used your 2 free questions for today. Sign in for unlimited AskAstro.";
 
 interface Message {
   id: string;
@@ -37,6 +46,10 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // True once a guest has hit the daily free-question limit; shows a sign-in
+  // CTA beneath the conversation.
+  const [guestLimitReached, setGuestLimitReached] = useState(false);
+  const router = useRouter();
 
   // Refs for the typewriter reveal: the active interval timer and the
   // ScrollView so we can keep the view pinned to the bottom as text grows.
@@ -460,7 +473,12 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   };
 
   // Calls the server-side LLM proxy. Returns the reply string on success,
-  // or null on timeout / any error / empty reply (never throws).
+  // or null on timeout / any error / empty reply.
+  //
+  // Exception: when the server returns HTTP 429 with body { error:'guest_limit' }
+  // (a guest who has used their free daily questions) it throws an Error whose
+  // message is GUEST_LIMIT carrying the server message, so handleSend can show
+  // a sign-in nudge instead of silently using the offline fallback.
   const askLLM = async (
     question: string,
     history: { role: string; content: string }[]
@@ -544,7 +562,22 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         return reply;
       }
       return null;
-    } catch {
+    } catch (error: any) {
+      // Guest daily-limit exceeded: surface it rather than falling back.
+      if (error?.status === 429) {
+        const serverMessage =
+          error?.response?.message ||
+          error?.data?.message ||
+          error?.response?.error ||
+          DEFAULT_GUEST_LIMIT_MESSAGE;
+        const limitError = new Error(GUEST_LIMIT);
+        (limitError as any).userMessage =
+          typeof serverMessage === 'string' && serverMessage.trim().length > 0
+            ? serverMessage
+            : DEFAULT_GUEST_LIMIT_MESSAGE;
+        throw limitError;
+      }
+      // All other failures (timeout / network / 5xx) → offline fallback.
       return null;
     } finally {
       clearTimeout(timeout);
@@ -588,7 +621,24 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     setIsLoading(true);
 
     // Try the server-side LLM proxy first; fall back to the offline engine.
-    const llmReply = await askLLM(sanitizedInput, history);
+    let llmReply: string | null = null;
+    try {
+      llmReply = await askLLM(sanitizedInput, history);
+    } catch (error: any) {
+      if (error?.message === GUEST_LIMIT) {
+        const limitMessage: string =
+          (error as any).userMessage || DEFAULT_GUEST_LIMIT_MESSAGE;
+        setGuestLimitReached(true);
+        // Surface the limit both as a toast and as an assistant message, with a
+        // persistent sign-in CTA rendered below the conversation.
+        showToast(limitMessage, 'info');
+        revealAssistantMessage(limitMessage);
+        return;
+      }
+      // Any other unexpected throw → fall back to the offline engine.
+      llmReply = null;
+    }
+
     const response =
       typeof llmReply === 'string' && llmReply.trim().length > 0
         ? llmReply
@@ -693,6 +743,25 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           </View>
         )}
       </ScrollView>
+
+      {guestLimitReached && (
+        <View style={styles.limitBanner}>
+          <Text style={styles.limitBannerText}>
+            {DEFAULT_GUEST_LIMIT_MESSAGE}
+          </Text>
+          <TouchableOpacity
+            style={styles.limitSignInButton}
+            onPress={() => {
+              tap();
+              router.push('/login');
+            }}
+            activeOpacity={0.85}
+          >
+            <LogIn size={16} color="#FFFFFF" />
+            <Text style={styles.limitSignInText}>Sign in</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={styles.inputContainer}>
         <View style={styles.inputWrapper}>
@@ -849,6 +918,42 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: 'Inter-Regular',
     color: '#F4F1E8',
+  },
+  limitBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: 16,
+    marginBottom: 4,
+    backgroundColor: 'rgba(255, 107, 107, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 107, 0.35)',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF6B6B',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  limitBannerText: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#F4F1E8',
+    lineHeight: 18,
+  },
+  limitSignInButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FF6B6B',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  limitSignInText: {
+    fontSize: 13,
+    fontFamily: 'Inter-SemiBold',
+    color: '#FFFFFF',
   },
   inputContainer: {
     padding: 16,

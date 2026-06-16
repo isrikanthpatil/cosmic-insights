@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { useRouter } from 'expo-router';
 import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
@@ -26,9 +27,18 @@ import ScreenBackground from '@/components/ScreenBackground';
 type Mode = 'login' | 'signup';
 
 export default function AuthScreen() {
-  const { signIn, signUp, requestPasswordReset } = useAuth();
+  const { signIn, signUp, requestPasswordReset, user } = useAuth();
+  const router = useRouter();
   const [mode, setMode] = useState<Mode>('login');
   const [submitting, setSubmitting] = useState(false);
+
+  // When used as the modal `login` route, dismiss it once the user becomes
+  // authenticated. The hard gate is gone, so this is the screen's only exit.
+  useEffect(() => {
+    if (user && router.canGoBack()) {
+      router.back();
+    }
+  }, [user, router]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -16,10 +16,13 @@ import {
   MessageCircle,
   Sparkles,
   Sun,
+  LogIn,
 } from 'lucide-react-native';
-import { useAuth } from '@/contexts/AuthContext';
+import { useChart } from '@/contexts/ChartContext';
 import { calculateSunSign, generateDailyHoroscope, DailyHoroscope } from '@/utils/astrology';
 import ScreenBackground from '@/components/ScreenBackground';
+import GuestEntryPrompt from '@/components/GuestEntryPrompt';
+import LoginNudge from '@/components/LoginNudge';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
 // Maps a lucky-color name to a displayable swatch hex. Falls back to gold.
@@ -56,7 +59,7 @@ const colorToHex = (name: string): string => {
 
 export default function Home() {
   const router = useRouter();
-  const { profile } = useAuth();
+  const { activeProfile: profile, isGuest } = useChart();
   const [refreshing, setRefreshing] = useState(false);
   // Bumped on pull-to-refresh to re-derive the daily horoscope.
   const [refreshNonce, setRefreshNonce] = useState(0);
@@ -86,6 +89,11 @@ export default function Home() {
   const goTo = (path: '/(tabs)/astrology' | '/(tabs)/numerology' | '/(tabs)/askastro' | '/(tabs)/profile') => {
     tap();
     router.push(path);
+  };
+
+  const goToLogin = () => {
+    tap();
+    router.push('/login');
   };
 
   return (
@@ -120,24 +128,26 @@ export default function Home() {
               </>
             )}
           </View>
+          {isGuest && (
+            <TouchableOpacity
+              style={styles.signInChip}
+              onPress={goToLogin}
+              activeOpacity={0.8}
+              accessibilityLabel="Sign in"
+            >
+              <LogIn size={16} color="#E8C87E" />
+              <Text style={styles.signInChipText}>Sign in</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
+        {isGuest && <LoginNudge />}
+
         {!profile ? (
-          <View style={styles.setupCard}>
-            <Star size={48} color="#E8C87E" />
-            <Text style={styles.setupTitle}>Set up your profile</Text>
-            <Text style={styles.setupText}>
-              Add your birth details to unlock personalized astrology readings,
-              numerology insights, and your daily horoscope.
-            </Text>
-            <TouchableOpacity
-              style={styles.setupButton}
-              onPress={() => goTo('/(tabs)/profile')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.setupButtonText}>Set Up Profile</Text>
-            </TouchableOpacity>
-          </View>
+          <GuestEntryPrompt
+            title="Get your free reading"
+            message="Enter your birth details to unlock personalized astrology, numerology, and your daily horoscope. No account needed."
+          />
         ) : (
           <>
             <View style={styles.signCard}>
@@ -279,39 +289,21 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
-  setupCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  signInChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',
-    borderRadius: 16,
-    padding: 28,
-    alignItems: 'center',
-    gap: 16,
-    marginTop: 24,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
   },
-  setupTitle: {
-    fontSize: 22,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
-  },
-  setupText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  setupButton: {
-    backgroundColor: '#FF6B6B',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 25,
-    marginTop: 4,
-  },
-  setupButtonText: {
-    fontSize: 16,
+  signInChipText: {
+    fontSize: 13,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#E8C87E',
   },
   signCard: {
     borderRadius: 16,

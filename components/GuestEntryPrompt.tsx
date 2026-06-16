@@ -9,67 +9,62 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { UserPlus, X } from 'lucide-react-native';
+import { Star, X } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
 import { Profile } from '@/contexts/AuthContext';
 import { tap } from '@/utils/haptics';
+import { showToast } from '@/utils/toast';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
 
-export default function ExploreBar() {
-  const { isExploring, exploreSubject, setExplore, clearExplore } = useChart();
+interface GuestEntryPromptProps {
+  /** Heading for the friendly empty-state card. */
+  title?: string;
+  /** Supporting copy below the heading. */
+  message?: string;
+}
 
+/**
+ * Guest empty-state shown when there is no activeProfile yet. Instead of a
+ * "Profile Required" wall, it invites the guest to enter birth details for a
+ * free reading. Submitting saves a local guest profile (persisted), so the
+ * reading renders immediately and survives restarts.
+ */
+export default function GuestEntryPrompt({
+  title = 'Get your free reading',
+  message = 'Enter your birth details to unlock your personalized astrology and numerology — no account needed.',
+}: GuestEntryPromptProps) {
+  const { setGuestProfile } = useChart();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
   const handleSubmit = (profile: Profile) => {
-    setExplore(profile);
-    closeModal();
+    setGuestProfile(profile);
+    setModalVisible(false);
+    showToast('Birth details saved on this device.', 'success');
   };
 
   return (
     <>
-      {isExploring ? (
-        <View style={styles.banner}>
-          <View style={styles.bannerTextWrap}>
-            <Text style={styles.bannerEyebrow}>Exploring</Text>
-            <Text style={styles.bannerTitle} numberOfLines={1}>
-              Viewing {exploreSubject?.firstName}'s chart
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {
-              tap();
-              clearExplore();
-            }}
-            activeOpacity={0.7}
-          >
-            <X size={16} color="#FFFFFF" />
-            <Text style={styles.backButtonText}>Back to my chart</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
+      <View style={styles.card}>
+        <Star size={48} color="#E8C87E" />
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.text}>{message}</Text>
         <TouchableOpacity
-          style={styles.exploreButton}
+          style={styles.button}
           onPress={() => {
             tap();
             setModalVisible(true);
           }}
-          activeOpacity={0.7}
+          activeOpacity={0.85}
         >
-          <UserPlus size={18} color="#E8C87E" />
-          <Text style={styles.exploreButtonText}>🔭 Explore another chart</Text>
+          <Text style={styles.buttonText}>Enter birth details</Text>
         </TouchableOpacity>
-      )}
+      </View>
 
       <Modal
         visible={modalVisible}
         animationType="slide"
         transparent
-        onRequestClose={closeModal}
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <KeyboardAvoidingView
@@ -77,8 +72,11 @@ export default function ExploreBar() {
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Explore another chart</Text>
-              <TouchableOpacity onPress={closeModal} accessibilityLabel="Close">
+              <Text style={styles.modalTitle}>Your birth details</Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                accessibilityLabel="Close"
+              >
                 <X size={24} color="#C7C4D6" />
               </TouchableOpacity>
             </View>
@@ -89,11 +87,14 @@ export default function ExploreBar() {
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
-              {modalVisible && (
-                <BirthDetailsForm onSubmit={handleSubmit} submitLabel="View chart" />
-              )}
-
-              <TouchableOpacity style={styles.cancelButton} onPress={closeModal}>
+              <Text style={styles.modalCaption}>
+                For a free reading. Saved on this device only.
+              </Text>
+              <BirthDetailsForm onSubmit={handleSubmit} submitLabel="Get my reading" />
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}
+              >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -105,66 +106,38 @@ export default function ExploreBar() {
 }
 
 const styles = StyleSheet.create({
-  exploreButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
+  card: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  exploreButtonText: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: '#E8C87E',
-  },
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    backgroundColor: 'rgba(255, 107, 107, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.35)',
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF6B6B',
     borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginBottom: 16,
-  },
-  bannerTextWrap: {
-    flex: 1,
-  },
-  bannerEyebrow: {
-    fontSize: 11,
-    fontFamily: 'Inter-SemiBold',
-    color: '#E8C87E',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    marginBottom: 2,
-  },
-  bannerTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: '#F4F1E8',
-  },
-  backButton: {
-    flexDirection: 'row',
+    padding: 28,
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#FF6B6B',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    gap: 16,
+    marginTop: 8,
   },
-  backButtonText: {
-    fontSize: 12,
+  title: {
+    fontSize: 22,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+    textAlign: 'center',
+  },
+  text: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  button: {
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 25,
+    marginTop: 4,
+  },
+  buttonText: {
+    fontSize: 16,
     fontFamily: 'Inter-SemiBold',
     color: '#FFFFFF',
   },
@@ -201,6 +174,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 32,
     gap: 16,
+  },
+  modalCaption: {
+    fontSize: 13,
+    fontFamily: 'Inter-Regular',
+    color: '#7E7B92',
+    lineHeight: 18,
   },
   cancelButton: {
     alignItems: 'center',

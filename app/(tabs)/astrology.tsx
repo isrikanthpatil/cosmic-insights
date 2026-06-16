@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
+import GuestEntryPrompt from '@/components/GuestEntryPrompt';
+import LoginNudge from '@/components/LoginNudge';
 import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
@@ -30,9 +31,8 @@ interface AstrologyData {
 }
 
 export default function Astrology() {
-  const router = useRouter();
   const { isLoading: loading } = useAuth();
-  const { activeProfile: userProfile, isExploring } = useChart();
+  const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
   const [astrologyData, setAstrologyData] = useState<AstrologyData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -90,23 +90,14 @@ export default function Astrology() {
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.exploreBarWrap}>
+            {isGuest && <LoginNudge />}
             <ExploreBar />
           </View>
-          <View style={styles.noProfileContainer}>
-            <Star size={64} color="#E8C87E" />
-            <Text style={styles.noProfileTitle}>Profile Required</Text>
-            <Text style={styles.noProfileText}>
-              Please set up your profile first to access personalized astrology readings.
-            </Text>
-            <TouchableOpacity
-              style={styles.setupProfileButton}
-              onPress={() => {
-                router.push('/(tabs)/profile');
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.setupProfileButtonText}>Set Up Profile</Text>
-            </TouchableOpacity>
+          <View style={styles.guestEntryWrap}>
+            <GuestEntryPrompt
+              title="Enter your birth details for a free reading"
+              message="Add your birth details to unlock your personalized astrology reading. No account needed."
+            />
           </View>
         </ScrollView>
       </ScreenBackground>
@@ -456,6 +447,7 @@ export default function Astrology() {
         }
       >
         <View style={styles.exploreBarWrap}>
+          {isGuest && !isExploring && <LoginNudge />}
           <ExploreBar />
         </View>
         {renderContent()}
@@ -472,37 +464,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
   },
-  noProfileContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 40,
-  },
-  noProfileTitle: {
-    fontSize: 24,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  noProfileText: {
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 30,
-  },
-  setupProfileButton: {
-    backgroundColor: '#FF6B6B',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-  },
-  setupProfileButtonText: {
-    fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+  guestEntryWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 40,
   },
   loadingContainer: {
     flex: 1,
