@@ -163,7 +163,7 @@ export default function Profile() {
 
       // Validate time format if provided (HH:MM AM/PM)
       if (sanitizedProfile.timeOfBirth && !SecurityUtils.validateTime(sanitizedProfile.timeOfBirth)) {
-        notify('Error', 'Please enter time in HH:MM AM/PM format');
+        notify('Error', 'Please enter time in HH:MM (24-hour) format');
         return;
       }
 

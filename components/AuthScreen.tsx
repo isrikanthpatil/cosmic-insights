@@ -183,19 +183,25 @@ export default function AuthScreen() {
         sanitizedProfile.timeOfBirth &&
         !SecurityUtils.validateTime(sanitizedProfile.timeOfBirth)
       ) {
-        notify('Error', 'Please enter time in HH:MM AM/PM format');
+        notify('Error', 'Please enter time in HH:MM (24-hour) format');
         return;
       }
 
       await signUp(trimmedEmail, password, sanitizedProfile);
     } catch (error: any) {
-      const message =
-        error?.response?.message ||
-        SecurityUtils.handleSecureError(error, 'auth');
-      notify(
-        mode === 'login' ? 'Sign In Failed' : 'Sign Up Failed',
-        message
-      );
+      if (mode === 'signup') {
+        // Avoid account enumeration: never surface the raw server message
+        // (e.g. "email already exists") on the sign-up path.
+        notify(
+          'Sign Up Failed',
+          'Could not create your account. Please check your details and try again.'
+        );
+      } else {
+        const message =
+          error?.response?.message ||
+          SecurityUtils.handleSecureError(error, 'auth');
+        notify('Sign In Failed', message);
+      }
     } finally {
       setSubmitting(false);
     }

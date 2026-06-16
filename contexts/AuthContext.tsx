@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       passwordConfirm: password,
-      emailVisibility: true,
+      emailVisibility: false,
       ...profile,
     });
     await pb.collection('users').authWithPassword(email, password);

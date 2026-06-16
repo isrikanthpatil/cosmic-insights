@@ -42,13 +42,13 @@ export class SecurityUtils {
 
   // Validate name (letters, spaces, hyphens, apostrophes only)
   static validateName(name: string): boolean {
-    const nameRegex = /^[a-zA-Z\s\-']{1,50}$/;
+    const nameRegex = /^[\p{L}\s\-'.]{1,50}$/u;
     return nameRegex.test(name);
   }
 
   // Validate place name
   static validatePlace(place: string): boolean {
-    const placeRegex = /^[a-zA-Z\s\-',\.]{1,100}$/;
+    const placeRegex = /^[\p{L}\p{N}\s\-',.()]{1,100}$/u;
     return placeRegex.test(place);
   }
 

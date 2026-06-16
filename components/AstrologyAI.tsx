@@ -599,6 +599,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     const userId = userProfile?.firstName || 'anonymous';
     if (!rateLimiter.isAllowed(userId, 'ai-query')) {
       securityMonitor.logSuspiciousActivity('Rate limit exceeded for AI queries', { userId });
+      showToast('Please wait a moment before asking again.', 'info');
       return;
     }
     const userMessage: Message = {
