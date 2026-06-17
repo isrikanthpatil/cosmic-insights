@@ -1,2 +1,5 @@
 # Netlify redirects for Expo Router
-/*    /index.html   200
+# Serve the static privacy page before the SPA catch-all (rules match top-down)
+/privacy        /privacy/index.html   200
+/privacy/*      /privacy/index.html   200
+/*              /index.html           200
