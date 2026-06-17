@@ -216,11 +216,10 @@ export default function Astrology() {
               <Text style={styles.sectionDescription}>
                 Based on your Sun in {astrologyData.sunSign}, Moon in {astrologyData.moonSign}, and {astrologyData.ascendant} Rising
               </Text>
-              <View style={styles.traitsList}>
+              <View style={styles.chipGroup}>
                 {astrologyData.traits.map((trait, index) => (
-                  <View key={index} style={styles.traitItem}>
-                    <Sparkles size={16} color="#E8C87E" />
-                    <Text style={styles.traitText}>{trait}</Text>
+                  <View key={index} style={styles.chip}>
+                    <Text style={styles.chipText}>{trait}</Text>
                   </View>
                 ))}
               </View>
@@ -250,10 +249,10 @@ export default function Astrology() {
             {astrologyData.locationInsights.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Location-Based Cosmic Insights</Text>
-                <View style={styles.insightsList}>
+                <View style={styles.chipGroup}>
                   {astrologyData.locationInsights.map((insight, index) => (
-                    <View key={index} style={styles.insightItem}>
-                      <Text style={styles.insightText}>{insight}</Text>
+                    <View key={index} style={styles.chip}>
+                      <Text style={styles.chipText}>{insight}</Text>
                     </View>
                   ))}
                 </View>
@@ -270,12 +269,14 @@ export default function Astrology() {
               <Text style={styles.sectionDescription}>
                 Based on authentic astrological knowledge from classical texts and verified sources
               </Text>
-              {astrologyData.positivePoints.map((point, index) => (
-                <View key={index} style={styles.pointCard}>
-                  <Text style={styles.pointText}>{point}</Text>
-                </View>
-              ))}
-              
+              <View style={styles.chipGroup}>
+                {astrologyData.positivePoints.map((point, index) => (
+                  <View key={index} style={styles.chip}>
+                    <Text style={styles.chipText}>{point}</Text>
+                  </View>
+                ))}
+              </View>
+
               <View style={styles.mythologyCard}>
                 <Text style={styles.mythologyTitle}>Ancient Wisdom</Text>
                 <Text style={styles.mythologyText}>
@@ -297,12 +298,14 @@ export default function Astrology() {
               <Text style={styles.sectionDescription}>
                 Understanding these patterns helps you grow and evolve consciously. These are not permanent limitations but opportunities for development.
               </Text>
-              {astrologyData.negativePoints.map((point, index) => (
-                <View key={index} style={styles.pointCard}>
-                  <Text style={styles.pointText}>{point}</Text>
-                </View>
-              ))}
-              
+              <View style={styles.chipGroup}>
+                {astrologyData.negativePoints.map((point, index) => (
+                  <View key={index} style={styles.chip}>
+                    <Text style={styles.chipText}>{point}</Text>
+                  </View>
+                ))}
+              </View>
+
               <View style={styles.balanceCard}>
                 <Text style={styles.balanceTitle}>The Path of Balance</Text>
                 <Text style={styles.balanceText}>
@@ -321,12 +324,14 @@ export default function Astrology() {
               <Text style={styles.sectionDescription}>
                 Time-tested remedies from Vedic astrology and ancient wisdom traditions
               </Text>
-              {astrologyData.remedies.map((remedy, index) => (
-                <View key={index} style={styles.remedyCard}>
-                  <Text style={styles.remedyText}>{remedy}</Text>
-                </View>
-              ))}
-              
+              <View style={styles.chipGroup}>
+                {astrologyData.remedies.map((remedy, index) => (
+                  <View key={index} style={styles.chip}>
+                    <Text style={styles.chipText}>{remedy}</Text>
+                  </View>
+                ))}
+              </View>
+
               <View style={styles.gemstoneCard}>
                 <View style={styles.gemstoneHeader}>
                   <Gem size={20} color="#9C27B0" />
@@ -571,7 +576,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   signCard: {
-    marginBottom: 24,
+    marginBottom: 14,
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
@@ -626,7 +631,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 14,
   },
   halfCard: {
     flex: 1,
@@ -666,8 +671,8 @@ const styles = StyleSheet.create({
   coordinatesCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
+    padding: 14,
+    marginBottom: 14,
     borderLeftWidth: 2,
     borderLeftColor: '#69C779',
     borderWidth: 1,
@@ -697,13 +702,31 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
   section: {
-    marginBottom: 28,
+    marginBottom: 16,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 14,
+    marginBottom: 10,
+  },
+  chipGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chip: {
+    backgroundColor: 'rgba(232, 200, 126, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.30)',
+    borderRadius: 14,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+  },
+  chipText: {
+    fontSize: 13,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
   },
   sectionTitle: {
     fontSize: 20,
@@ -714,7 +737,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
-    marginBottom: 14,
+    marginBottom: 10,
     lineHeight: 17,
   },
   traitsList: {

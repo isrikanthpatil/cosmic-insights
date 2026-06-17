@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Platform, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { MessageCircle, Send, Sparkles, Book, LogIn } from 'lucide-react-native';
@@ -659,17 +659,11 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const suggestedQuestions = userProfile ? [
     "What's my birth chart?",
     "Tell me about my sun sign",
-    "What's my moon sign?",
-    "Show my compatibility",
-    "What are my remedies?",
-    "How does my birthplace affect me?"
+    "What are my remedies?"
   ] : [
-    "What are the traits of Aries?",
-    "Tell me about Mercury retrograde",
-    "What do the houses represent?",
-    "Explain the fire signs",
     "What is a birth chart?",
-    "How do coordinates affect astrology?"
+    "What are the traits of Aries?",
+    "What do the houses represent?"
   ];
 
   return (
@@ -732,15 +726,17 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         {messages.length === 1 && (
           <View style={styles.suggestionsContainer}>
             <Text style={styles.suggestionsTitle}>Try asking:</Text>
-            {suggestedQuestions.map((question, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.suggestionButton}
-                onPress={() => setInputText(question)}
-              >
-                <Text style={styles.suggestionText}>{question}</Text>
-              </TouchableOpacity>
-            ))}
+            <View style={styles.suggestionsGroup}>
+              {suggestedQuestions.map((question, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.suggestionButton}
+                  onPress={() => setInputText(question)}
+                >
+                  <Text style={styles.suggestionText}>{question}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         )}
       </ScrollView>
@@ -775,6 +771,23 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             selectionColor="#E8C87E"
             multiline
             maxLength={500}
+            returnKeyType="send"
+            blurOnSubmit={false}
+            onSubmitEditing={handleSend}
+            onKeyPress={(e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+              // Web: send on Enter (without Shift); Shift+Enter inserts a newline.
+              if (Platform.OS === 'web') {
+                const nativeEvent = e.nativeEvent as unknown as {
+                  key?: string;
+                  shiftKey?: boolean;
+                  preventDefault?: () => void;
+                };
+                if (nativeEvent.key === 'Enter' && !nativeEvent.shiftKey) {
+                  nativeEvent.preventDefault?.();
+                  handleSend();
+                }
+              }
+            }}
           />
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
@@ -897,7 +910,7 @@ const styles = StyleSheet.create({
     color: '#E8C87E',
   },
   suggestionsContainer: {
-    marginTop: 16,
+    marginTop: 12,
   },
   suggestionsTitle: {
     fontSize: 11,
@@ -905,13 +918,18 @@ const styles = StyleSheet.create({
     color: '#E8C87E',
     letterSpacing: 2,
     textTransform: 'uppercase',
-    marginBottom: 12,
+    marginBottom: 10,
+  },
+  suggestionsGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   suggestionButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
+    borderRadius: 14,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',
   },

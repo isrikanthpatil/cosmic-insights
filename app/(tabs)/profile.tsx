@@ -666,7 +666,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
@@ -692,7 +692,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
+    padding: 16,
     paddingBottom: 100,
   },
   noProfileContainer: {
@@ -862,7 +862,7 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   profileContainer: {
-    gap: 24,
+    gap: 16,
   },
   profileHeader: {
     flexDirection: 'row',
@@ -871,13 +871,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',
-    padding: 20,
+    padding: 16,
     borderRadius: 16,
   },
   avatarContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: 'rgba(232, 200, 126, 0.08)',
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',
@@ -888,7 +888,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileName: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     marginBottom: 4,
@@ -899,16 +899,16 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   profileDetails: {
-    gap: 16,
+    gap: 10,
   },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 14,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.10)',
-    padding: 16,
+    padding: 12,
     borderRadius: 12,
   },
   detailContent: {
@@ -949,7 +949,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 14,
+    paddingVertical: 11,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
@@ -991,13 +991,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    marginTop: 8,
-    lineHeight: 20,
+    marginTop: 6,
+    lineHeight: 19,
   },
   aboutDisclaimer: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
-    marginTop: 8,
+    marginTop: 6,
   },
 });

@@ -7,19 +7,18 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { tap } from '@/utils/haptics';
 import {
-  Star,
-  Hash,
-  MessageCircle,
   Sparkles,
   Sun,
+  Moon,
+  Star,
   LogIn,
 } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
-import { calculateSunSign, generateDailyHoroscope, DailyHoroscope } from '@/utils/astrology';
+import { calculateSunSign, generateDailyHoroscope, getAstrologyReading, DailyHoroscope } from '@/utils/astrology';
+import { getNumerologyReading } from '@/utils/numerology';
 import ScreenBackground from '@/components/ScreenBackground';
 import GuestEntryPrompt from '@/components/GuestEntryPrompt';
 import LoginNudge from '@/components/LoginNudge';
@@ -78,6 +77,29 @@ export default function Home() {
     [profile, refreshNonce]
   );
 
+  // Full chart (Sun/Moon/Ascendant) using the same util the Astrology screen uses.
+  const chart = useMemo(
+    () =>
+      profile
+        ? getAstrologyReading(profile.dateOfBirth, profile.placeOfBirth, profile.timeOfBirth)
+        : null,
+    [profile]
+  );
+
+  // Core numerology numbers, mirroring the Numerology screen's usage.
+  const numbers = useMemo(
+    () =>
+      profile
+        ? getNumerologyReading(
+            profile.firstName,
+            profile.lastName,
+            profile.dateOfBirth,
+            profile.gender
+          )
+        : null,
+    [profile]
+  );
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setRefreshNonce((n) => n + 1);
@@ -85,11 +107,6 @@ export default function Home() {
     // synchronously via the memo above.
     setTimeout(() => setRefreshing(false), 600);
   }, []);
-
-  const goTo = (path: '/(tabs)/astrology' | '/(tabs)/numerology' | '/(tabs)/askastro' | '/(tabs)/profile') => {
-    tap();
-    router.push(path);
-  };
 
   const goToLogin = () => {
     tap();
@@ -143,23 +160,61 @@ export default function Home() {
           />
         ) : (
           <>
-            <View style={styles.signCard}>
-              <LinearGradient
-                colors={['rgba(232, 200, 126, 0.10)', 'rgba(232, 200, 126, 0.03)']}
-                style={styles.signGradient}
-              >
-                <Sun size={32} color="#E8C87E" />
-                <View style={styles.signInfo}>
-                  <Text style={styles.signLabel}>Your Sun Sign</Text>
-                  <View style={styles.signValueRow}>
-                    <Text style={styles.signValue}>{sunSign}</Text>
-                    {sunSign ? (
-                      <Text style={styles.signGlyph}>{getZodiacGlyph(sunSign)}</Text>
-                    ) : null}
+            <Text style={styles.snapshotTitle}>Your chart</Text>
+            <View style={styles.chartRow}>
+              <View style={styles.chartCard}>
+                <Sun size={20} color="#E8C87E" />
+                <Text style={styles.chartLabel}>Sun</Text>
+                <View style={styles.chartValueRow}>
+                  <Text style={styles.chartValue}>{chart?.sunSign ?? sunSign}</Text>
+                  {(chart?.sunSign ?? sunSign) ? (
+                    <Text style={styles.chartGlyph}>
+                      {getZodiacGlyph(chart?.sunSign ?? (sunSign as string))}
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
+              <View style={styles.chartCard}>
+                <Moon size={20} color="#C0C0C0" />
+                <Text style={styles.chartLabel}>Moon</Text>
+                <View style={styles.chartValueRow}>
+                  <Text style={styles.chartValue}>{chart?.moonSign}</Text>
+                  {chart?.moonSign ? (
+                    <Text style={styles.chartGlyph}>{getZodiacGlyph(chart.moonSign)}</Text>
+                  ) : null}
+                </View>
+              </View>
+              <View style={styles.chartCard}>
+                <Star size={20} color="#FF6B6B" />
+                <Text style={styles.chartLabel}>Rising</Text>
+                <View style={styles.chartValueRow}>
+                  <Text style={styles.chartValue}>{chart?.ascendant}</Text>
+                  {chart?.ascendant ? (
+                    <Text style={styles.chartGlyph}>{getZodiacGlyph(chart.ascendant)}</Text>
+                  ) : null}
+                </View>
+              </View>
+            </View>
+
+            {numbers && (
+              <>
+                <Text style={styles.snapshotTitle}>Your numbers</Text>
+                <View style={styles.numbersRow}>
+                  <View style={styles.numberChip}>
+                    <Text style={styles.numberLabel}>Birth</Text>
+                    <Text style={styles.numberValue}>{numbers.birthNumber}</Text>
+                  </View>
+                  <View style={styles.numberChip}>
+                    <Text style={styles.numberLabel}>Destiny</Text>
+                    <Text style={styles.numberValue}>{numbers.destinyNumber}</Text>
+                  </View>
+                  <View style={styles.numberChip}>
+                    <Text style={styles.numberLabel}>Kua</Text>
+                    <Text style={styles.numberValue}>{numbers.kuaNumber}</Text>
                   </View>
                 </View>
-              </LinearGradient>
-            </View>
+              </>
+            )}
 
             {horoscope && (
               <View style={styles.horoscopeCard}>
@@ -196,44 +251,6 @@ export default function Home() {
                 </View>
               </View>
             )}
-
-            <Text style={styles.quickTitle}>Explore</Text>
-            <View style={styles.quickRow}>
-              <TouchableOpacity
-                style={styles.quickCard}
-                onPress={() => goTo('/(tabs)/astrology')}
-                activeOpacity={0.8}
-              >
-                <Star size={26} color="#E8C87E" />
-                <Text style={styles.quickLabel}>Astrology</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.quickCard}
-                onPress={() => goTo('/(tabs)/numerology')}
-                activeOpacity={0.8}
-              >
-                <Hash size={26} color="#FF6B6B" />
-                <Text style={styles.quickLabel}>Numerology</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.quickCard}
-                onPress={() => goTo('/(tabs)/askastro')}
-                activeOpacity={0.8}
-              >
-                <MessageCircle size={26} color="#E8C87E" />
-                <Text style={styles.quickLabel}>AskAstro</Text>
-              </TouchableOpacity>
-            </View>
-
-            {sunSign && (
-              <View style={styles.tipRow}>
-                <Sparkles size={16} color="#E8C87E" />
-                <Text style={styles.tipText}>
-                  The stars align for {sunSign} today. Trust your intuition and
-                  embrace what the universe sends your way.
-                </Text>
-              </View>
-            )}
           </>
         )}
       </ScrollView>
@@ -257,7 +274,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    marginBottom: 28,
+    marginBottom: 20,
   },
   brandIcon: {
     width: 56,
@@ -298,44 +315,77 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
   },
-  signCard: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(232, 200, 126, 0.25)',
-  },
-  signGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    padding: 16,
-  },
-  signInfo: {
-    flex: 1,
-  },
-  signLabel: {
+  snapshotTitle: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
     letterSpacing: 2,
     textTransform: 'uppercase',
+    marginBottom: 10,
   },
-  signValueRow: {
+  chartRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
+  },
+  chartCard: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.20)',
+  },
+  chartLabel: {
+    fontSize: 10,
+    fontFamily: 'Inter-SemiBold',
+    color: '#7E7B92',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  chartValueRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginTop: 4,
+    gap: 4,
   },
-  signValue: {
-    fontSize: 24,
+  chartValue: {
+    fontSize: 14,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
-  signGlyph: {
-    fontSize: 26,
+  chartGlyph: {
+    fontSize: 15,
     color: '#E8C87E',
-    marginTop: -2,
+  },
+  numbersRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
+  },
+  numberChip: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 14,
+    paddingVertical: 10,
+    alignItems: 'center',
+    gap: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  numberLabel: {
+    fontSize: 10,
+    fontFamily: 'Inter-SemiBold',
+    color: '#7E7B92',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  numberValue: {
+    fontSize: 22,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#E8C87E',
   },
   horoscopeCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -343,8 +393,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.10)',
     borderRadius: 16,
     padding: 16,
-    marginBottom: 28,
-    gap: 14,
+    marginBottom: 16,
+    gap: 12,
   },
   colorValueRow: {
     flexDirection: 'row',
@@ -419,48 +469,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     lineHeight: 20,
-  },
-  quickTitle: {
-    fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
-    marginBottom: 14,
-  },
-  quickRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  quickCard: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 16,
-    paddingVertical: 20,
-    alignItems: 'center',
-    gap: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
-  },
-  tipRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: 'rgba(232, 200, 126, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(232, 200, 126, 0.25)',
-    borderRadius: 12,
-    padding: 14,
-    marginTop: 28,
-  },
-  tipText: {
-    flex: 1,
-    fontSize: 12,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    lineHeight: 18,
-  },
-  quickLabel: {
-    fontSize: 13,
-    fontFamily: 'Inter-Medium',
-    color: '#F4F1E8',
   },
 });
