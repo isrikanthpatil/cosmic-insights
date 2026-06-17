@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   name: {
-    fontSize: 26,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },

@@ -266,7 +266,7 @@ export default function Numerology() {
               <Hash size={16} color="#FF6B6B" />
               <Text style={styles.compactNumberLabel}>Birth</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.birthNumber}</Text>
-              <Text style={styles.compactNumberMeaning} numberOfLines={2}>
+              <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.birthNumberMeaning}
               </Text>
             </View>
@@ -275,7 +275,7 @@ export default function Numerology() {
               <Target size={16} color="#E8C87E" />
               <Text style={styles.compactNumberLabel}>Destiny</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.destinyNumber}</Text>
-              <Text style={styles.compactNumberMeaning} numberOfLines={2}>
+              <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.destinyNumberMeaning}
               </Text>
             </View>
@@ -417,10 +417,10 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
     gap: 6,
-    minHeight: 130,
+    minHeight: 150,
   },
   compactNumberLabel: {
     fontSize: 10,
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   compactNumberValue: {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
@@ -472,11 +472,11 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   compactNumberMeaning: {
-    fontSize: 9,
+    fontSize: 10,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     textAlign: 'center',
-    lineHeight: 12,
+    lineHeight: 14,
   },
   numberCard: {
     borderRadius: 12,

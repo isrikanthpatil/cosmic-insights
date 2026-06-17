@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Star, Hash, MessageCircle, User } from 'lucide-react-native';
+import { House, Sparkles, Grid3x3, MessageCircle, User } from 'lucide-react-native';
 import React from 'react';
+import { colors } from '@/constants/theme';
 
 export default function TabLayout() {
   return (
@@ -8,17 +9,17 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#1A1A2E',
-          borderTopColor: '#FF6B6B',
+          backgroundColor: '#13102A',
+          borderTopColor: 'rgba(232, 200, 126, 0.22)',
           borderTopWidth: 1,
-          height: 80,
-          paddingBottom: 10,
+          height: 82,
+          paddingBottom: 12,
           paddingTop: 10,
         },
-        tabBarActiveTintColor: '#FFD700',
-        tabBarInactiveTintColor: '#8E8E93',
+        tabBarActiveTintColor: colors.gold,
+        tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontFamily: 'Inter-Medium',
         },
       }}
@@ -28,7 +29,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ size, color }) => (
-            <Home size={size} color={color} />
+            <House size={size - 2} color={color} strokeWidth={1.8} />
           ),
         }}
       />
@@ -37,16 +38,16 @@ export default function TabLayout() {
         options={{
           title: 'Astrology',
           tabBarIcon: ({ size, color }) => (
-            <Star size={size} color={color} />
+            <Sparkles size={size - 2} color={color} strokeWidth={1.8} />
           ),
         }}
       />
       <Tabs.Screen
         name="numerology"
         options={{
-          title: 'Numerology',
+          title: 'Numbers',
           tabBarIcon: ({ size, color }) => (
-            <Hash size={size} color={color} />
+            <Grid3x3 size={size - 2} color={color} strokeWidth={1.8} />
           ),
         }}
       />
@@ -55,7 +56,7 @@ export default function TabLayout() {
         options={{
           title: 'AskAstro',
           tabBarIcon: ({ size, color }) => (
-            <MessageCircle size={size} color={color} />
+            <MessageCircle size={size - 2} color={color} strokeWidth={1.8} />
           ),
         }}
       />
@@ -64,7 +65,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ size, color }) => (
-            <User size={size} color={color} />
+            <User size={size - 2} color={color} strokeWidth={1.8} />
           ),
         }}
       />
