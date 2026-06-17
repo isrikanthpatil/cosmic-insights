@@ -212,7 +212,7 @@ export default function Astrology() {
             )}
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Integrated Personality Traits</Text>
+              <SectionHeader icon={Sparkles} title="Integrated Personality Traits" iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
                 Based on your Sun in {astrologyData.sunSign}, Moon in {astrologyData.moonSign}, and {astrologyData.ascendant} Rising
               </Text>
@@ -226,10 +226,7 @@ export default function Astrology() {
             </View>
 
             <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Book size={20} color="#B49BE6" />
-                <Text style={styles.sectionTitle}>Astrological Elements</Text>
-              </View>
+              <SectionHeader icon={Book} title="Astrological Elements" iconColor="#B49BE6" />
               <View style={styles.elementsGrid}>
                 <View style={styles.elementCard}>
                   <Text style={styles.elementLabel}>Sun Element</Text>
@@ -248,7 +245,7 @@ export default function Astrology() {
 
             {astrologyData.locationInsights.length > 0 && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Location-Based Cosmic Insights</Text>
+                <SectionHeader icon={MapPin} title="Location-Based Cosmic Insights" iconColor="#69C779" />
                 <View style={styles.chipGroup}>
                   {astrologyData.locationInsights.map((insight, index) => (
                     <View key={index} style={styles.chip}>
@@ -291,10 +288,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <AlertTriangle size={24} color="#FF9800" />
-                <Text style={styles.sectionTitle}>Areas for Conscious Growth</Text>
-              </View>
+              <SectionHeader icon={AlertTriangle} title="Areas for Conscious Growth" iconColor="#FF9800" />
               <Text style={styles.sectionDescription}>
                 Understanding these patterns helps you grow and evolve consciously. These are not permanent limitations but opportunities for development.
               </Text>
@@ -362,7 +356,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Cosmic Guidance & Insights</Text>
+              <SectionHeader icon={Sparkles} title="Cosmic Guidance & Insights" iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
                 Based on your birth chart, planetary positions, and ancient astrological wisdom
               </Text>
