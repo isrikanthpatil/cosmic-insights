@@ -334,11 +334,13 @@ export default function Numerology() {
 
           <View style={styles.section}>
             <SectionHeader icon={Star} title="Remedies & Suggestions" iconColor="#E8C87E" />
-            {numerologyReading.remedies.map((remedy: string, index: number) => (
-              <View key={index} style={styles.remedyCard}>
-                <Text style={styles.remedyText}>{remedy}</Text>
-              </View>
-            ))}
+            <View style={styles.chipGroup}>
+              {numerologyReading.remedies.map((remedy: string, index: number) => (
+                <View key={index} style={styles.chip}>
+                  <Text style={styles.chipText}>{remedy}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -678,20 +680,22 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#E8C87E',
   },
-  remedyCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    borderLeftWidth: 2,
-    borderLeftColor: '#E8C87E',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
+  chipGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
-  remedyText: {
-    fontSize: 14,
+  chip: {
+    backgroundColor: 'rgba(232, 200, 126, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.30)',
+    borderRadius: 14,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+  },
+  chipText: {
+    fontSize: 13,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 21,
   },
 });
