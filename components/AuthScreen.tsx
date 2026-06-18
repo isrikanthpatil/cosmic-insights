@@ -429,26 +429,30 @@ export default function AuthScreen() {
               </TouchableOpacity>
             )}
 
-            <View style={styles.dividerRow}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.dividerLine} />
-            </View>
+            {Platform.OS === 'web' && (
+              <>
+                <View style={styles.dividerRow}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>or</Text>
+                  <View style={styles.dividerLine} />
+                </View>
 
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogle}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <ActivityIndicator size={20} color="#1A1A2E" />
-              ) : (
-                <>
-                  <Text style={styles.googleG}>G</Text>
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
-                </>
-              )}
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.googleButton}
+                  onPress={handleGoogle}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <ActivityIndicator size={20} color="#1A1A2E" />
+                  ) : (
+                    <>
+                      <Text style={styles.googleG}>G</Text>
+                      <Text style={styles.googleButtonText}>Continue with Google</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </>
+            )}
 
             <TouchableOpacity style={styles.switchButton} onPress={switchMode}>
               <Text style={styles.switchText}>
