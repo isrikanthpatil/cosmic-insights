@@ -185,7 +185,7 @@ export default function Home() {
                 </View>
               </View>
               <View style={styles.chartCard}>
-                <Star size={20} color="#FF6B6B" />
+                <Star size={20} color="#B49BE6" />
                 <Text style={styles.chartLabel}>Rising</Text>
                 <View style={styles.chartValueRow}>
                   <Text style={styles.chartValue}>{chart?.ascendant}</Text>
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 8,
   },
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 6,
   },

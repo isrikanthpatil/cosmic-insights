@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   button: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     paddingVertical: 14,
     paddingHorizontal: 32,
     borderRadius: 25,
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   modalOverlay: {
     flex: 1,

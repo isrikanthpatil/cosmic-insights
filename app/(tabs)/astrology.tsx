@@ -186,7 +186,7 @@ export default function Astrology() {
                 </Text>
               </View>
               <View style={styles.halfCard}>
-                <Star size={24} color="#FF6B6B" />
+                <Star size={24} color="#B49BE6" />
                 <Text style={styles.halfCardTitle}>Ascendant</Text>
                 <Text style={styles.halfCardValue}>{astrologyData.ascendant}</Text>
                 <Text style={styles.halfCardDesc}>How others see you</Text>
@@ -288,7 +288,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={AlertTriangle} title="Areas for Conscious Growth" iconColor="#FF9800" />
+              <SectionHeader icon={AlertTriangle} title="Areas for Conscious Growth" iconColor="#D9A441" />
               <Text style={styles.sectionDescription}>
                 Understanding these patterns helps you grow and evolve consciously. These are not permanent limitations but opportunities for development.
               </Text>
@@ -314,7 +314,7 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={Heart} title="Sacred Remedies & Practices" iconColor="#E91E63" />
+              <SectionHeader icon={Heart} title="Sacred Remedies & Practices" iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
                 Time-tested remedies from Vedic astrology and ancient wisdom traditions
               </Text>
@@ -591,7 +591,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 6,
   },
@@ -762,7 +762,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 8,
   },
@@ -779,15 +779,15 @@ const styles = StyleSheet.create({
     padding: 16,
     marginTop: 12,
     borderLeftWidth: 2,
-    borderLeftColor: '#FF9800',
+    borderLeftColor: '#D9A441',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   balanceTitle: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#FF9800',
-    letterSpacing: 2,
+    color: '#D9A441',
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 8,
   },
@@ -817,7 +817,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#B49BE6',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   gemstoneText: {
@@ -846,7 +846,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#B49BE6',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 10,
   },

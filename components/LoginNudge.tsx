@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   button: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
@@ -68,6 +68,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 13,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
 });

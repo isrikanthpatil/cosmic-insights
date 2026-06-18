@@ -6,6 +6,7 @@ export const colors = {
   // Brand / accents
   gold: '#E8C87E', // champagne gold accent (replaces the old bright #FFD700)
   coral: '#FF6B6B', // missing / secondary
+  amber: '#D9A441', // warm note / warning accent
   green: '#69C779', // present
   purple: '#B49BE6', // Kua (Lo Shu)
 

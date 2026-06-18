@@ -80,7 +80,7 @@ export default function ToastHost() {
         {isSuccess ? (
           <CheckCircle size={18} color="#E8C87E" />
         ) : (
-          <InfoIcon size={18} color="#E0E0E0" />
+          <InfoIcon size={18} color="#C7C4D6" />
         )}
         <Text style={styles.message} numberOfLines={3}>
           {toast.message}

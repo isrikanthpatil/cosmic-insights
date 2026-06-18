@@ -147,7 +147,7 @@ export default function Numerology() {
 
         {originalKuaNumber && (
           <View style={styles.conversionInfo}>
-            <RefreshCw size={16} color="#FF9800" />
+            <RefreshCw size={16} color="#D9A441" />
             <Text style={styles.conversionInfoText}>
               Kua 5 Conversion: Your calculated Kua was {originalKuaNumber}, converted to {kuaNumber} for {userProfile.gender}s (traditional Feng Shui rule)
             </Text>
@@ -263,7 +263,7 @@ export default function Numerology() {
         <View style={styles.content}>
           <View style={styles.numbersRow}>
             <View style={styles.compactNumberCard}>
-              <Hash size={16} color="#FF6B6B" />
+              <Hash size={16} color="#69C779" />
               <Text style={styles.compactNumberLabel}>Birth</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.birthNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
   compactOriginalKua: {
     fontSize: 8,
     fontFamily: 'Inter-Regular',
-    color: '#FF9800',
+    color: '#D9A441',
     marginTop: 1,
   },
   compactNumberMeaning: {
@@ -530,7 +530,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 10,
     borderLeftWidth: 2,
-    borderLeftColor: '#FF9800',
+    borderLeftColor: '#D9A441',
   },
   conversionInfoText: {
     fontSize: 10,
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
   gridElement: {
     fontSize: 9,
     fontFamily: 'Inter-Medium',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
@@ -622,7 +622,7 @@ const styles = StyleSheet.create({
     fontSize: 8,
     fontFamily: 'Inter-SemiBold',
     color: '#B49BE6',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   gridLegend: {
     flexDirection: 'row',

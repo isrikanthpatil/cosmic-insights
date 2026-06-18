@@ -48,12 +48,12 @@ const styles = StyleSheet.create({
   link: {
     paddingVertical: 15,
     paddingHorizontal: 30,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     borderRadius: 25,
   },
   linkText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
 });

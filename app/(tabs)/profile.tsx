@@ -347,7 +347,7 @@ export default function Profile() {
                 }}
                 activeOpacity={0.85}
               >
-                <UserPlus size={20} color="#FFFFFF" />
+                <UserPlus size={20} color="#0B0B1A" />
                 <Text style={styles.createProfileButtonText}>Sign in / Sign up</Text>
               </TouchableOpacity>
 
@@ -492,7 +492,7 @@ export default function Profile() {
                     <ActivityIndicator size={20} color="#FFFFFF" />
                   ) : (
                     <>
-                      <Save size={20} color="#FFFFFF" />
+                      <Save size={20} color="#0B0B1A" />
                       <Text style={styles.saveButtonText}>Save Profile</Text>
                     </>
                   )}
@@ -716,7 +716,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -744,7 +744,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   createProfileButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -752,7 +752,7 @@ const styles = StyleSheet.create({
   createProfileButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   editContainer: {
     gap: 16,
@@ -770,7 +770,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   input: {
@@ -816,8 +816,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   genderButtonActive: {
-    backgroundColor: '#FF6B6B',
-    borderColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
+    borderColor: '#E8C87E',
   },
   genderButtonText: {
     fontSize: 16,
@@ -825,7 +825,7 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   genderButtonTextActive: {
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   buttonContainer: {
     gap: 12,
@@ -835,7 +835,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   cancelButton: {
     flexDirection: 'row',

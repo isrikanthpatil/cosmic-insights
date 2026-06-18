@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   input: {
@@ -584,8 +584,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   genderButtonActive: {
-    backgroundColor: '#FF6B6B',
-    borderColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
+    borderColor: '#E8C87E',
   },
   genderButtonText: {
     fontSize: 16,
@@ -593,13 +593,13 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   genderButtonTextActive: {
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 8,
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   dividerRow: {
     flexDirection: 'row',

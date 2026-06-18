@@ -754,7 +754,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             }}
             activeOpacity={0.85}
           >
-            <LogIn size={16} color="#FFFFFF" />
+            <LogIn size={16} color="#0B0B1A" />
             <Text style={styles.limitSignInText}>Sign in</Text>
           </TouchableOpacity>
         </View>
@@ -916,7 +916,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 10,
   },
@@ -944,11 +944,11 @@ const styles = StyleSheet.create({
     gap: 10,
     marginHorizontal: 16,
     marginBottom: 4,
-    backgroundColor: 'rgba(255, 107, 107, 0.10)',
+    backgroundColor: 'rgba(232, 200, 126, 0.10)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 107, 107, 0.35)',
+    borderColor: 'rgba(232, 200, 126, 0.30)',
     borderLeftWidth: 4,
-    borderLeftColor: '#FF6B6B',
+    borderLeftColor: '#E8C87E',
     borderRadius: 12,
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -964,7 +964,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#E8C87E',
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 14,
@@ -972,7 +972,7 @@ const styles = StyleSheet.create({
   limitSignInText: {
     fontSize: 13,
     fontFamily: 'Inter-SemiBold',
-    color: '#FFFFFF',
+    color: '#0B0B1A',
   },
   inputContainer: {
     padding: 16,
