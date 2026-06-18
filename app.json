@@ -44,9 +44,11 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "PLACEHOLDER_FILLED_BY_EAS_INIT"
+        "projectId": "4ec24dfd-5f30-4d39-97e5-39a544f646fa"
       }
-    }
+    },
+    "owner": "isrikanthpatil"
   }
 }
