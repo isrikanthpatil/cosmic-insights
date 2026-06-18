@@ -328,7 +328,7 @@ export default function Astrology() {
 
               <View style={styles.gemstoneCard}>
                 <View style={styles.gemstoneHeader}>
-                  <Gem size={20} color="#9C27B0" />
+                  <Gem size={20} color="#B49BE6" />
                   <Text style={styles.gemstoneTitle}>Recommended Gemstones</Text>
                 </View>
                 <Text style={styles.gemstoneText}>
@@ -518,8 +518,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 40,
+    paddingBottom: 16,
   },
   title: {
     fontSize: 24,
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   tabContent: {
     paddingHorizontal: 20,
     paddingVertical: 4,
-    gap: 18,
+    gap: 12,
     alignItems: 'center',
   },
   tab: {
@@ -567,10 +567,10 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 88,
   },
   signCard: {
-    marginBottom: 14,
+    marginBottom: 12,
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
@@ -625,7 +625,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   halfCard: {
     flex: 1,
@@ -696,13 +696,7 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
   section: {
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   chipGroup: {
     flexDirection: 'row',
@@ -722,36 +716,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
-  },
   sectionDescription: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
     marginBottom: 10,
     lineHeight: 17,
-  },
-  traitsList: {
-    gap: 10,
-  },
-  traitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
-    borderRadius: 16,
-    padding: 14,
-  },
-  traitText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    flex: 1,
   },
   elementsGrid: {
     flexDirection: 'row',
@@ -780,43 +750,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: '#F4F1E8',
   },
-  insightsList: {
-    gap: 10,
-  },
-  insightItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 16,
-    padding: 14,
-    borderLeftWidth: 2,
-    borderLeftColor: '#69C779',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
-  },
-  insightText: {
-    fontSize: 13,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    lineHeight: 19,
-  },
-  pointCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-  },
-  pointText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    lineHeight: 21,
-  },
   mythologyCard: {
     backgroundColor: 'rgba(232, 200, 126, 0.06)',
     borderRadius: 16,
     padding: 16,
-    marginTop: 14,
+    marginTop: 12,
     borderLeftWidth: 2,
     borderLeftColor: '#E8C87E',
   },
@@ -839,7 +777,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
     padding: 16,
-    marginTop: 14,
+    marginTop: 12,
     borderLeftWidth: 2,
     borderLeftColor: '#FF9800',
     borderWidth: 1,
@@ -859,27 +797,11 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
     lineHeight: 19,
   },
-  remedyCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    borderLeftWidth: 2,
-    borderLeftColor: '#E8C87E',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
-  },
-  remedyText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
-    lineHeight: 21,
-  },
   gemstoneCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
     padding: 16,
-    marginTop: 14,
+    marginTop: 12,
     borderLeftWidth: 2,
     borderLeftColor: '#B49BE6',
     borderWidth: 1,
@@ -914,7 +836,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
     padding: 16,
-    marginTop: 14,
+    marginTop: 12,
     borderLeftWidth: 2,
     borderLeftColor: '#B49BE6',
     borderWidth: 1,

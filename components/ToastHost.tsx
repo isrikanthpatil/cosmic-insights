@@ -78,7 +78,7 @@ export default function ToastHost() {
         ]}
       >
         {isSuccess ? (
-          <CheckCircle size={18} color="#FFD700" />
+          <CheckCircle size={18} color="#E8C87E" />
         ) : (
           <InfoIcon size={18} color="#E0E0E0" />
         )}
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   toastSuccess: {
     borderColor: 'rgba(255, 215, 0, 0.5)',
     borderLeftWidth: 4,
-    borderLeftColor: '#FFD700',
+    borderLeftColor: '#E8C87E',
   },
   message: {
     flexShrink: 1,

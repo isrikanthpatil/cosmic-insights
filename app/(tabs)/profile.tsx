@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 40,
     paddingBottom: 16,
   },
   title: {
@@ -693,18 +693,18 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 88,
   },
   noProfileContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 60,
+    paddingVertical: 40,
     gap: 20,
   },
   guestContainer: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: 16,
     gap: 18,
   },
   guestDetails: {
@@ -755,7 +755,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   editContainer: {
-    gap: 20,
+    gap: 16,
   },
   sectionTitle: {
     fontSize: 20,
@@ -829,7 +829,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 12,
-    marginTop: 20,
+    marginTop: 16,
   },
   saveButton: {
     flexDirection: 'row',

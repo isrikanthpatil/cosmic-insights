@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',
-    margin: 20,
+    margin: 16,
     overflow: 'hidden',
   },
   header: {
@@ -848,7 +848,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   messageWrapper: {
-    marginBottom: 14,
+    marginBottom: 12,
   },
   userMessageWrapper: {
     alignItems: 'flex-end',

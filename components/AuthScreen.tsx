@@ -479,8 +479,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
-    paddingTop: 80,
-    paddingBottom: 60,
+    paddingTop: 56,
+    paddingBottom: 40,
   },
   brandContainer: {
     alignItems: 'center',
@@ -488,9 +488,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   brandIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: 'rgba(232, 200, 126, 0.08)',
     borderWidth: 1,
     borderColor: 'rgba(232, 200, 126, 0.25)',

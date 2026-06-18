@@ -305,10 +305,7 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Sparkles size={20} color="#E8C87E" />
-              <Text style={styles.sectionTitle}>Detailed Analysis</Text>
-            </View>
+            <SectionHeader icon={Sparkles} title="Detailed Analysis" iconColor="#E8C87E" />
             {numerologyReading.loshuAnalysis.length > 0 ? (
               numerologyReading.loshuAnalysis.map((analysis: string, index: number) => (
                 <View key={index} style={styles.analysisCard}>
@@ -336,7 +333,7 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Remedies & Suggestions</Text>
+            <SectionHeader icon={Star} title="Remedies & Suggestions" iconColor="#E8C87E" />
             {numerologyReading.remedies.map((remedy: string, index: number) => (
               <View key={index} style={styles.remedyCard}>
                 <Text style={styles.remedyText}>{remedy}</Text>
@@ -413,7 +410,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 40,
     paddingBottom: 16,
   },
   title: {
@@ -437,7 +434,7 @@ const styles = StyleSheet.create({
   numbersRow: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   compactNumberCard: {
     flex: 1,
@@ -478,54 +475,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 14,
   },
-  numberCard: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  numberCardGradient: {
-    padding: 12,
-    alignItems: 'center',
-    gap: 4,
-  },
-  numberLabel: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-    color: '#B8B8B8',
-  },
-  numberValue: {
-    fontSize: 24,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#FFFFFF',
-  },
-  kuaNumberContainer: {
-    alignItems: 'center',
-  },
-  originalKuaText: {
-    fontSize: 9,
-    fontFamily: 'Inter-Regular',
-    color: '#FF9800',
-    marginTop: 2,
-  },
-  numberMeaning: {
-    fontSize: 10,
-    fontFamily: 'Inter-Regular',
-    color: '#E0E0E0',
-    textAlign: 'center',
-    lineHeight: 14,
-  },
   section: {
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
+    marginBottom: 12,
   },
   loshuCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
