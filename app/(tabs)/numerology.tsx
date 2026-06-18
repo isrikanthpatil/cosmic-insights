@@ -306,19 +306,20 @@ export default function Numerology() {
 
           <View style={styles.section}>
             <SectionHeader icon={Sparkles} title="Detailed Analysis" iconColor="#E8C87E" />
-            {numerologyReading.loshuAnalysis.length > 0 ? (
-              numerologyReading.loshuAnalysis.map((analysis: string, index: number) => (
-                <View key={index} style={styles.analysisCard}>
-                  <Text style={styles.analysisText}>{analysis}</Text>
-                </View>
-              ))
-            ) : (
-              <View style={styles.analysisCard}>
+            <View style={styles.analysisCard}>
+              {numerologyReading.loshuAnalysis.length > 0 ? (
+                numerologyReading.loshuAnalysis.map((analysis: string, index: number) => (
+                  <View key={index} style={styles.analysisRow}>
+                    <View style={styles.analysisDot} />
+                    <Text style={styles.analysisText}>{analysis}</Text>
+                  </View>
+                ))
+              ) : (
                 <Text style={styles.analysisText}>
                   Your grid shows a unique pattern. Each missing or filled position represents different aspects of your personality that can be developed through awareness and practice.
                 </Text>
-              </View>
-            )}
+              )}
+            </View>
           </View>
 
           <View style={styles.section}>
@@ -648,13 +649,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
     borderLeftWidth: 2,
-    borderLeftColor: '#69C779',
+    borderLeftColor: '#E8C87E',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.10)',
+    gap: 12,
+  },
+  analysisRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  analysisDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#E8C87E',
+    marginTop: 7,
   },
   analysisText: {
+    flex: 1,
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
