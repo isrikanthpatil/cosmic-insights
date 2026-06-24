@@ -36,8 +36,13 @@ export default function PremiumScreen() {
           style={styles.backButton}
           onPress={() => {
             tap();
-            router.back();
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/profile');
+            }
           }}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           accessibilityLabel="Go back"
         >
           <ArrowLeft size={22} color="#E8C87E" />
@@ -158,10 +163,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   topBarTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: '#C7C4D6',
-    letterSpacing: 1,
+    fontSize: 24,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   scrollView: {
     flex: 1,
@@ -211,17 +215,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   memberTitle: {
-    fontSize: 20,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#E8C87E',
     textAlign: 'center',
   },
   memberText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     textAlign: 'center',
-    lineHeight: 19,
+    lineHeight: 21,
   },
   benefitsCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-    letterSpacing: 2,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 2,
   },
@@ -286,14 +290,14 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   priceNote: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Medium',
     color: '#E8C87E',
     textAlign: 'center',
     marginTop: 2,
   },
   placeholderNote: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
     textAlign: 'center',
@@ -311,7 +315,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(232, 200, 126, 0.30)',
   },
   primaryButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
@@ -343,10 +347,10 @@ const styles = StyleSheet.create({
     borderLeftColor: '#E8C87E',
   },
   disclaimerText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 17,
     fontStyle: 'italic',
   },
 });

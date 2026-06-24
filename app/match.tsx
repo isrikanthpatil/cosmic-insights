@@ -209,9 +209,14 @@ export default function MatchScreen() {
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.backButton}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           onPress={() => {
             tap();
-            router.back();
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/more');
+            }
           }}
           accessibilityLabel="Go back"
         >
@@ -250,7 +255,11 @@ export default function MatchScreen() {
                 style={styles.primaryButton}
                 onPress={() => {
                   tap();
-                  router.back();
+                  if (router.canGoBack()) {
+                    router.back();
+                  } else {
+                    router.replace('/(tabs)/profile');
+                  }
                 }}
                 activeOpacity={0.85}
               >
@@ -531,10 +540,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   topBarTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: '#C7C4D6',
-    letterSpacing: 1,
+    fontSize: 24,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
   },
   scrollView: {
     flex: 1,
@@ -575,7 +583,7 @@ const styles = StyleSheet.create({
     color: '#F4F1E8',
   },
   personMeta: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
   },
@@ -602,7 +610,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   inputHint: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
   },
@@ -633,7 +641,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   primaryButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
@@ -663,7 +671,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   noticeTitle: {
-    fontSize: 20,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     textAlign: 'center',
@@ -684,10 +692,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   errorText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#FF6B6B',
-    lineHeight: 19,
+    lineHeight: 17,
   },
   // Result — hero
   heroCard: {
@@ -699,7 +707,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   heroNames: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Medium',
     color: '#C7C4D6',
     marginBottom: 2,
@@ -724,11 +732,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   heroDescriptor: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     textAlign: 'center',
-    lineHeight: 19,
+    lineHeight: 17,
     marginTop: 4,
   },
   noteCard: {
@@ -742,10 +750,10 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   noteText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 17,
   },
   // Koota grid
   kootaGrid: {
@@ -781,10 +789,10 @@ const styles = StyleSheet.create({
     color: '#7E7B92',
   },
   kootaNote: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 15,
+    lineHeight: 16,
   },
   // Dosha badges
   badgeRow: {
@@ -811,7 +819,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
   },
   mangalRef: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
     marginTop: 8,
@@ -825,10 +833,10 @@ const styles = StyleSheet.create({
     borderLeftColor: '#E8C87E',
   },
   disclaimerText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 17,
     fontStyle: 'italic',
   },
 });

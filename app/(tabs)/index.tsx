@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(232, 200, 126, 0.25)',
   },
   chartLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#7E7B92',
     letterSpacing: 1,
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   numberLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#7E7B92',
     letterSpacing: 1,
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 22,
+    lineHeight: 21,
   },
   metaRow: {
     flexDirection: 'row',
@@ -468,6 +468,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 20,
+    lineHeight: 21,
   },
 });

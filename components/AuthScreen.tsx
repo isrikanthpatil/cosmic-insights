@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
@@ -639,12 +639,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   googleG: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#4285F4',
   },
   googleButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#1A1A2E',
   },

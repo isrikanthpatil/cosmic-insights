@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
-import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem, ChevronRight } from 'lucide-react-native';
+import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
@@ -32,7 +31,6 @@ interface AstrologyData {
 }
 
 export default function Astrology() {
-  const router = useRouter();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
@@ -354,7 +352,10 @@ export default function Astrology() {
           </View>
         );
 
-      case 'predictions':
+      case 'predictions': {
+        const sd = astrologyData.detailedAnalysis.sunSignData;
+        const md = astrologyData.detailedAnalysis.moonSignData;
+        const lc = (v?: string, fb = ''): string => (v ? String(v).toLowerCase() : fb);
         return (
           <View style={styles.content}>
             <View style={styles.section}>
@@ -366,33 +367,34 @@ export default function Astrology() {
               <View style={styles.predictionCard}>
                 <Text style={styles.predictionTitle}>Current Planetary Influences</Text>
                 <Text style={styles.predictionText}>
-                  Your {astrologyData.sunSign} Sun is currently being influenced by planetary transits that favor {astrologyData.detailedAnalysis.sunSignData.keywords[0].toLowerCase()} and {astrologyData.detailedAnalysis.sunSignData.keywords[1].toLowerCase()}. Your {astrologyData.moonSign} Moon suggests emotional clarity and {astrologyData.detailedAnalysis.moonSignData.keywords[0].toLowerCase()} are coming into focus.
+                  Your {astrologyData.sunSign} Sun is currently being influenced by planetary transits that favor {lc(sd.keywords?.[0], 'growth')} and {lc(sd.keywords?.[1], 'balance')}. Your {astrologyData.moonSign} Moon suggests emotional clarity and {lc(md.keywords?.[0], 'intuition')} are coming into focus.
                 </Text>
               </View>
 
               <View style={styles.predictionCard}>
                 <Text style={styles.predictionTitle}>Career & Life Path Guidance</Text>
                 <Text style={styles.predictionText}>
-                  Your astrological combination suggests success in fields related to {astrologyData.detailedAnalysis.sunSignData.career[0].toLowerCase()}, {astrologyData.detailedAnalysis.sunSignData.career[1].toLowerCase()}, and {astrologyData.detailedAnalysis.sunSignData.career[2].toLowerCase()}. The {astrologyData.ascendant} Rising enhances your ability to present yourself professionally.
+                  Your astrological combination suggests success in fields related to {lc(sd.career?.[0], 'your craft')}, {lc(sd.career?.[1], 'leadership')}, and {lc(sd.career?.[2], 'creative work')}. The {astrologyData.ascendant} Rising enhances your ability to present yourself professionally.
                 </Text>
               </View>
 
               <View style={styles.predictionCard}>
                 <Text style={styles.predictionTitle}>Health & Wellness Focus</Text>
                 <Text style={styles.predictionText}>
-                  Pay special attention to {astrologyData.detailedAnalysis.sunSignData.bodyParts[0].toLowerCase()} and {astrologyData.detailedAnalysis.sunSignData.bodyParts[1].toLowerCase()}. {astrologyData.detailedAnalysis.sunSignData.health[0]} Regular practice of the recommended remedies will support your overall well-being.
+                  Pay special attention to {lc(sd.bodyParts?.[0], 'overall vitality')} and {lc(sd.bodyParts?.[1], 'rest')}. {sd.health?.[0] ?? ''} Regular practice of the recommended remedies will support your overall well-being.
                 </Text>
               </View>
 
               <View style={styles.predictionCard}>
                 <Text style={styles.predictionTitle}>Spiritual Evolution</Text>
                 <Text style={styles.predictionText}>
-                  Your unique combination of {astrologyData.sunSign}, {astrologyData.moonSign}, and {astrologyData.ascendant} indicates a soul journey focused on developing {astrologyData.detailedAnalysis.sunSignData.keywords[2].toLowerCase()} and {astrologyData.detailedAnalysis.sunSignData.keywords[3].toLowerCase()}. This lifetime offers opportunities for significant spiritual growth and self-realization.
+                  Your unique combination of {astrologyData.sunSign}, {astrologyData.moonSign}, and {astrologyData.ascendant} indicates a soul journey focused on developing {lc(sd.keywords?.[2], 'wisdom')} and {lc(sd.keywords?.[3], 'compassion')}. This lifetime offers opportunities for significant spiritual growth and self-realization.
                 </Text>
               </View>
             </View>
           </View>
         );
+      }
 
       default:
         return null;
@@ -450,25 +452,6 @@ export default function Astrology() {
         <View style={styles.exploreBarWrap}>
           {isGuest && !isExploring && <LoginNudge />}
           <ExploreBar />
-          <TouchableOpacity
-            style={styles.matchCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              tap();
-              router.push('/match');
-            }}
-          >
-            <View style={styles.matchIcon}>
-              <Heart size={22} color="#E8C87E" />
-            </View>
-            <View style={styles.matchTextWrap}>
-              <Text style={styles.matchTitle}>Check compatibility</Text>
-              <Text style={styles.matchSubtitle}>
-                Kundli matching · Ashtakoota Guna Milan
-              </Text>
-            </View>
-            <ChevronRight size={20} color="#7E7B92" />
-          </TouchableOpacity>
         </View>
         {renderContent()}
       </ScrollView>
@@ -483,41 +466,6 @@ const styles = StyleSheet.create({
   exploreBarWrap: {
     paddingHorizontal: 16,
     paddingTop: 16,
-  },
-  matchCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginTop: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(232, 200, 126, 0.25)',
-    borderRadius: 16,
-    padding: 16,
-  },
-  matchIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(232, 200, 126, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(232, 200, 126, 0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  matchTextWrap: {
-    flex: 1,
-    gap: 2,
-  },
-  matchTitle: {
-    fontSize: 16,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
-  },
-  matchSubtitle: {
-    fontSize: 12,
-    fontFamily: 'Inter-Regular',
-    color: '#C7C4D6',
   },
   guestEntryWrap: {
     paddingHorizontal: 16,
@@ -707,13 +655,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   halfCardDesc: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
     textAlign: 'center',
   },
   halfCardElement: {
-    fontSize: 9,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#E8C87E',
     textAlign: 'center',
@@ -735,8 +683,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   coordinatesTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
+    fontSize: 17,
+    fontFamily: 'PlayfairDisplay-Bold',
     color: '#69C779',
   },
   coordinatesText: {
@@ -746,10 +694,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   coordinatesDescription: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
-    lineHeight: 15,
+    lineHeight: 17,
   },
   section: {
     marginBottom: 12,
@@ -793,7 +741,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   elementLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#B49BE6',
     letterSpacing: 1,
@@ -823,10 +771,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   mythologyText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 21,
     fontStyle: 'italic',
   },
   balanceCard: {
@@ -848,10 +796,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   balanceText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 21,
   },
   gemstoneCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -883,10 +831,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   gemstoneDescription: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 21,
   },
   mantraCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -915,10 +863,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   mantraDescription: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
-    lineHeight: 19,
+    lineHeight: 21,
     marginTop: 8,
   },
   predictionCard: {
@@ -932,9 +880,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.10)',
   },
   predictionTitle: {
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: '#E8C87E',
+    fontSize: 17,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
     marginBottom: 8,
   },
   predictionText: {

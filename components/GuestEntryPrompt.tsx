@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     textAlign: 'center',
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 21,
   },
   button: {
     backgroundColor: '#E8C87E',
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
@@ -176,10 +176,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   modalCaption: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
-    lineHeight: 18,
+    lineHeight: 17,
   },
   cancelButton: {
     alignItems: 'center',

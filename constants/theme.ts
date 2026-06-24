@@ -63,4 +63,32 @@ export const fonts = {
   display: 'PlayfairDisplay-Bold',
 } as const;
 
+// Typography scale — the single reference for text roles across the app.
+// Every <Text> style should map to one of these roles so the same role uses
+// the same size + family everywhere. (SectionHeader is the one intentional
+// exception: it uses letterSpacing 2 for the eyebrow.)
+export const typography = {
+  // A screen's main heading (e.g. "Astrology Reading", Home "Astropanth").
+  pageTitle: { fontSize: 24, fontFamily: fonts.display, color: colors.text },
+  // A heading inside a card (e.g. "Today's Horoscope").
+  cardTitle: { fontSize: 17, fontFamily: fonts.display, color: colors.text },
+  // Small uppercase eyebrow labels on stat/number/detail cards.
+  microLabel: {
+    fontSize: 11,
+    fontFamily: fonts.semiBold,
+    color: colors.muted,
+    letterSpacing: 1,
+    textTransform: 'uppercase' as const,
+  },
+  // Paragraphs / descriptions / reading text.
+  body: { fontSize: 14, fontFamily: fonts.regular, color: colors.textSecondary, lineHeight: 21 },
+  // Pill chip text (suggestion / trait chips).
+  chip: { fontSize: 13, fontFamily: fonts.regular, color: colors.textSecondary },
+  // Captions / supporting copy (descriptions, notes, disclaimers, version).
+  caption: { fontSize: 12, fontFamily: fonts.regular, color: colors.muted },
+  // Button labels.
+  buttonPrimary: { fontSize: 15, fontFamily: fonts.semiBold },
+  buttonSecondary: { fontSize: 14, fontFamily: fonts.medium },
+} as const;
+
 export type AppColors = typeof colors;

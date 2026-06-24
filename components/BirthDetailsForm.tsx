@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },

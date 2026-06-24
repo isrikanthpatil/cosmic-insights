@@ -112,6 +112,10 @@ export default function Profile() {
   };
 
   const handleDeleteAccount = () => {
+    if (!user?.id) {
+      notify('Error', 'No active account to delete.');
+      return;
+    }
     confirmAction(
       'Delete Account',
       'This will permanently delete your account and all associated data. This action cannot be undone.',
@@ -789,11 +793,11 @@ const styles = StyleSheet.create({
     color: '#F4F1E8',
   },
   noProfileText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 21,
     paddingHorizontal: 20,
   },
   createProfileButton: {
@@ -803,7 +807,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   createProfileButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
@@ -811,7 +815,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     marginBottom: 10,
@@ -894,7 +898,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   saveButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
@@ -910,7 +914,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cancelButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Inter-Medium',
     color: '#C7C4D6',
   },
@@ -994,7 +998,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
@@ -1052,7 +1056,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   plusTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     marginBottom: 2,
@@ -1068,13 +1072,13 @@ const styles = StyleSheet.create({
     color: '#E8C87E',
   },
   aboutAppName: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     marginTop: 2,
   },
   aboutVersion: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Inter-Medium',
     color: '#E8C87E',
     marginTop: 2,
@@ -1084,7 +1088,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     marginTop: 6,
-    lineHeight: 19,
+    lineHeight: 21,
   },
   aboutDisclaimer: {
     fontSize: 12,

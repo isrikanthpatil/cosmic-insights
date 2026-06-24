@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     minHeight: 132,
   },
   compactNumberLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#7E7B92',
     letterSpacing: 1,
@@ -466,17 +466,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   compactOriginalKua: {
-    fontSize: 8,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#D9A441',
     marginTop: 1,
   },
   compactNumberMeaning: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     textAlign: 'center',
-    lineHeight: 14,
+    lineHeight: 16,
   },
   section: {
     marginBottom: 12,
@@ -492,13 +492,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gridTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     marginBottom: 2,
   },
   gridSubtitle: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
     marginBottom: 8,
@@ -515,11 +515,11 @@ const styles = StyleSheet.create({
     borderLeftColor: '#B49BE6',
   },
   kuaInfoText: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     flex: 1,
-    lineHeight: 14,
+    lineHeight: 16,
   },
   conversionInfo: {
     flexDirection: 'row',
@@ -533,11 +533,11 @@ const styles = StyleSheet.create({
     borderLeftColor: '#D9A441',
   },
   conversionInfoText: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#C7C4D6',
     flex: 1,
-    lineHeight: 14,
+    lineHeight: 16,
   },
   gridWrapper: {
     gap: 6,
@@ -612,14 +612,14 @@ const styles = StyleSheet.create({
     color: '#56536A',
   },
   gridElement: {
-    fontSize: 9,
-    fontFamily: 'Inter-Medium',
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
     letterSpacing: 1,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
   kuaIndicator: {
-    fontSize: 8,
+    fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#B49BE6',
     letterSpacing: 1,
@@ -641,7 +641,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   legendText: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
   },

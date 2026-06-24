@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },

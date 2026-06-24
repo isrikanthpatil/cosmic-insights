@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Platform, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Platform, KeyboardAvoidingView, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MessageCircle, Send, Sparkles, Book, LogIn } from 'lucide-react-native';
 import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
@@ -50,6 +52,16 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   // CTA beneath the conversation.
   const [guestLimitReached, setGuestLimitReached] = useState(false);
   const router = useRouter();
+
+  // Keyboard avoidance: this chat lives inside a bottom-tab screen, so on iOS the
+  // KeyboardAvoidingView offset must equal the tab bar height or the input ends up
+  // hidden behind the tab bar. useBottomTabBarHeight() reads it from the navigator;
+  // the safe-area inset is also read so we have a sane fallback if the navigator
+  // value is ever 0/unavailable.
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
+  const kbOffset =
+    Platform.OS === 'ios' ? tabBarHeight || insets.bottom + 60 : 0;
 
   // Refs for the typewriter reveal: the active interval timer and the
   // ScrollView so we can keep the view pinned to the bottom as text grows.
@@ -586,6 +598,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
+    if (isLoading) return; // prevent double-submit from Enter/keyboard while a reply is in flight
     tap();
 
     // Security: Validate and sanitize input
@@ -667,7 +680,11 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   ];
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={kbOffset}
+    >
       <View style={styles.header}>
         <View style={styles.headerIcon}>
           <Sparkles size={24} color="#E8C87E" />
@@ -809,7 +826,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -845,7 +862,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
@@ -886,7 +903,7 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   userMessageText: {
     color: '#F4F1E8',
@@ -895,7 +912,7 @@ const styles = StyleSheet.create({
     color: '#C7C4D6',
   },
   timestamp: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 'Inter-Regular',
     color: '#7E7B92',
     marginTop: 4,
