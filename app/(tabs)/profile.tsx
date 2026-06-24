@@ -7,6 +7,10 @@ import { searchPlaces } from '@/utils/places';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
 import { showToast } from '@/utils/toast';
+import {
+  enableDailyHoroscopeReminder,
+  disableDailyHoroscopeReminder,
+} from '@/utils/notifications';
 import { tap, success } from '@/utils/haptics';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
@@ -58,6 +62,28 @@ export default function Profile() {
 
   const toggleNotifications = async (value: boolean) => {
     setNotificationsEnabled(value);
+
+    if (value) {
+      // Schedule the daily local reminder. If permission is denied (or the
+      // platform is unsupported), revert the toggle and inform the user.
+      const enabled = await enableDailyHoroscopeReminder();
+      if (!enabled) {
+        setNotificationsEnabled(false);
+        try {
+          await AsyncStorage.setItem(NOTIFICATIONS_KEY, 'false');
+        } catch {
+          // Non-critical.
+        }
+        showToast(
+          'Enable notifications permission to get daily horoscope reminders.',
+          'info'
+        );
+        return;
+      }
+    } else {
+      await disableDailyHoroscopeReminder();
+    }
+
     try {
       await AsyncStorage.setItem(NOTIFICATIONS_KEY, value ? 'true' : 'false');
     } catch {
