@@ -15,6 +15,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ChartProvider } from '@/contexts/ChartContext';
+import { PremiumProvider } from '@/contexts/PremiumContext';
 import ToastHost from '@/components/ToastHost';
 
 SplashScreen.preventAutoHideAsync();
@@ -32,14 +33,18 @@ function RootNavigator() {
   // in is reachable via the `login` modal route below.
   return (
     <ChartProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="login"
-          options={{ presentation: 'modal', headerShown: false }}
-        />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <PremiumProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="login"
+            options={{ presentation: 'modal', headerShown: false }}
+          />
+          <Stack.Screen name="match" options={{ headerShown: false }} />
+          <Stack.Screen name="premium" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </PremiumProvider>
     </ChartProvider>
   );
 }

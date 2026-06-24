@@ -746,17 +746,28 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           <Text style={styles.limitBannerText}>
             {DEFAULT_GUEST_LIMIT_MESSAGE}
           </Text>
-          <TouchableOpacity
-            style={styles.limitSignInButton}
-            onPress={() => {
-              tap();
-              router.push('/login');
-            }}
-            activeOpacity={0.85}
-          >
-            <LogIn size={16} color="#0B0B1A" />
-            <Text style={styles.limitSignInText}>Sign in</Text>
-          </TouchableOpacity>
+          <View style={styles.limitActions}>
+            <TouchableOpacity
+              style={styles.limitSignInButton}
+              onPress={() => {
+                tap();
+                router.push('/login');
+              }}
+              activeOpacity={0.85}
+            >
+              <LogIn size={16} color="#0B0B1A" />
+              <Text style={styles.limitSignInText}>Sign in</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                tap();
+                router.push('/premium');
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.limitPlusLink}>Go Plus for unlimited</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -960,6 +971,10 @@ const styles = StyleSheet.create({
     color: '#F4F1E8',
     lineHeight: 18,
   },
+  limitActions: {
+    alignItems: 'flex-end',
+    gap: 6,
+  },
   limitSignInButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -973,6 +988,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
+  },
+  limitPlusLink: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    color: '#E8C87E',
+    textDecorationLine: 'underline',
   },
   inputContainer: {
     padding: 16,

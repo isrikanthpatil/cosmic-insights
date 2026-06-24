@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
-import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
+import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem, ChevronRight } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
@@ -31,6 +32,7 @@ interface AstrologyData {
 }
 
 export default function Astrology() {
+  const router = useRouter();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
@@ -448,6 +450,25 @@ export default function Astrology() {
         <View style={styles.exploreBarWrap}>
           {isGuest && !isExploring && <LoginNudge />}
           <ExploreBar />
+          <TouchableOpacity
+            style={styles.matchCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              tap();
+              router.push('/match');
+            }}
+          >
+            <View style={styles.matchIcon}>
+              <Heart size={22} color="#E8C87E" />
+            </View>
+            <View style={styles.matchTextWrap}>
+              <Text style={styles.matchTitle}>Check compatibility</Text>
+              <Text style={styles.matchSubtitle}>
+                Kundli matching · Ashtakoota Guna Milan
+              </Text>
+            </View>
+            <ChevronRight size={20} color="#7E7B92" />
+          </TouchableOpacity>
         </View>
         {renderContent()}
       </ScrollView>
@@ -462,6 +483,41 @@ const styles = StyleSheet.create({
   exploreBarWrap: {
     paddingHorizontal: 16,
     paddingTop: 16,
+  },
+  matchCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
+    borderRadius: 16,
+    padding: 16,
+  },
+  matchIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  matchTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  matchTitle: {
+    fontSize: 16,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+  },
+  matchSubtitle: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
   },
   guestEntryWrap: {
     paddingHorizontal: 16,

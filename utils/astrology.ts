@@ -191,8 +191,64 @@ export const getCoordinatesForPlace = (place: string): { latitude: number; longi
     'tirupati': { latitude: 13.6288, longitude: 79.4192 }
   };
 
-  const normalizedPlace = place.toLowerCase().split(',')[0].trim();
-  return placeCoordinates[normalizedPlace] || null;
+  // State / UT centroids — fallback for the ~558k places (name, district, state)
+  // that aren't in the major-city list above. For Vedic matching the Moon's
+  // nakshatra/rashi is geocentric (effectively location-independent across
+  // India), so a state-level coordinate is accurate for Guna Milan; it also
+  // gives the astrology screen a sensible location for any town. (Precise
+  // per-place coords can be added later for full-Kundli ascendant accuracy.)
+  const stateCoordinates: { [key: string]: { latitude: number; longitude: number } } = {
+    'andhra pradesh': { latitude: 15.9129, longitude: 79.7400 },
+    'arunachal pradesh': { latitude: 28.2180, longitude: 94.7278 },
+    'assam': { latitude: 26.2006, longitude: 92.9376 },
+    'bihar': { latitude: 25.0961, longitude: 85.3131 },
+    'chhattisgarh': { latitude: 21.2787, longitude: 81.8661 },
+    'goa': { latitude: 15.2993, longitude: 74.1240 },
+    'gujarat': { latitude: 22.2587, longitude: 71.1924 },
+    'haryana': { latitude: 29.0588, longitude: 76.0856 },
+    'himachal pradesh': { latitude: 31.1048, longitude: 77.1734 },
+    'jharkhand': { latitude: 23.6102, longitude: 85.2799 },
+    'karnataka': { latitude: 15.3173, longitude: 75.7139 },
+    'kerala': { latitude: 10.8505, longitude: 76.2711 },
+    'madhya pradesh': { latitude: 22.9734, longitude: 78.6569 },
+    'maharashtra': { latitude: 19.7515, longitude: 75.7139 },
+    'manipur': { latitude: 24.6637, longitude: 93.9063 },
+    'meghalaya': { latitude: 25.4670, longitude: 91.3662 },
+    'mizoram': { latitude: 23.1645, longitude: 92.9376 },
+    'nagaland': { latitude: 26.1584, longitude: 94.5624 },
+    'odisha': { latitude: 20.9517, longitude: 85.0985 },
+    'orissa': { latitude: 20.9517, longitude: 85.0985 },
+    'punjab': { latitude: 31.1471, longitude: 75.3412 },
+    'rajasthan': { latitude: 27.0238, longitude: 74.2179 },
+    'sikkim': { latitude: 27.5330, longitude: 88.5122 },
+    'tamil nadu': { latitude: 11.1271, longitude: 78.6569 },
+    'telangana': { latitude: 18.1124, longitude: 79.0193 },
+    'tripura': { latitude: 23.9408, longitude: 91.9882 },
+    'uttar pradesh': { latitude: 26.8467, longitude: 80.9462 },
+    'uttarakhand': { latitude: 30.0668, longitude: 79.0193 },
+    'west bengal': { latitude: 22.9868, longitude: 87.8550 },
+    'andaman and nicobar islands': { latitude: 11.7401, longitude: 92.6586 },
+    'chandigarh': { latitude: 30.7333, longitude: 76.7794 },
+    'dadra and nagar haveli and daman and diu': { latitude: 20.1809, longitude: 73.0169 },
+    'delhi': { latitude: 28.7041, longitude: 77.1025 },
+    'jammu and kashmir': { latitude: 33.7782, longitude: 76.5762 },
+    'ladakh': { latitude: 34.2996, longitude: 78.2932 },
+    'lakshadweep': { latitude: 10.5667, longitude: 72.6417 },
+    'puducherry': { latitude: 11.9416, longitude: 79.8083 },
+    'pondicherry': { latitude: 11.9416, longitude: 79.8083 },
+  };
+
+  const parts = place.toLowerCase().split(',').map((s) => s.trim()).filter(Boolean);
+  const cityKey = parts[0] || '';
+  if (placeCoordinates[cityKey]) {
+    return placeCoordinates[cityKey];
+  }
+  // Fall back to the state/UT centroid (last comma-separated segment).
+  const stateKey = parts.length > 1 ? parts[parts.length - 1] : '';
+  if (stateKey && stateCoordinates[stateKey]) {
+    return stateCoordinates[stateKey];
+  }
+  return null;
 };
 
 // Enhanced sun sign calculation with proper date parsing

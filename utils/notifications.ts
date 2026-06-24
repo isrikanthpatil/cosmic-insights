@@ -2,29 +2,46 @@
 //
 // Schedules a single repeating DAILY local notification at 9:00 AM local time
 // using expo-notifications. There is no backend / push token involved — these
-// are device-local scheduled notifications. Web is a safe no-op since the
-// scheduling APIs are not supported there.
+// are device-local scheduled notifications.
+//
+// IMPORTANT: expo-notifications must NOT be imported at module scope. On web,
+// importing it runs its push-token auto-registration, which calls localStorage
+// during the web (Node) render and crashes the bundle. So we lazily `require`
+// it only on native, and web is a safe no-op.
 
 import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
 
-// Stable identifier so we can cancel/replace the reminder without touching any
-// other scheduled notifications.
 const DAILY_REMINDER_ID = 'astropanth-daily-horoscope-reminder';
-
 const REMINDER_HOUR = 9;
 const REMINDER_MINUTE = 0;
 
-// Ensure notifications surface an alert (and not just silently) while the app
-// is foregrounded. Registering this is cheap and idempotent.
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+type NotificationsModule = typeof import('expo-notifications');
+
+let _notifications: NotificationsModule | null = null;
+let _handlerSet = false;
+
+// Load expo-notifications only on native, on first use. Returns null on web.
+function getNotifications(): NotificationsModule | null {
+  if (Platform.OS === 'web') {
+    return null;
+  }
+  if (!_notifications) {
+    _notifications = require('expo-notifications') as NotificationsModule;
+  }
+  if (!_handlerSet && _notifications) {
+    // Surface a banner when a notification fires while the app is foregrounded.
+    _notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
+    _handlerSet = true;
+  }
+  return _notifications;
+}
 
 /**
  * Request permission and schedule a repeating daily local notification at
@@ -32,8 +49,8 @@ Notifications.setNotificationHandler({
  * denied or the platform is unsupported (web).
  */
 export async function enableDailyHoroscopeReminder(): Promise<boolean> {
-  // expo-notifications scheduling is not supported on web — no-op gracefully.
-  if (Platform.OS === 'web') {
+  const Notifications = getNotifications();
+  if (!Notifications) {
     return false;
   }
 
@@ -78,7 +95,8 @@ export async function enableDailyHoroscopeReminder(): Promise<boolean> {
  * and a no-op on web.
  */
 export async function disableDailyHoroscopeReminder(): Promise<void> {
-  if (Platform.OS === 'web') {
+  const Notifications = getNotifications();
+  if (!Notifications) {
     return;
   }
 

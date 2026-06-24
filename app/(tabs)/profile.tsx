@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
-import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus } from 'lucide-react-native';
+import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { searchPlaces } from '@/utils/places';
@@ -14,6 +14,7 @@ import {
 import { tap, success } from '@/utils/haptics';
 import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
+import { usePremium } from '@/contexts/PremiumContext';
 import { pb } from '@/utils/pocketbase';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
@@ -25,6 +26,7 @@ export default function Profile() {
   const router = useRouter();
   const { profile, user, isLoading: loading, updateProfile, signOut, requestPasswordReset } = useAuth();
   const { isGuest, guestProfile } = useChart();
+  const { isPremium } = usePremium();
   const userProfile = profile;
   const profileComplete =
     !!profile &&
@@ -645,6 +647,31 @@ export default function Profile() {
                 </TouchableOpacity>
               </View>
 
+              {/* Astropanth Plus */}
+              <TouchableOpacity
+                style={styles.plusCard}
+                onPress={() => {
+                  tap();
+                  router.push('/premium');
+                }}
+                activeOpacity={0.85}
+              >
+                <View style={styles.plusIcon}>
+                  <Sparkles size={20} color="#E8C87E" />
+                </View>
+                <View style={styles.plusTextWrap}>
+                  <Text style={styles.plusTitle}>Astropanth Plus</Text>
+                  {isPremium ? (
+                    <Text style={styles.plusBadgeText}>Plus member ✦</Text>
+                  ) : (
+                    <Text style={styles.plusSubtitle}>
+                      Unlock unlimited AskAstro & detailed reports
+                    </Text>
+                  )}
+                </View>
+                <ChevronRight size={18} color="#7E7B92" />
+              </TouchableOpacity>
+
               {/* About */}
               <View style={styles.card}>
                 <View style={styles.cardTitleRow}>
@@ -1000,6 +1027,45 @@ const styles = StyleSheet.create({
   },
   settingLabelDanger: {
     color: '#FF6B6B',
+  },
+  plusCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: 'rgba(232, 200, 126, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
+    borderRadius: 16,
+    padding: 16,
+  },
+  plusIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(232, 200, 126, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.30)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  plusTextWrap: {
+    flex: 1,
+  },
+  plusTitle: {
+    fontSize: 16,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+    marginBottom: 2,
+  },
+  plusSubtitle: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
+  },
+  plusBadgeText: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
   },
   aboutAppName: {
     fontSize: 18,
