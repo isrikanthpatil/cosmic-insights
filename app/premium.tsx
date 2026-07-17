@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Check, Sparkles } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
@@ -21,6 +22,7 @@ import {
 
 export default function PremiumScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { isPremium } = usePremium();
 
   // Restore purchases is a no-op for now — there's no billing provider yet.
@@ -31,7 +33,7 @@ export default function PremiumScreen() {
 
   return (
     <ScreenBackground style={styles.container}>
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => {
@@ -97,7 +99,10 @@ export default function PremiumScreen() {
           <>
             <View style={styles.priceRow}>
               {plusPrices.map((price) => (
-                <View key={price.id} style={styles.priceCard}>
+                <View
+                  key={price.id}
+                  style={[styles.priceCard, !!price.note && styles.priceCardHighlight]}
+                >
                   <Text style={styles.priceAmount}>{price.displayPrice}</Text>
                   <Text style={styles.pricePeriod}>{price.period}</Text>
                   {price.note ? (
@@ -152,7 +157,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 52,
     paddingBottom: 8,
   },
   backButton: {
@@ -278,6 +282,9 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 4,
     alignItems: 'center',
+  },
+  priceCardHighlight: {
+    borderColor: 'rgba(232, 200, 126, 0.45)',
   },
   priceAmount: {
     fontSize: 22,

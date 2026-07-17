@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Activi
 import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { searchPlaces } from '@/utils/places';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
@@ -24,6 +25,7 @@ const NOTIFICATIONS_KEY = 'settings_notifications';
 
 export default function Profile() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { profile, user, isLoading: loading, updateProfile, signOut, requestPasswordReset } = useAuth();
   const { isGuest, guestProfile } = useChart();
   const { isPremium } = usePremium();
@@ -298,12 +300,13 @@ export default function Profile() {
 
   return (
     <ScreenBackground style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.title}>Profile</Text>
         <View style={styles.headerActions}>
           {!isGuest && profileComplete && !isEditing && (
             <TouchableOpacity
               style={styles.headerButton}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               onPress={() => setIsEditing(true)}
             >
               <Edit3 size={20} color="#E8C87E" />
@@ -312,6 +315,7 @@ export default function Profile() {
           {!isGuest && (
             <TouchableOpacity
               style={[styles.headerButton, styles.clearButton]}
+              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               onPress={handleSignOut}
             >
               <LogOut size={20} color="#FF6B6B" />

@@ -8,8 +8,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Heart, Sparkles, User, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
 import { getCoordinatesForPlace } from '@/utils/astrology';
@@ -45,7 +47,11 @@ interface MatchResult {
 
 export default function MatchScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { activeProfile } = useChart();
+
+  // Scrolled to top when a result appears so the hero score is visible.
+  const scrollRef = useRef<ScrollView>(null);
 
   // Person B form state.
   const [firstName, setFirstName] = useState('');
@@ -59,6 +65,7 @@ export default function MatchScreen() {
 
   const [error, setError] = useState<string | null>(null);
   const [match, setMatch] = useState<MatchResult | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -145,6 +152,7 @@ export default function MatchScreen() {
       return;
     }
 
+    setSubmitting(true);
     try {
       // Run the ephemeris for both people.
       const ephA = computeEphemeris({
@@ -191,10 +199,15 @@ export default function MatchScreen() {
         personAName: activeProfile.firstName || 'You',
         personBName: firstName.trim() || 'Partner',
       });
+      // Scroll the shared ScrollView back to the top so the hero score is
+      // visible instead of leaving the view parked at the button.
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
     } catch (e) {
       setError(
         'Something went wrong calculating the match. Please double-check the birth details and try again.',
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -206,7 +219,7 @@ export default function MatchScreen() {
 
   return (
     <ScreenBackground style={styles.container}>
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
         <TouchableOpacity
           style={styles.backButton}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -231,6 +244,7 @@ export default function MatchScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView
+          ref={scrollRef}
           style={styles.scrollView}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
@@ -348,11 +362,16 @@ export default function MatchScreen() {
               )}
 
               <TouchableOpacity
-                style={styles.primaryButton}
+                style={[styles.primaryButton, submitting && styles.primaryButtonDisabled]}
                 onPress={handleCheck}
                 activeOpacity={0.85}
+                disabled={submitting}
               >
-                <Text style={styles.primaryButtonText}>Check compatibility</Text>
+                {submitting ? (
+                  <ActivityIndicator size={20} color="#0B0B1A" />
+                ) : (
+                  <Text style={styles.primaryButtonText}>Check compatibility</Text>
+                )}
               </TouchableOpacity>
             </>
           )}
@@ -529,7 +548,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 52,
     paddingBottom: 8,
   },
   backButton: {
@@ -639,6 +657,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 8,
+  },
+  primaryButtonDisabled: {
+    backgroundColor: 'rgba(232, 200, 126, 0.30)',
   },
   primaryButtonText: {
     fontSize: 15,
@@ -762,8 +783,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   kootaCard: {
-    width: '47%',
-    flexGrow: 1,
+    width: '48%',
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.10)',
@@ -801,10 +821,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   badge: {
+    width: '48%',
     borderRadius: 14,
     paddingVertical: 7,
     paddingHorizontal: 12,
     borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badgePresent: {
     backgroundColor: 'rgba(255, 107, 107, 0.08)',

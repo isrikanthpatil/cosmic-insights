@@ -1,8 +1,24 @@
 import { Tabs } from 'expo-router';
+import { Text } from 'react-native';
 import { House, Sparkles, Grid3x3, MessageCircle, LayoutGrid, User } from 'lucide-react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/constants/theme';
+
+// Custom tab label: single line, auto-shrinks to fit so long labels like
+// "Numerology" never wrap or truncate in the 6-tab bar.
+function tabLabel(title: string) {
+  return ({ color }: { focused: boolean; color: string }) => (
+    <Text
+      numberOfLines={1}
+      adjustsFontSizeToFit
+      minimumFontScale={0.8}
+      style={{ color, fontSize: 10, fontFamily: 'Inter-Medium', textAlign: 'center' }}
+    >
+      {title}
+    </Text>
+  );
+}
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -20,9 +36,8 @@ export default function TabLayout() {
         },
         tabBarActiveTintColor: colors.gold,
         tabBarInactiveTintColor: colors.muted,
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontFamily: 'Inter-Medium',
+        tabBarItemStyle: {
+          paddingHorizontal: 2,
         },
       }}
     >
@@ -30,6 +45,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
+          tabBarLabel: tabLabel('Home'),
           tabBarIcon: ({ size, color }) => (
             <House size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -39,6 +55,7 @@ export default function TabLayout() {
         name="astrology"
         options={{
           title: 'Astrology',
+          tabBarLabel: tabLabel('Astrology'),
           tabBarIcon: ({ size, color }) => (
             <Sparkles size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -48,6 +65,7 @@ export default function TabLayout() {
         name="numerology"
         options={{
           title: 'Numerology',
+          tabBarLabel: tabLabel('Numerology'),
           tabBarIcon: ({ size, color }) => (
             <Grid3x3 size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -57,6 +75,7 @@ export default function TabLayout() {
         name="askastro"
         options={{
           title: 'AskAstro',
+          tabBarLabel: tabLabel('AskAstro'),
           tabBarIcon: ({ size, color }) => (
             <MessageCircle size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -66,6 +85,7 @@ export default function TabLayout() {
         name="more"
         options={{
           title: 'More',
+          tabBarLabel: tabLabel('More'),
           tabBarIcon: ({ size, color }) => (
             <LayoutGrid size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -75,6 +95,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
+          tabBarLabel: tabLabel('Profile'),
           tabBarIcon: ({ size, color }) => (
             <User size={size - 2} color={color} strokeWidth={1.8} />
           ),

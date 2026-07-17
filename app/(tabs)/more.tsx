@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, ScrollText, Sparkles, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
@@ -43,10 +44,11 @@ const FEATURES: FeatureItem[] = [
 
 export default function More() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
     <ScreenBackground style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.title}>Other Features</Text>
         <Text style={styles.subtitle}>More ways to explore your cosmic blueprint</Text>
       </View>
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 40,
     paddingBottom: 16,
   },

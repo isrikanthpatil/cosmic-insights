@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getNumerologyReading } from '@/utils/numerology';
 import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, RefreshCw } from 'lucide-react-native';
@@ -13,6 +14,7 @@ import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
 
 export default function Numerology() {
+  const insets = useSafeAreaInsets();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
@@ -239,7 +241,7 @@ export default function Numerology() {
 
   return (
     <ScreenBackground style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.title}>Numerology Analysis</Text>
         <Text style={styles.subtitle}>Numbers that define {userProfile.firstName}</Text>
       </View>
@@ -354,11 +356,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   exploreBarWrap: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingTop: 16,
   },
   guestEntryWrap: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 40,
   },
@@ -374,7 +376,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   skeletonWrap: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingBottom: 40,
     gap: 14,
   },
@@ -431,7 +433,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 12,
+    padding: 16,
     paddingBottom: 100,
   },
   numbersRow: {
@@ -540,16 +542,23 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   gridWrapper: {
+    alignSelf: 'stretch',
     gap: 6,
     marginBottom: 10,
+    // Keep the 3-cell grid centered and square-capped on wide screens.
+    maxWidth: 88 * 3 + 6 * 2,
+    width: '100%',
+    alignItems: 'center',
   },
   gridRow: {
     flexDirection: 'row',
+    alignSelf: 'stretch',
     gap: 6,
   },
   gridCell: {
-    width: 88,
-    height: 88,
+    flex: 1,
+    aspectRatio: 1,
+    maxWidth: 88,
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1,
@@ -626,9 +635,9 @@ const styles = StyleSheet.create({
   },
   gridLegend: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 12,
   },
   legendItem: {
     flexDirection: 'row',

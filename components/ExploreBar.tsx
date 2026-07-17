@@ -61,7 +61,7 @@ export default function ExploreBar() {
           activeOpacity={0.7}
         >
           <UserPlus size={18} color="#E8C87E" />
-          <Text style={styles.exploreButtonText}>🔭 Explore another chart</Text>
+          <Text style={styles.exploreButtonText}>Explore another chart</Text>
         </TouchableOpacity>
       )}
 

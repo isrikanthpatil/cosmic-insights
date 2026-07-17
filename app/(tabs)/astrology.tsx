@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
@@ -31,6 +32,7 @@ interface AstrologyData {
 }
 
 export default function Astrology() {
+  const insets = useSafeAreaInsets();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
@@ -403,7 +405,7 @@ export default function Astrology() {
 
   return (
     <ScreenBackground style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.title}>Astrology Reading</Text>
         <Text style={styles.subtitle}>Ancient wisdom for {userProfile.firstName}</Text>
       </View>
@@ -424,6 +426,7 @@ export default function Astrology() {
           <TouchableOpacity
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
+            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
             onPress={() => {
               tap();
               setActiveTab(tab.key);
@@ -548,7 +551,7 @@ const styles = StyleSheet.create({
   tab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
     paddingVertical: 10,
     borderBottomWidth: 1.5,
     borderBottomColor: 'transparent',

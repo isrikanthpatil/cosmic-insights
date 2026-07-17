@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { MessageCircle, Send, Sparkles, Book, LogIn } from 'lucide-react-native';
+import { MessageCircle, Send, Sparkles, LogIn } from 'lucide-react-native';
 import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
 import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
@@ -681,7 +681,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { marginTop: insets.top + 8 }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={kbOffset}
     >
@@ -695,7 +695,6 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             {userProfile ? `Personalized insights for ${userProfile.firstName}` : 'Ask me anything about astrology'}
           </Text>
         </View>
-        <Book size={20} color="#7E7B92" />
       </View>
 
       <ScrollView
@@ -748,6 +747,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
                 <TouchableOpacity
                   key={index}
                   style={styles.suggestionButton}
+                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                   onPress={() => setInputText(question)}
                 >
                   <Text style={styles.suggestionText}>{question}</Text>
@@ -801,6 +801,10 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             maxLength={500}
             returnKeyType="send"
             blurOnSubmit={false}
+            onFocus={() => {
+              // When the keyboard opens, keep the latest message + the input in view.
+              setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 150);
+            }}
             onSubmitEditing={handleSend}
             onKeyPress={(e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
               // Web: send on Enter (without Shift); Shift+Enter inserts a newline.
@@ -938,7 +942,7 @@ const styles = StyleSheet.create({
     color: '#E8C87E',
   },
   suggestionsContainer: {
-    marginTop: 12,
+    marginTop: 16,
   },
   suggestionsTitle: {
     fontSize: 11,

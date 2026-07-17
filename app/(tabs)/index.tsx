@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tap } from '@/utils/haptics';
 import {
   Sparkles,
@@ -58,6 +59,7 @@ const colorToHex = (name: string): string => {
 
 export default function Home() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { activeProfile: profile, isGuest } = useChart();
   const [refreshing, setRefreshing] = useState(false);
   // Bumped on pull-to-refresh to re-derive the daily horoscope.
@@ -117,7 +119,7 @@ export default function Home() {
     <ScreenBackground style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 12 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -373,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.10)',
+    borderColor: 'rgba(232, 200, 126, 0.25)',
   },
   numberLabel: {
     fontSize: 11,
