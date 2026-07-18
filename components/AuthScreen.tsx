@@ -20,6 +20,7 @@ import { notify } from '@/utils/notify';
 import { showToast } from '@/utils/toast';
 import { tap } from '@/utils/haptics';
 import { searchPlaces } from '@/utils/places';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
@@ -29,6 +30,7 @@ type Mode = 'login' | 'signup';
 export default function AuthScreen() {
   const { signIn, signUp, requestPasswordReset, user } = useAuth();
   const router = useRouter();
+  const kb = useKeyboardHeight();
   const [mode, setMode] = useState<Mode>('login');
   const [submitting, setSubmitting] = useState(false);
 
@@ -243,7 +245,10 @@ export default function AuthScreen() {
       >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            kb > 0 && { paddingBottom: kb + 24 },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >

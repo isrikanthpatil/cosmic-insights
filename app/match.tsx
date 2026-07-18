@@ -25,6 +25,7 @@ import {
 import { searchPlaces } from '@/utils/places';
 import { SecurityUtils } from '@/utils/security';
 import { tap } from '@/utils/haptics';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
@@ -49,6 +50,7 @@ export default function MatchScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { activeProfile } = useChart();
+  const kb = useKeyboardHeight();
 
   // Scrolled to top when a result appears so the hero score is visible.
   const scrollRef = useRef<ScrollView>(null);
@@ -246,7 +248,10 @@ export default function MatchScreen() {
         <ScrollView
           ref={scrollRef}
           style={styles.scrollView}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            kb > 0 && { paddingBottom: kb + 24 },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >

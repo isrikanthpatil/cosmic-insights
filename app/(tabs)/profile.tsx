@@ -17,6 +17,7 @@ import { useAuth, Profile as UserProfile } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { pb } from '@/utils/pocketbase';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
@@ -27,8 +28,10 @@ export default function Profile() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile, user, isLoading: loading, updateProfile, signOut, requestPasswordReset } = useAuth();
-  const { isGuest, guestProfile } = useChart();
+  const { isGuest, guestProfile, setGuestProfile } = useChart();
   const { isPremium } = usePremium();
+  const kb = useKeyboardHeight();
+  const scrollViewRef = useRef<ScrollView>(null);
   const userProfile = profile;
   const profileComplete =
     !!profile &&
@@ -201,8 +204,33 @@ export default function Profile() {
         return;
       }
 
-      // Save to PocketBase via the auth context
-      await updateProfile(sanitizedProfile);
+      // Guests (no authenticated account) save locally — never hit the
+      // network, which would 404 because there is no user record to update.
+      if (!user?.id) {
+        setGuestProfile(sanitizedProfile);
+        setIsEditing(false);
+        success();
+        showToast('Profile saved successfully!', 'success');
+        return;
+      }
+
+      // Authenticated: save to PocketBase via the auth context. If the session
+      // has expired the update 404s / 401s; attempt a single auth refresh and
+      // retry before surfacing a clear "sign in again" message.
+      try {
+        await updateProfile(sanitizedProfile);
+      } catch (updateError: any) {
+        try {
+          await pb.collection('users').authRefresh();
+        } catch {
+          throw new Error('SESSION_EXPIRED');
+        }
+        try {
+          await updateProfile(sanitizedProfile);
+        } catch {
+          throw new Error('SESSION_EXPIRED');
+        }
+      }
 
       setIsEditing(false);
       success();
@@ -210,6 +238,10 @@ export default function Profile() {
 
     } catch (error: any) {
       console.error('Error saving profile:', error);
+      if (error?.message === 'SESSION_EXPIRED') {
+        notify('Error', 'Your session expired — please sign in again.');
+        return;
+      }
       const message =
         error?.response?.message ||
         SecurityUtils.handleSecureError(error, 'profile');
@@ -324,7 +356,13 @@ export default function Profile() {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={kb > 0 ? { paddingBottom: kb + 24 } : undefined}
+      >
         <View style={styles.content}>
           {isGuest ? (
             <View style={styles.guestContainer}>
@@ -399,7 +437,7 @@ export default function Profile() {
                   Personalized astrology & numerology guidance.
                 </Text>
                 <Text style={styles.aboutDisclaimer}>
-                  Readings are for guidance and entertainment.
+                  Readings are for guidance and self-reflection, and not a substitute for professional advice.
                 </Text>
               </View>
             </View>
@@ -472,6 +510,13 @@ export default function Profile() {
                   placeholder="Mumbai, Maharashtra"
                   placeholderTextColor="#7E7B92"
                   maxLength={200}
+                  onFocus={() => {
+                    // Bottom-most field: scroll it clear of the keyboard.
+                    setTimeout(
+                      () => scrollViewRef.current?.scrollToEnd({ animated: true }),
+                      100
+                    );
+                  }}
                 />
                 {showPlaceSuggestions && (
                   <View style={styles.suggestionsContainer}>
@@ -692,7 +737,7 @@ export default function Profile() {
                   Personalized astrology & numerology guidance.
                 </Text>
                 <Text style={styles.aboutDisclaimer}>
-                  Readings are for guidance and entertainment.
+                  Readings are for guidance and self-reflection, and not a substitute for professional advice.
                 </Text>
               </View>
             </View>

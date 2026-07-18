@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Platform, KeyboardAvoidingView, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Platform, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useRouter } from 'expo-router';
 import { MessageCircle, Send, Sparkles, LogIn } from 'lucide-react-native';
 import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
@@ -53,15 +54,13 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const [guestLimitReached, setGuestLimitReached] = useState(false);
   const router = useRouter();
 
-  // Keyboard avoidance: this chat lives inside a bottom-tab screen, so on iOS the
-  // KeyboardAvoidingView offset must equal the tab bar height or the input ends up
-  // hidden behind the tab bar. useBottomTabBarHeight() reads it from the navigator;
-  // the safe-area inset is also read so we have a sane fallback if the navigator
-  // value is ever 0/unavailable.
+  // Keyboard avoidance: Android edge-to-edge breaks the standard
+  // KeyboardAvoidingView, so we lift the card manually. The keyboard overlays
+  // from the screen bottom, over the tab bar, so raising the card by
+  // (keyboardHeight − tabBarHeight) puts the input just above the keyboard.
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
-  const kbOffset =
-    Platform.OS === 'ios' ? tabBarHeight || insets.bottom + 60 : 0;
+  const kb = useKeyboardHeight();
 
   // Refs for the typewriter reveal: the active interval timer and the
   // ScrollView so we can keep the view pinned to the bottom as text grows.
@@ -680,10 +679,14 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   ];
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { marginTop: insets.top + 8 }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={kbOffset}
+    <View
+      style={[
+        styles.container,
+        {
+          marginTop: insets.top + 8,
+          paddingBottom: kb > 0 ? Math.max(0, kb - tabBarHeight) : 0,
+        },
+      ]}
     >
       <View style={styles.header}>
         <View style={styles.headerIcon}>
@@ -830,7 +833,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           </TouchableOpacity>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

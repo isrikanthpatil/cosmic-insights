@@ -32,7 +32,7 @@ Every insight is grounded in your own chart and a curated knowledge base, not ge
 • Explore another chart — read a friend's or family member's details, then jump back to yours
 • Clean, calm "Celestial Minimal" design
 
-Browse astrology and numerology free as a guest; sign in to save your profile and unlock unlimited AskAstro. Astropanth is for reflection and entertainment and does not provide medical, financial, or legal advice.
+Browse astrology and numerology free as a guest; sign in to save your profile and unlock unlimited AskAstro. Astropanth is for guidance and self-reflection and does not provide medical, financial, or legal advice.
 ```
 
 ---
@@ -98,7 +98,7 @@ Parts of the app (saving profile, unlimited AskAstro) need a login, so Google's 
 - **COVID-19 / contact tracing:** No.
 - **Government app:** No.
 - **Financial features:** No.
-- **Health / medical:** No — it's entertainment/lifestyle; the description states it is not medical, financial, or legal advice.
+- **Health / medical:** No — it's a lifestyle/guidance app; the description states it is not medical, financial, or legal advice.
 - **Target countries:** select your markets (e.g., India + others, or all countries).
 
 ---

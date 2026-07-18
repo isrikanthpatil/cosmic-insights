@@ -112,7 +112,7 @@ export default function PremiumScreen() {
               ))}
             </View>
             <Text style={styles.placeholderNote}>
-              Prices shown are placeholders while we finalise subscriptions.
+              Prices shown are representative while we finalise subscriptions.
             </Text>
 
             {/* Subscribe — disabled until a billing provider is wired. */}

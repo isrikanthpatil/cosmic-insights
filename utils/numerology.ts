@@ -12,8 +12,25 @@ export interface NumerologyReading {
   loshuAnalysis: string[];
   luckyNumbers: number[];
   remedies: string[];
+  /** Lo Shu numbers (1–9) absent from the grid, in ascending order. */
+  missingNumbers: number[];
   gridMeanings: { [key: number]: { element: string; meaning: string; color: string } };
 }
+
+// Curated, deterministic remedy per missing Lo Shu number. Rendered as a
+// dedicated "Remedies for your missing numbers" section on the Numerology
+// screen — no LLM involved.
+export const MISSING_NUMBER_REMEDIES: Record<number, string> = {
+  1: 'Missing 1 (Sun): build confidence and initiative — greet the sunrise, act decisively, and honour elders; warm reds/oranges support this energy.',
+  2: 'Missing 2 (Moon): nurture emotional balance — keep a steady sleep routine, spend time near water, honour your mother, and meditate; white/silver tones help.',
+  3: 'Missing 3 (Jupiter): grow knowledge and optimism — read and learn daily, respect teachers, and practice gratitude; yellow tones and Thursdays support this.',
+  4: 'Missing 4 (Rahu): create discipline and structure — keep a fixed routine, declutter, and take up steady service or a craft; grounding habits balance this.',
+  5: 'Missing 5 (Mercury): strengthen communication and adaptability — practice writing/speaking, stay curious, keep learning; green tones and mindful breathing help.',
+  6: 'Missing 6 (Venus): invite harmony and warmth — nurture home and relationships, engage with art or music, and practice kindness; white/pastels support this.',
+  7: 'Missing 7 (Ketu): develop introspection and faith — set aside quiet time for meditation or prayer, spend time in nature, and journal; simplicity helps.',
+  8: 'Missing 8 (Saturn): build patience and perseverance — commit to consistent work, serve those in need, and practice discipline and honesty; Saturdays support this.',
+  9: 'Missing 9 (Mars): channel energy and courage — exercise regularly, act bravely while managing anger, and help the less fortunate; red tones balance this.',
+};
 
 export const calculateBirthNumber = (dateOfBirth: string): number => {
   const date = parseDDMMYYYY(dateOfBirth);
@@ -356,6 +373,7 @@ export const getNumerologyReading = (firstName: string, lastName: string, dateOf
     kuaNumberMeaning: kuaMeanings[kuaNumber as keyof typeof kuaMeanings] || 'Unique energy pattern',
     loshuAnalysis,
     luckyNumbers: generateUniqueLuckyNumbers(birthNumber, destinyNumber, kuaNumber),
+    missingNumbers: [...missingNumbers].sort((a, b) => a - b),
     gridMeanings,
     remedies: [
       `Strengthen birth number ${birthNumber} energy through meditation and positive affirmations`,

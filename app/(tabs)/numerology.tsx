@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getNumerologyReading } from '@/utils/numerology';
-import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, RefreshCw } from 'lucide-react-native';
+import { getNumerologyReading, MISSING_NUMBER_REMEDIES } from '@/utils/numerology';
+import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
@@ -19,6 +19,8 @@ export default function Numerology() {
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  // Which compact number card (if any) is expanded to show its full meaning.
+  const [expandedCard, setExpandedCard] = useState<'birth' | 'destiny' | 'kua' | null>(null);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -264,25 +266,60 @@ export default function Numerology() {
         </View>
         <View style={styles.content}>
           <View style={styles.numbersRow}>
-            <View style={styles.compactNumberCard}>
+            <TouchableOpacity
+              style={[styles.compactNumberCard, expandedCard === 'birth' && styles.compactNumberCardActive]}
+              activeOpacity={0.85}
+              onPress={() => setExpandedCard((c) => (c === 'birth' ? null : 'birth'))}
+              accessibilityLabel="Birth number — tap for full meaning"
+            >
               <Hash size={16} color="#69C779" />
               <Text style={styles.compactNumberLabel}>Birth</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.birthNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.birthNumberMeaning}
               </Text>
-            </View>
+              <View style={styles.cardHint}>
+                {expandedCard === 'birth' ? (
+                  <ChevronUp size={14} color="#7E7B92" />
+                ) : (
+                  <ChevronDown size={14} color="#7E7B92" />
+                )}
+                <Text style={styles.cardHintText}>
+                  {expandedCard === 'birth' ? 'less' : 'tap for more'}
+                </Text>
+              </View>
+            </TouchableOpacity>
 
-            <View style={styles.compactNumberCard}>
+            <TouchableOpacity
+              style={[styles.compactNumberCard, expandedCard === 'destiny' && styles.compactNumberCardActive]}
+              activeOpacity={0.85}
+              onPress={() => setExpandedCard((c) => (c === 'destiny' ? null : 'destiny'))}
+              accessibilityLabel="Destiny number — tap for full meaning"
+            >
               <Target size={16} color="#E8C87E" />
               <Text style={styles.compactNumberLabel}>Destiny</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.destinyNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.destinyNumberMeaning}
               </Text>
-            </View>
+              <View style={styles.cardHint}>
+                {expandedCard === 'destiny' ? (
+                  <ChevronUp size={14} color="#7E7B92" />
+                ) : (
+                  <ChevronDown size={14} color="#7E7B92" />
+                )}
+                <Text style={styles.cardHintText}>
+                  {expandedCard === 'destiny' ? 'less' : 'tap for more'}
+                </Text>
+              </View>
+            </TouchableOpacity>
 
-            <View style={styles.compactNumberCard}>
+            <TouchableOpacity
+              style={[styles.compactNumberCard, expandedCard === 'kua' && styles.compactNumberCardActive]}
+              activeOpacity={0.85}
+              onPress={() => setExpandedCard((c) => (c === 'kua' ? null : 'kua'))}
+              accessibilityLabel="Kua number — tap for full meaning"
+            >
               <Compass size={16} color="#B49BE6" />
               <Text style={styles.compactNumberLabel}>Kua</Text>
               <View style={styles.compactKuaContainer}>
@@ -296,8 +333,37 @@ export default function Numerology() {
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.kuaNumberMeaning}
               </Text>
-            </View>
+              <View style={styles.cardHint}>
+                {expandedCard === 'kua' ? (
+                  <ChevronUp size={14} color="#7E7B92" />
+                ) : (
+                  <ChevronDown size={14} color="#7E7B92" />
+                )}
+                <Text style={styles.cardHintText}>
+                  {expandedCard === 'kua' ? 'less' : 'tap for more'}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
+
+          {expandedCard && (
+            <View style={styles.expandedPanel}>
+              <Text style={styles.expandedTitle}>
+                {expandedCard === 'birth'
+                  ? `Birth Number ${numerologyReading.birthNumber}`
+                  : expandedCard === 'destiny'
+                  ? `Destiny Number ${numerologyReading.destinyNumber}`
+                  : `Kua Number ${numerologyReading.kuaNumber}`}
+              </Text>
+              <Text style={styles.expandedText}>
+                {expandedCard === 'birth'
+                  ? numerologyReading.birthNumberMeaning
+                  : expandedCard === 'destiny'
+                  ? numerologyReading.destinyNumberMeaning
+                  : numerologyReading.kuaNumberMeaning}
+              </Text>
+            </View>
+          )}
 
           <View style={styles.section}>
             <SectionHeader icon={Grid3X3} title="Lo Shu Grid Analysis" iconColor="#69C779" />
@@ -345,6 +411,23 @@ export default function Numerology() {
               ))}
             </View>
           </View>
+
+          {numerologyReading.missingNumbers && numerologyReading.missingNumbers.length > 0 && (
+            <View style={styles.section}>
+              <SectionHeader icon={Star} title="Remedies for your missing numbers" iconColor="#B49BE6" />
+              <View style={styles.missingRemediesCard}>
+                {numerologyReading.missingNumbers.map((num: number) => (
+                  <View key={num} style={styles.analysisRow}>
+                    <View style={styles.analysisDot} />
+                    <Text style={styles.analysisText}>{MISSING_NUMBER_REMEDIES[num]}</Text>
+                  </View>
+                ))}
+                <Text style={styles.missingNote}>
+                  These are supportive practices; consult a qualified astrologer before adopting gemstone remedies.
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
     </ScreenBackground>
@@ -452,12 +535,65 @@ const styles = StyleSheet.create({
     gap: 4,
     minHeight: 132,
   },
+  compactNumberCardActive: {
+    borderColor: 'rgba(232, 200, 126, 0.55)',
+    backgroundColor: 'rgba(232, 200, 126, 0.06)',
+  },
   compactNumberLabel: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
     color: '#7E7B92',
     letterSpacing: 1,
     textTransform: 'uppercase',
+  },
+  cardHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 2,
+  },
+  cardHintText: {
+    fontSize: 10,
+    fontFamily: 'Inter-Medium',
+    color: '#7E7B92',
+  },
+  expandedPanel: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    gap: 6,
+  },
+  expandedTitle: {
+    fontSize: 15,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+  },
+  expandedText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
+    lineHeight: 21,
+  },
+  missingRemediesCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    padding: 16,
+    borderLeftWidth: 2,
+    borderLeftColor: '#B49BE6',
+    borderWidth: 1,
+    borderColor: 'rgba(180, 155, 230, 0.25)',
+    gap: 12,
+  },
+  missingNote: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    color: '#7E7B92',
+    lineHeight: 17,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
   compactNumberValue: {
     fontSize: 26,

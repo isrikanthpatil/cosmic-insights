@@ -18,7 +18,7 @@ import {
   LogIn,
 } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
-import { calculateSunSign, generateDailyHoroscope, getAstrologyReading, DailyHoroscope } from '@/utils/astrology';
+import { calculateSunSign, generateDailyHoroscope, generateWeeklyHoroscope, getAstrologyReading, DailyHoroscope, WeeklyHoroscope } from '@/utils/astrology';
 import { getNumerologyReading } from '@/utils/numerology';
 import ScreenBackground from '@/components/ScreenBackground';
 import GuestEntryPrompt from '@/components/GuestEntryPrompt';
@@ -64,6 +64,8 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   // Bumped on pull-to-refresh to re-derive the daily horoscope.
   const [refreshNonce, setRefreshNonce] = useState(0);
+  // Daily (default) vs weekly horoscope view.
+  const [horoscopeMode, setHoroscopeMode] = useState<'daily' | 'weekly'>('daily');
 
   const sunSign = useMemo(
     () => (profile ? calculateSunSign(profile.dateOfBirth, profile.timeOfBirth) : null),
@@ -74,6 +76,15 @@ export default function Home() {
     () =>
       profile
         ? generateDailyHoroscope(profile.firstName, profile.dateOfBirth, profile.placeOfBirth)
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [profile, refreshNonce]
+  );
+
+  const weeklyHoroscope: WeeklyHoroscope | null = useMemo(
+    () =>
+      profile
+        ? generateWeeklyHoroscope(profile.firstName, profile.dateOfBirth, profile.placeOfBirth)
         : null,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [profile, refreshNonce]
@@ -218,40 +229,124 @@ export default function Home() {
               </>
             )}
 
-            {horoscope && (
-              <View style={styles.horoscopeCard}>
-                <View style={styles.cardHeader}>
-                  <Sparkles size={18} color="#E8C87E" />
-                  <Text style={styles.cardTitle}>Today's Horoscope</Text>
-                </View>
-                <Text style={styles.horoscopeText}>{horoscope.mainPrediction}</Text>
-
-                <View style={styles.metaRow}>
-                  <View style={styles.metaItem}>
-                    <Text style={styles.metaLabel}>Lucky Numbers</Text>
-                    <Text style={styles.metaValue}>
-                      {horoscope.luckyNumbers.join(', ')}
+            {(horoscope || weeklyHoroscope) && (
+              <>
+                <View style={styles.segmentRow}>
+                  <TouchableOpacity
+                    style={[
+                      styles.segmentButton,
+                      horoscopeMode === 'daily' && styles.segmentButtonActive,
+                    ]}
+                    onPress={() => {
+                      tap();
+                      setHoroscopeMode('daily');
+                    }}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.segmentText,
+                        horoscopeMode === 'daily' && styles.segmentTextActive,
+                      ]}
+                    >
+                      Daily
                     </Text>
-                  </View>
-                  <View style={styles.metaItem}>
-                    <Text style={styles.metaLabel}>Lucky Color</Text>
-                    <View style={styles.colorValueRow}>
-                      <View
-                        style={[
-                          styles.colorSwatch,
-                          { backgroundColor: colorToHex(horoscope.luckyColor) },
-                        ]}
-                      />
-                      <Text style={styles.metaValue}>{horoscope.luckyColor}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.segmentButton,
+                      horoscopeMode === 'weekly' && styles.segmentButtonActive,
+                    ]}
+                    onPress={() => {
+                      tap();
+                      setHoroscopeMode('weekly');
+                    }}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.segmentText,
+                        horoscopeMode === 'weekly' && styles.segmentTextActive,
+                      ]}
+                    >
+                      Weekly
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {horoscopeMode === 'daily' && horoscope && (
+                  <View style={styles.horoscopeCard}>
+                    <View style={styles.cardHeader}>
+                      <Sparkles size={18} color="#E8C87E" />
+                      <Text style={styles.cardTitle}>Today's Horoscope</Text>
+                    </View>
+                    <Text style={styles.horoscopeText}>{horoscope.mainPrediction}</Text>
+
+                    <View style={styles.metaRow}>
+                      <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Lucky Numbers</Text>
+                        <Text style={styles.metaValue}>
+                          {horoscope.luckyNumbers.join(', ')}
+                        </Text>
+                      </View>
+                      <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Lucky Color</Text>
+                        <View style={styles.colorValueRow}>
+                          <View
+                            style={[
+                              styles.colorSwatch,
+                              { backgroundColor: colorToHex(horoscope.luckyColor) },
+                            ]}
+                          />
+                          <Text style={styles.metaValue}>{horoscope.luckyColor}</Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    <View style={styles.adviceBox}>
+                      <Text style={styles.adviceLabel}>Advice</Text>
+                      <Text style={styles.adviceText}>{horoscope.advice}</Text>
                     </View>
                   </View>
-                </View>
+                )}
 
-                <View style={styles.adviceBox}>
-                  <Text style={styles.adviceLabel}>Advice</Text>
-                  <Text style={styles.adviceText}>{horoscope.advice}</Text>
-                </View>
-              </View>
+                {horoscopeMode === 'weekly' && weeklyHoroscope && (
+                  <View style={styles.horoscopeCard}>
+                    <View style={styles.cardHeader}>
+                      <Sparkles size={18} color="#E8C87E" />
+                      <Text style={styles.cardTitle}>This Week</Text>
+                    </View>
+                    <Text style={styles.weekRange}>
+                      {weeklyHoroscope.weekStart} – {weeklyHoroscope.weekEnd}
+                    </Text>
+                    <Text style={styles.horoscopeText}>{weeklyHoroscope.overview}</Text>
+
+                    {weeklyHoroscope.highlights.length > 0 && (
+                      <View style={styles.weeklySection}>
+                        <Text style={styles.metaLabel}>Highlights</Text>
+                        {weeklyHoroscope.highlights.map((item, index) => (
+                          <View key={index} style={styles.weeklyRow}>
+                            <View style={styles.weeklyDot} />
+                            <Text style={styles.weeklyItemText}>{item}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+
+                    {weeklyHoroscope.focusAreas.length > 0 && (
+                      <View style={styles.weeklySection}>
+                        <Text style={styles.metaLabel}>Focus Areas</Text>
+                        {weeklyHoroscope.focusAreas.map((item, index) => (
+                          <View key={index} style={styles.weeklyRow}>
+                            <View style={styles.weeklyDot} />
+                            <Text style={styles.weeklyItemText}>{item}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                )}
+              </>
             )}
           </>
         )}
@@ -389,6 +484,33 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#E8C87E',
   },
+  segmentRow: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.25)',
+    borderRadius: 12,
+    padding: 4,
+    gap: 4,
+    marginBottom: 12,
+  },
+  segmentButton: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 9,
+    alignItems: 'center',
+  },
+  segmentButtonActive: {
+    backgroundColor: '#E8C87E',
+  },
+  segmentText: {
+    fontSize: 13,
+    fontFamily: 'Inter-SemiBold',
+    color: '#C7C4D6',
+  },
+  segmentTextActive: {
+    color: '#0B0B1A',
+  },
   horoscopeCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
@@ -397,6 +519,34 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     gap: 12,
+  },
+  weekRange: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    color: '#E8C87E',
+    marginTop: -4,
+  },
+  weeklySection: {
+    gap: 8,
+  },
+  weeklyRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  weeklyDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#E8C87E',
+    marginTop: 7,
+  },
+  weeklyItemText: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
+    lineHeight: 21,
   },
   colorValueRow: {
     flexDirection: 'row',

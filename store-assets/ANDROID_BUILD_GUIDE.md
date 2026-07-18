@@ -72,6 +72,6 @@ Every insight is grounded in your own chart and a curated knowledge base, not ge
 • Explore another chart — read a friend's or family member's details, then jump back to yours
 • Clean, calm "Celestial Minimal" design
 
-Browse astrology and numerology free as a guest; sign in to save your profile and unlock unlimited AskAstro. Astropanth is for reflection and entertainment and does not provide medical, financial, or legal advice.
+Browse astrology and numerology free as a guest; sign in to save your profile and unlock unlimited AskAstro. Astropanth is for guidance and self-reflection and does not provide medical, financial, or legal advice.
 
 **Category:** Lifestyle  ·  **Tags:** astrology, numerology, horoscope, zodiac

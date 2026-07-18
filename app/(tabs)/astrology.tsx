@@ -452,10 +452,12 @@ export default function Astrology() {
           />
         }
       >
-        <View style={styles.exploreBarWrap}>
-          {isGuest && !isExploring && <LoginNudge />}
-          <ExploreBar />
-        </View>
+        {activeTab === 'overview' && (
+          <View style={styles.exploreBarWrap}>
+            {isGuest && !isExploring && <LoginNudge />}
+            <ExploreBar />
+          </View>
+        )}
         {renderContent()}
       </ScrollView>
     </ScreenBackground>
