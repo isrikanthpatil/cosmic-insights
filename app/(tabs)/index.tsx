@@ -6,16 +6,20 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Platform,
+  Share,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tap } from '@/utils/haptics';
+import { showToast } from '@/utils/toast';
 import {
   Sparkles,
   Sun,
   Moon,
   Star,
   LogIn,
+  Share2,
 } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
 import { calculateSunSign, generateDailyHoroscope, generateWeeklyHoroscope, getAstrologyReading, DailyHoroscope, WeeklyHoroscope } from '@/utils/astrology';
@@ -124,6 +128,41 @@ export default function Home() {
   const goToLogin = () => {
     tap();
     router.push('/login');
+  };
+
+  // Share the current (daily or weekly) reading as text, with the app link.
+  const shareReading = async () => {
+    tap();
+    const sun = chart?.sunSign ?? sunSign;
+    let message = '';
+    if (horoscopeMode === 'weekly' && weeklyHoroscope) {
+      message =
+        `My Astropanth week ✨${sun ? ` — ${sun}` : ''}\n` +
+        `${weeklyHoroscope.overview}\n\n` +
+        `Get your free astrology + numerology reading: https://www.astropanth.com`;
+    } else if (horoscope) {
+      message =
+        `My Astropanth reading for today ✨${sun ? ` — ${sun}` : ''}\n` +
+        `${horoscope.mainPrediction}\n` +
+        `Lucky numbers: ${horoscope.luckyNumbers.join(', ')} · Lucky colour: ${horoscope.luckyColor}\n\n` +
+        `Get your free reading: https://www.astropanth.com`;
+    } else {
+      return;
+    }
+    try {
+      if (Platform.OS === 'web') {
+        const nav: any = typeof navigator !== 'undefined' ? navigator : undefined;
+        if (nav?.share) {
+          await nav.share({ text: message });
+        } else {
+          showToast('Sharing is only available in the app.', 'info');
+        }
+        return;
+      }
+      await Share.share({ message });
+    } catch {
+      // User cancelled or sharing unavailable — ignore quietly.
+    }
   };
 
   return (
@@ -277,8 +316,17 @@ export default function Home() {
                 {horoscopeMode === 'daily' && horoscope && (
                   <View style={styles.horoscopeCard}>
                     <View style={styles.cardHeader}>
-                      <Sparkles size={18} color="#E8C87E" />
-                      <Text style={styles.cardTitle}>Today's Horoscope</Text>
+                      <View style={styles.cardHeaderLeft}>
+                        <Sparkles size={18} color="#E8C87E" />
+                        <Text style={styles.cardTitle}>Today's Horoscope</Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={shareReading}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        accessibilityLabel="Share today's horoscope"
+                      >
+                        <Share2 size={18} color="#E8C87E" />
+                      </TouchableOpacity>
                     </View>
                     <Text style={styles.horoscopeText}>{horoscope.mainPrediction}</Text>
 
@@ -313,8 +361,17 @@ export default function Home() {
                 {horoscopeMode === 'weekly' && weeklyHoroscope && (
                   <View style={styles.horoscopeCard}>
                     <View style={styles.cardHeader}>
-                      <Sparkles size={18} color="#E8C87E" />
-                      <Text style={styles.cardTitle}>This Week</Text>
+                      <View style={styles.cardHeaderLeft}>
+                        <Sparkles size={18} color="#E8C87E" />
+                        <Text style={styles.cardTitle}>This Week</Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={shareReading}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        accessibilityLabel="Share this week's horoscope"
+                      >
+                        <Share2 size={18} color="#E8C87E" />
+                      </TouchableOpacity>
                     </View>
                     <Text style={styles.weekRange}>
                       {weeklyHoroscope.weekStart} – {weeklyHoroscope.weekEnd}
@@ -561,6 +618,12 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  cardHeaderLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
