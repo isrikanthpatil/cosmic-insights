@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getNumerologyReading, MISSING_NUMBER_REMEDIES } from '@/utils/numerology';
-import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Hash, Target, Compass, Grid3x3 as Grid3X3, Sparkles, Star, Info, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
 import ExploreBar from '@/components/ExploreBar';
@@ -125,7 +125,7 @@ export default function Numerology() {
   }
 
   const renderLoshuGrid = () => {
-    const { loshuGrid, gridMeanings, kuaNumber, originalKuaNumber } = numerologyReading;
+    const { loshuGrid, gridMeanings, kuaNumber } = numerologyReading;
     
     // Traditional Lo Shu Grid layout
     // 4 9 2
@@ -149,15 +149,6 @@ export default function Numerology() {
           </Text>
         </View>
 
-        {originalKuaNumber && (
-          <View style={styles.conversionInfo}>
-            <RefreshCw size={16} color="#D9A441" />
-            <Text style={styles.conversionInfoText}>
-              Kua 5 Conversion: Your calculated Kua was {originalKuaNumber}, converted to {kuaNumber} for {userProfile.gender}s (traditional Feng Shui rule)
-            </Text>
-          </View>
-        )}
-        
         <View style={styles.gridWrapper}>
           {gridNumbers.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.gridRow}>
@@ -324,11 +315,6 @@ export default function Numerology() {
               <Text style={styles.compactNumberLabel}>Kua</Text>
               <View style={styles.compactKuaContainer}>
                 <Text style={styles.compactNumberValue}>{numerologyReading.kuaNumber}</Text>
-                {numerologyReading.originalKuaNumber && (
-                  <Text style={styles.compactOriginalKua}>
-                    (was {numerologyReading.originalKuaNumber})
-                  </Text>
-                )}
               </View>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.kuaNumberMeaning}

@@ -13,8 +13,8 @@ export const colors = {
   // Text
   text: '#F4F1E8', // primary
   textSecondary: '#C7C4D6', // secondary
-  muted: '#7E7B92', // muted
-  faint: '#56536A', // faint (inactive tabs etc.)
+  muted: '#8B88A0', // muted (raised for WCAG contrast on dark navy)
+  faint: '#6E6B84', // faint (inactive tabs etc.) — raised from #56536A for contrast
 
   // Surfaces — fine hairline borders over lots of negative space
   surface: 'rgba(255, 255, 255, 0.03)',

@@ -17,7 +17,6 @@ import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
-import { showToast } from '@/utils/toast';
 import { tap } from '@/utils/haptics';
 import { searchPlaces } from '@/utils/places';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
@@ -33,6 +32,9 @@ export default function AuthScreen() {
   const kb = useKeyboardHeight();
   const [mode, setMode] = useState<Mode>('login');
   const [submitting, setSubmitting] = useState(false);
+  // Inline notice — toasts render behind this modal screen, so feedback here
+  // (e.g. the password-reset confirmation) must be shown inline to be visible.
+  const [notice, setNotice] = useState<{ text: string; kind: 'ok' | 'err' } | null>(null);
 
   // When used as the modal `login` route, dismiss it once the user becomes
   // authenticated. The hard gate is gone, so this is the screen's only exit.
@@ -101,18 +103,22 @@ export default function AuthScreen() {
   const handleForgotPassword = async () => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !SecurityUtils.validateEmail(trimmedEmail)) {
-      notify('Reset Password', 'Enter your email address above first, then tap "Forgot password?" again.');
+      setNotice({ text: 'Enter your email address above first, then tap "Forgot password?" again.', kind: 'err' });
       return;
     }
     try {
       setSubmitting(true);
+      setNotice(null);
       await requestPasswordReset(trimmedEmail);
-      showToast(`If an account exists for ${trimmedEmail}, a reset link has been sent.`, 'info');
+      setNotice({
+        text: `If an account exists for ${trimmedEmail}, a password reset link has been sent. Please check your email (and spam folder).`,
+        kind: 'ok',
+      });
     } catch (error: any) {
       const message =
         error?.response?.message ||
         SecurityUtils.handleSecureError(error, 'auth');
-      notify('Reset Failed', message);
+      setNotice({ text: message, kind: 'err' });
     } finally {
       setSubmitting(false);
     }
@@ -410,6 +416,17 @@ export default function AuthScreen() {
               </>
             )}
 
+            {notice && (
+              <View
+                style={[
+                  styles.noticeBanner,
+                  notice.kind === 'ok' ? styles.noticeOk : styles.noticeErr,
+                ]}
+              >
+                <Text style={styles.noticeText}>{notice.text}</Text>
+              </View>
+            )}
+
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleSubmit}
@@ -603,6 +620,28 @@ const styles = StyleSheet.create({
   },
   genderButtonTextActive: {
     color: '#0B0B1A',
+  },
+  noticeBanner: {
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  noticeOk: {
+    backgroundColor: 'rgba(232, 200, 126, 0.12)',
+    borderColor: 'rgba(232, 200, 126, 0.5)',
+  },
+  noticeErr: {
+    backgroundColor: 'rgba(224, 122, 95, 0.12)',
+    borderColor: 'rgba(224, 122, 95, 0.5)',
+  },
+  noticeText: {
+    fontSize: 13,
+    lineHeight: 19,
+    fontFamily: 'Inter-Regular',
+    color: '#F4F1E8',
   },
   submitButton: {
     flexDirection: 'row',

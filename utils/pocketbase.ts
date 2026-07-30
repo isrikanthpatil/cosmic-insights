@@ -8,5 +8,5 @@ const store = new AsyncAuthStore({
   clear:   async () => AsyncStorage.removeItem('pb_auth'),
 });
 
-const url = process.env.EXPO_PUBLIC_PB_URL ?? 'https://cosmicpatil.duckdns.org';
+const url = process.env.EXPO_PUBLIC_PB_URL ?? 'https://api.astropanth.com';
 export const pb = new PocketBase(url, store);

@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     marginBottom: 6,

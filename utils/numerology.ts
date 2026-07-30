@@ -4,7 +4,6 @@ export interface NumerologyReading {
   birthNumber: number;
   destinyNumber: number;
   kuaNumber: number;
-  originalKuaNumber?: number; // Store original before conversion
   loshuGrid: number[][];
   birthNumberMeaning: string;
   destinyNumberMeaning: string;
@@ -78,94 +77,39 @@ export const calculateDestinyNumber = (firstName: string, lastName: string, date
   return sum;
 };
 
-export const calculateKuaNumber = (dateOfBirth: string, gender: 'male' | 'female'): { kuaNumber: number; originalKuaNumber?: number } => {
+export const calculateKuaNumber = (dateOfBirth: string, gender: 'male' | 'female'): { kuaNumber: number } => {
   const date = parseDDMMYYYY(dateOfBirth);
   if (!date) {
-    console.error('Invalid date format for kua number calculation:', dateOfBirth);
-    return { kuaNumber: 1 }; // Default fallback
+    return { kuaNumber: 1 }; // Default fallback for invalid dates
   }
-  
+
   const year = date.getFullYear();
-  console.log('🔢 KUA CALCULATION DEBUG:');
-  console.log('📅 Birth Year:', year);
-  console.log('👤 Gender:', gender);
-  
-  // Step 1: Take the last two digits of birth year
-  const lastTwoDigits = year % 100;
-  const tensDigit = Math.floor(lastTwoDigits / 10);
-  const unitsDigit = lastTwoDigits % 10;
-  
-  console.log('🔢 Last two digits:', lastTwoDigits, '(', tensDigit, '+', unitsDigit, ')');
-  
-  // Add them together
-  let sum = tensDigit + unitsDigit;
-  console.log('➕ Initial sum:', sum);
-  
-  // Step 1 continued: If double-digit, add digits again to get single digit
-  while (sum > 9) {
-    const originalSum = sum;
-    const sumStr = sum.toString();
-    sum = parseInt(sumStr[0]) + parseInt(sumStr[1]);
-    console.log('🔄 Reducing:', originalSum, '→', sum);
-  }
-  
-  console.log('✅ Final single digit:', sum);
-  
-  let kuaNumber;
-  let originalKuaNumber;
-  
-  if (gender === 'male') {
-    console.log('👨 MALE CALCULATION:');
-    // Step 3: For males - subtract from 10
-    kuaNumber = 10 - sum;
-    console.log('🧮 10 -', sum, '=', kuaNumber);
-    
-    // Handle special case: if result is 0, it becomes 9
-    if (kuaNumber === 0) {
-      kuaNumber = 9;
-      console.log('⚠️ Adjusted 0 → 9');
+
+  // Reduce any number to a single digit (1-9) by repeated digit summing.
+  const reduceToSingle = (n: number): number => {
+    let x = Math.abs(n);
+    while (x > 9) {
+      x = String(x).split('').reduce((s, d) => s + Number(d), 0);
     }
-    // Handle special case: if result is 10, it becomes 1
-    if (kuaNumber === 10) {
-      kuaNumber = 1;
-      console.log('⚠️ Adjusted 10 → 1');
-    }
-    
-    // Kua 5 Rule: Since Kua 5 doesn't exist in traditional Feng Shui, for males it becomes Kua 2
-    if (kuaNumber === 5) {
-      originalKuaNumber = 5;
-      kuaNumber = 2;
-      console.log('🔄 Kua 5 Rule Applied: Male Kua 5 → Kua 2');
-    }
-  } else {
-    console.log('👩 FEMALE CALCULATION:');
-    // Step 2: For females - add 5
-    kuaNumber = sum + 5;
-    console.log('🧮', sum, '+ 5 =', kuaNumber);
-    
-    // If result is double-digit, add digits again
-    while (kuaNumber > 9) {
-      const originalKua = kuaNumber;
-      const kuaStr = kuaNumber.toString();
-      kuaNumber = parseInt(kuaStr[0]) + parseInt(kuaStr[1]);
-      console.log('🔄 Reducing:', originalKua, '→', kuaNumber);
-    }
-    
-    // Kua 5 Rule: Since Kua 5 doesn't exist in traditional Feng Shui, for females it becomes Kua 8
-    if (kuaNumber === 5) {
-      originalKuaNumber = 5;
-      kuaNumber = 8;
-      console.log('🔄 Kua 5 Rule Applied: Female Kua 5 → Kua 8');
-    }
-  }
-  
-  console.log('🏆 FINAL KUA NUMBER:', kuaNumber);
-  if (originalKuaNumber) {
-    console.log('📝 ORIGINAL KUA NUMBER:', originalKuaNumber, '(converted due to Kua 5 rule)');
-  }
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  
-  return { kuaNumber, originalKuaNumber };
+    return x;
+  };
+
+  // Step 1: sum ALL digits of the birth year, then reduce to a single digit.
+  //   e.g. 1978 -> 1+9+7+8 = 25 -> 2+5 = 7
+  const yearDigitSum = reduceToSingle(
+    String(year).split('').reduce((s, d) => s + Number(d), 0)
+  );
+
+  // Step 2/3: gender formulas (each reduced to a single digit).
+  //   Male:   11 - yearDigitSum   e.g. 11 - 7 = 4
+  //   Female: yearDigitSum + 4    e.g. 7 + 4 = 11 -> 2
+  // Note: this method can legitimately yield 5; Kua 5 is kept as-is (no substitution).
+  const kuaNumber =
+    gender === 'male'
+      ? reduceToSingle(11 - yearDigitSum)
+      : reduceToSingle(yearDigitSum + 4);
+
+  return { kuaNumber };
 };
 
 export const generateLoshuGrid = (dateOfBirth: string, birthNumber: number, destinyNumber: number, kuaNumber?: number): number[][] => {
@@ -273,16 +217,11 @@ const gridMeanings = {
 };
 
 export const getNumerologyReading = (firstName: string, lastName: string, dateOfBirth: string, gender: 'male' | 'female'): NumerologyReading => {
-  console.log('🎯 Getting numerology reading for:', { firstName, lastName, dateOfBirth, gender });
-  
   const birthNumber = calculateBirthNumber(dateOfBirth);
   const destinyNumber = calculateDestinyNumber(firstName, lastName, dateOfBirth);
   const kuaResult = calculateKuaNumber(dateOfBirth, gender);
   const kuaNumber = kuaResult.kuaNumber;
-  const originalKuaNumber = kuaResult.originalKuaNumber;
   const loshuGrid = generateLoshuGrid(dateOfBirth, birthNumber, destinyNumber, kuaNumber);
-
-  console.log('📊 Final calculated numbers:', { birthNumber, destinyNumber, kuaNumber, originalKuaNumber });
 
   const loshuAnalysis = [];
   
@@ -355,18 +294,12 @@ export const getNumerologyReading = (firstName: string, lastName: string, dateOf
     loshuAnalysis.push(`Strong numbers: ${repeatedNumbers.join(', ')} - These are your dominant traits and natural strengths`);
   }
 
-  // Add Kua number analysis with conversion information
-  if (originalKuaNumber) {
-    loshuAnalysis.push(`Kua Number Conversion: Your calculated Kua number was ${originalKuaNumber}, but according to traditional Feng Shui, Kua 5 doesn't exist. For ${gender}s, Kua 5 becomes Kua ${kuaNumber}. This converted number has been added to your Lo Shu Grid.`);
-  }
-  
   loshuAnalysis.push(`Kua Number ${kuaNumber} influence: ${kuaMeanings[kuaNumber as keyof typeof kuaMeanings] || 'Unique energy pattern'} - This number enhances your personal energy and directional guidance.`);
 
   return {
     birthNumber,
     destinyNumber,
     kuaNumber,
-    originalKuaNumber,
     loshuGrid,
     birthNumberMeaning: numberMeanings[birthNumber as keyof typeof numberMeanings],
     destinyNumberMeaning: numberMeanings[destinyNumber as keyof typeof numberMeanings],

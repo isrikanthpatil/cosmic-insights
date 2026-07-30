@@ -42,7 +42,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm AskAstro, your personal astrology guide. I can answer questions about astrology, zodiac signs, planetary influences, and provide insights based on ancient astrological wisdom. I can also provide personalized readings based on your birth details. What would you like to know?",
+      text: "Namaste 🙏 I'm AskAstro. Ask me anything about your chart, zodiac, or numerology — or add your birth details for a personalised reading.",
       isUser: false,
       timestamp: new Date(),
     },
@@ -116,7 +116,8 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         return;
       }
 
-      index += 1;
+      // Reveal 2 words per tick so long replies don't feel slow.
+      index += 2;
       const partial = tokens.slice(0, index).join('');
       setMessages(prev =>
         prev.map(m => (m.id === messageId ? { ...m, text: partial } : m))
@@ -128,7 +129,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           typingIntervalRef.current = null;
         }
       }
-    }, 35);
+    }, 25);
   };
 
   // Enhanced astrology knowledge base with coordinate-based insights
@@ -1044,9 +1045,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   sendButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#E8C87E',
     justifyContent: 'center',
     alignItems: 'center',

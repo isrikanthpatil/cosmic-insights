@@ -5,15 +5,22 @@ import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/constants/theme';
 
-// Custom tab label: single line, auto-shrinks to fit so long labels like
-// "Numerology" never wrap or truncate in the 6-tab bar.
+// Custom tab label: single line at a UNIFORM fixed size for every tab, so long
+// labels like "Numerology" render the same size as the others (no per-label
+// auto-shrink, which previously made "Numerology" look smaller). allowFontScaling
+// is off so OS font-size settings can't shrink one label relative to the rest.
 function tabLabel(title: string) {
   return ({ color }: { focused: boolean; color: string }) => (
     <Text
       numberOfLines={1}
-      adjustsFontSizeToFit
-      minimumFontScale={0.8}
-      style={{ color, fontSize: 10, fontFamily: 'Inter-Medium', textAlign: 'center' }}
+      allowFontScaling={false}
+      style={{
+        color,
+        fontSize: 10,
+        fontFamily: 'Inter-Medium',
+        letterSpacing: -0.2,
+        textAlign: 'center',
+      }}
     >
       {title}
     </Text>

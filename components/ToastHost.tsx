@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   toastSuccess: {
-    borderColor: 'rgba(255, 215, 0, 0.5)',
+    borderColor: 'rgba(232, 200, 126, 0.5)',
     borderLeftWidth: 4,
     borderLeftColor: '#E8C87E',
   },

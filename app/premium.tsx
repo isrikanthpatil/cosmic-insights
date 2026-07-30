@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   heroTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
     textAlign: 'center',
