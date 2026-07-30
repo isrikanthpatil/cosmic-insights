@@ -13,7 +13,12 @@ This document has six categories (a–f). Sections **d** and **e** started from 
 - **e-M1** pure-Vedic knowledge (classical rulerships, Vedic rashi lore ×12, nine-graha Rahu/Ketu) — DONE
 - **e-H4** rich planet-mapped per-number numerology (summary + expandable detail) — DONE
 - **e-H5** clarified Destiny = Bhagyank (correct for Indian numerology); Namank = future — DONE
-- **Remaining in e:** e-O1 (longer daily/weekly), e-O2 (daily variation via Moon nakshatra), e-M3 (weekly variation), e-M4 (27-nakshatra KB), e-M5/M6/M7 (remedy specificity, gemstone caution, disclaimers), e-H6 (dedupe AskAstro offline dataset).
+- **e-O1/O2/M3** daily grounded in today's Moon transit (Chandra Gochar) — varies daily + ~2× longer; weekly lengthened, highlights/focus/lucky-days rotate weekly, lucky day leads with sign-lord weekday — DONE
+- **e-M5** planet-specific general numerology remedies — DONE
+- **e-M6** gemstone (neelam) caution on remedies — DONE
+- **e-M7** disclaimers on Astrology reading (all sub-tabs) + AskAstro — DONE
+- **Remaining in e:** e-M4 (27-nakshatra knowledge base — pairs with feature b2 "surface nakshatra"), e-H6 (dedupe the AskAstro offline zodiac dataset — refactor). Both larger; deferred.
+- **Remaining in d:** density/de-box (d-O1/O2) — pending on-device review.
 
 ## Decisions locked
 - **Pure Vedic.** Remove the Western/tropical and "blended" content entirely — no modern co-rulers (Pluto/Uranus/Neptune), no Greek mythology, no tropical sun signs. The app presents sidereal (Lahiri) Jyotish. (Chinese Feng Shui numerology — Kua/Lo Shu — stays, clearly framed as its own tradition.)
