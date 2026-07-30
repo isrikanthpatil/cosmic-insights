@@ -15,7 +15,6 @@ import { showToast } from '@/utils/toast';
 import { usePremium } from '@/contexts/PremiumContext';
 import {
   plusFeatures,
-  plusPrices,
   plusPlanName,
   plusTagline,
 } from '@/constants/plans';
@@ -25,10 +24,10 @@ export default function PremiumScreen() {
   const insets = useSafeAreaInsets();
   const { isPremium } = usePremium();
 
-  // Restore purchases is a no-op for now — there's no billing provider yet.
-  const handleRestore = () => {
+  // Plus isn't live yet — capture interest instead of a dead Subscribe button.
+  const handleNotify = () => {
     tap();
-    showToast('Restore will be available once subscriptions launch.', 'info');
+    showToast("Thanks! We'll let you know when Astropanth Plus is ready.", 'success');
   };
 
   return (
@@ -94,45 +93,23 @@ export default function PremiumScreen() {
           ))}
         </View>
 
-        {/* Pricing — placeholder amounts */}
+        {/* Plus not yet live: invite interest rather than showing placeholder
+            pricing or a dead Subscribe button. */}
         {!isPremium && (
           <>
-            <View style={styles.priceRow}>
-              {plusPrices.map((price) => (
-                <View
-                  key={price.id}
-                  style={[styles.priceCard, !!price.note && styles.priceCardHighlight]}
-                >
-                  <Text style={styles.priceAmount}>{price.displayPrice}</Text>
-                  <Text style={styles.pricePeriod}>{price.period}</Text>
-                  {price.note ? (
-                    <Text style={styles.priceNote}>{price.note}</Text>
-                  ) : null}
-                </View>
-              ))}
-            </View>
+            <Text style={styles.comingSoonHeadline}>Astropanth Plus is coming soon</Text>
             <Text style={styles.placeholderNote}>
-              Prices shown are representative while we finalise subscriptions.
+              We're putting the finishing touches on Plus. Pricing will be announced at launch.
             </Text>
 
-            {/* Subscribe — disabled until a billing provider is wired. */}
             <TouchableOpacity
-              style={[styles.primaryButton, styles.primaryButtonDisabled]}
-              disabled
-              activeOpacity={1}
-              accessibilityLabel="Subscribe (coming soon)"
+              style={styles.primaryButton}
+              onPress={handleNotify}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel="Notify me when Astropanth Plus launches"
             >
-              <Text style={styles.primaryButtonText}>Subscribe</Text>
-            </TouchableOpacity>
-            <Text style={styles.comingSoonNote}>Coming soon</Text>
-
-            {/* Restore purchases — no-op for now. */}
-            <TouchableOpacity
-              style={styles.restoreButton}
-              onPress={handleRestore}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.restoreText}>Restore purchases</Text>
+              <Text style={styles.primaryButtonText}>Notify me at launch</Text>
             </TouchableOpacity>
           </>
         )}
@@ -302,6 +279,13 @@ const styles = StyleSheet.create({
     color: '#E8C87E',
     textAlign: 'center',
     marginTop: 2,
+  },
+  comingSoonHeadline: {
+    fontSize: 17,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#F4F1E8',
+    textAlign: 'center',
+    marginTop: 8,
   },
   placeholderNote: {
     fontSize: 12,

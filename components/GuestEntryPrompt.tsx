@@ -6,14 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { Star, X } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
 import { Profile } from '@/contexts/AuthContext';
 import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
 
 interface GuestEntryPromptProps {
@@ -35,6 +34,7 @@ export default function GuestEntryPrompt({
 }: GuestEntryPromptProps) {
   const { setGuestProfile } = useChart();
   const [modalVisible, setModalVisible] = useState(false);
+  const kb = useKeyboardHeight();
 
   const handleSubmit = (profile: Profile) => {
     setGuestProfile(profile);
@@ -67,10 +67,7 @@ export default function GuestEntryPrompt({
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <KeyboardAvoidingView
-            style={styles.modalCard}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          >
+          <View style={[styles.modalCard, kb > 0 && { marginBottom: kb }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Your birth details</Text>
               <TouchableOpacity
@@ -98,7 +95,7 @@ export default function GuestEntryPrompt({
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             </ScrollView>
-          </KeyboardAvoidingView>
+          </View>
         </View>
       </Modal>
     </>
