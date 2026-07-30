@@ -4,6 +4,17 @@ Status: v1.0.0 is LIVE on Google Play (versionCode 8, commit 07047b9). Productio
 
 This document has six categories (a–f). Sections **d** and **e** started from an independent code+content audit; the owner's inputs are merged in (marked ★).
 
+## v9 progress log (committed locally, not pushed)
+- **a** (security): API 36 + R8, dropped Supabase, secrets verified, PB fallback fixed — DONE
+- **f** (bugs): reinstall privacy (allowBackup off), reset-password inline banner, daily values already deterministic — DONE
+- **e-M2** Kua formula (owner's method, keep literal 5) — DONE
+- **d** (UI): off-brand gold, 404 re-skin, tab labels, contrast, page titles, AskAstro greeting/speed, 44pt send button, error-toast type, insets bottom-padding, modal keyboard, premium softened, accessibility labels — DONE. **Remaining: density/de-box (d-O1/O2) — pending on-device review.**
+- **e-H1/H2/H3** main reading now pure sidereal (Sun/Moon from ephemeris, real Ascendant only with birth time, invented location insights removed); AskAstro grounds on sidereal — DONE + verified
+- **e-M1** pure-Vedic knowledge (classical rulerships, Vedic rashi lore ×12, nine-graha Rahu/Ketu) — DONE
+- **e-H4** rich planet-mapped per-number numerology (summary + expandable detail) — DONE
+- **e-H5** clarified Destiny = Bhagyank (correct for Indian numerology); Namank = future — DONE
+- **Remaining in e:** e-O1 (longer daily/weekly), e-O2 (daily variation via Moon nakshatra), e-M3 (weekly variation), e-M4 (27-nakshatra KB), e-M5/M6/M7 (remedy specificity, gemstone caution, disclaimers), e-H6 (dedupe AskAstro offline dataset).
+
 ## Decisions locked
 - **Pure Vedic.** Remove the Western/tropical and "blended" content entirely — no modern co-rulers (Pluto/Uranus/Neptune), no Greek mythology, no tropical sun signs. The app presents sidereal (Lahiri) Jyotish. (Chinese Feng Shui numerology — Kua/Lo Shu — stays, clearly framed as its own tradition.)
 - **Monetisation later.** Defer category **c** until the authenticity + UI + content enhancements ship.
