@@ -832,6 +832,9 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             <Send size={20} color={!inputText.trim() ? "#7E7B92" : "#0B0B1A"} />
           </TouchableOpacity>
         </View>
+        <Text style={styles.disclaimer}>
+          For guidance and self-reflection — not professional advice.
+        </Text>
       </View>
     </View>
   );
@@ -1023,6 +1026,13 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  disclaimer: {
+    fontSize: 10,
+    fontFamily: 'Inter-Regular',
+    color: '#6E6B84',
+    textAlign: 'center',
+    marginTop: 8,
   },
   inputWrapper: {
     flexDirection: 'row',

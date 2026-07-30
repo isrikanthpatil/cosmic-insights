@@ -350,7 +350,7 @@ export default function Astrology() {
                   {astrologyData.detailedAnalysis.sunSignData.gemstones.join(', ')}
                 </Text>
                 <Text style={styles.gemstoneDescription}>
-                  These gemstones resonate with your {astrologyData.sunSign} energy and can enhance your natural qualities.
+                  These gemstones resonate with your {astrologyData.sunSign} energy. Gemstones are powerful remedies — some (such as blue sapphire / neelam) can react strongly, so please consult a qualified astrologer before wearing one.
                 </Text>
               </View>
 
@@ -476,6 +476,9 @@ export default function Astrology() {
           </View>
         )}
         {renderContent()}
+        <Text style={styles.disclaimer}>
+          Astropanth offers Vedic astrology for guidance and self-reflection. It is not a substitute for professional medical, financial, or legal advice.
+        </Text>
       </ScrollView>
     </ScreenBackground>
   );
@@ -748,6 +751,15 @@ const styles = StyleSheet.create({
     color: '#7E7B92',
     marginBottom: 10,
     lineHeight: 17,
+  },
+  disclaimer: {
+    fontSize: 11,
+    fontFamily: 'Inter-Regular',
+    color: '#6E6B84',
+    lineHeight: 16,
+    textAlign: 'center',
+    paddingHorizontal: 24,
+    marginTop: 20,
   },
   elementsGrid: {
     flexDirection: 'row',
