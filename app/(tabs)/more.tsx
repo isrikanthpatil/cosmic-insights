@@ -55,7 +55,7 @@ export default function More() {
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 88 }]}
         showsVerticalScrollIndicator={false}
       >
         {FEATURES.map((feature) => {

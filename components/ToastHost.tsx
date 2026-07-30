@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View, Platform } from 'react-native';
-import { CircleCheck as CheckCircle, Info as InfoIcon } from 'lucide-react-native';
+import { CircleCheck as CheckCircle, Info as InfoIcon, CircleAlert as AlertIcon } from 'lucide-react-native';
 import { subscribeToast, ToastPayload } from '@/utils/toast';
 
 const AUTO_DISMISS_MS = 2500;
@@ -67,6 +67,7 @@ export default function ToastHost() {
   if (!toast) return null;
 
   const isSuccess = toast.type === 'success';
+  const isError = toast.type === 'error';
 
   return (
     <View style={styles.host} pointerEvents="none">
@@ -74,11 +75,14 @@ export default function ToastHost() {
         style={[
           styles.toast,
           isSuccess && styles.toastSuccess,
+          isError && styles.toastError,
           { opacity, transform: [{ translateY }] },
         ]}
       >
         {isSuccess ? (
           <CheckCircle size={18} color="#E8C87E" />
+        ) : isError ? (
+          <AlertIcon size={18} color="#E07A5F" />
         ) : (
           <InfoIcon size={18} color="#C7C4D6" />
         )}
@@ -121,6 +125,11 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(232, 200, 126, 0.5)',
     borderLeftWidth: 4,
     borderLeftColor: '#E8C87E',
+  },
+  toastError: {
+    borderColor: 'rgba(224, 122, 95, 0.5)',
+    borderLeftWidth: 4,
+    borderLeftColor: '#E07A5F',
   },
   message: {
     flexShrink: 1,

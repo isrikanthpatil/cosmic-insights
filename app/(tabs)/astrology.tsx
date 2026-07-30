@@ -432,7 +432,7 @@ export default function Astrology() {
               setActiveTab(tab.key);
             }}
           >
-            <tab.icon size={20} color={activeTab === tab.key ? '#E8C87E' : '#56536A'} />
+            <tab.icon size={20} color={activeTab === tab.key ? '#E8C87E' : '#6E6B84'} />
             <Text style={[styles.tabText, activeTab === tab.key && styles.activeTabText]}>
               {tab.label}
             </Text>
@@ -442,6 +442,7 @@ export default function Astrology() {
 
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={{ paddingBottom: insets.bottom }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -565,7 +566,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 12,
     fontFamily: 'Inter-Medium',
-    color: '#56536A',
+    color: '#6E6B84',
   },
   activeTabText: {
     color: '#E8C87E',

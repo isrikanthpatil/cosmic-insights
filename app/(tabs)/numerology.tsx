@@ -255,7 +255,7 @@ export default function Numerology() {
           {isGuest && !isExploring && <LoginNudge />}
           <ExploreBar />
         </View>
-        <View style={styles.content}>
+        <View style={[styles.content, { paddingBottom: insets.bottom + 88 }]}>
           <View style={styles.numbersRow}>
             <TouchableOpacity
               style={[styles.compactNumberCard, expandedCard === 'birth' && styles.compactNumberCardActive]}
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     color: '#F4F1E8',
   },
   gridNumberEmpty: {
-    color: '#56536A',
+    color: '#6E6B84',
   },
   gridElement: {
     fontSize: 11,

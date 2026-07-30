@@ -2,7 +2,7 @@
 // required — call showToast(...) from anywhere, and ToastHost subscribes once
 // at the app root to render them.
 
-export type ToastType = 'success' | 'info';
+export type ToastType = 'success' | 'info' | 'error';
 
 export interface ToastPayload {
   id: number;

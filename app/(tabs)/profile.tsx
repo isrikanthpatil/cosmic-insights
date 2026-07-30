@@ -361,7 +361,7 @@ export default function Profile() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={kb > 0 ? { paddingBottom: kb + 24 } : undefined}
+        contentContainerStyle={kb > 0 ? { paddingBottom: kb + 24 } : { paddingBottom: insets.bottom + 88 }}
       >
         <View style={styles.content}>
           {isGuest ? (
