@@ -336,16 +336,16 @@ export default function Numerology() {
             <View style={styles.expandedPanel}>
               <Text style={styles.expandedTitle}>
                 {expandedCard === 'birth'
-                  ? `Birth Number ${numerologyReading.birthNumber}`
+                  ? `Birth Number ${numerologyReading.birthNumber} · ${numerologyReading.birthNumberPlanet}`
                   : expandedCard === 'destiny'
-                  ? `Destiny Number ${numerologyReading.destinyNumber}`
+                  ? `Destiny Number ${numerologyReading.destinyNumber} · ${numerologyReading.destinyNumberPlanet}`
                   : `Kua Number ${numerologyReading.kuaNumber}`}
               </Text>
               <Text style={styles.expandedText}>
                 {expandedCard === 'birth'
-                  ? numerologyReading.birthNumberMeaning
+                  ? numerologyReading.birthNumberDetail
                   : expandedCard === 'destiny'
-                  ? numerologyReading.destinyNumberMeaning
+                  ? numerologyReading.destinyNumberDetail
                   : numerologyReading.kuaNumberMeaning}
               </Text>
             </View>

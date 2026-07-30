@@ -8,6 +8,10 @@ export interface NumerologyReading {
   birthNumberMeaning: string;
   destinyNumberMeaning: string;
   kuaNumberMeaning: string;
+  birthNumberDetail: string;
+  destinyNumberDetail: string;
+  birthNumberPlanet: string;
+  destinyNumberPlanet: string;
   loshuAnalysis: string[];
   luckyNumbers: number[];
   remedies: string[];
@@ -46,6 +50,11 @@ export const calculateBirthNumber = (dateOfBirth: string): number => {
   return sum <= 9 ? sum : sum.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
 };
 
+// Destiny Number = Bhagyank in Indian numerology: the sum of the FULL date of
+// birth reduced to a single digit. This is date-derived by definition (not a
+// misnomer). The name-based number (Namank, Chaldean) is a separate concept and
+// is planned as a future addition; firstName/lastName are accepted here for a
+// forward-compatible signature but are intentionally not used by Bhagyank.
 export const calculateDestinyNumber = (firstName: string, lastName: string, dateOfBirth: string): number => {
   const date = parseDDMMYYYY(dateOfBirth);
   if (!date) {
@@ -179,16 +188,56 @@ export const generateLoshuGrid = (dateOfBirth: string, birthNumber: number, dest
   return grid;
 };
 
-const numberMeanings = {
-  1: 'Leadership, independence, pioneering spirit',
-  2: 'Cooperation, diplomacy, sensitivity',
-  3: 'Creativity, communication, optimism',
-  4: 'Stability, practicality, hard work',
-  5: 'Freedom, adventure, versatility',
-  6: 'Nurturing, responsibility, harmony',
-  7: 'Spirituality, introspection, analysis',
-  8: 'Material success, ambition, authority',
-  9: 'Humanitarian, generous, completion'
+// Per-number knowledge (Indian numerology). Each single-digit number is governed
+// by a graha. `summary` is the one-line label shown on the compact card; `detail`
+// is the richer reading revealed when the card is expanded.
+interface NumberInfo { planet: string; summary: string; detail: string; }
+const NUMBER_KNOWLEDGE: Record<number, NumberInfo> = {
+  1: {
+    planet: 'Sun (Surya)',
+    summary: 'Leadership, independence, pioneering spirit',
+    detail: 'Ruled by the Sun, number 1 gives strong will, originality and authority — a natural pioneer and leader. Strengths: confidence, initiative and determination. Watch for: ego, dominance and impatience. Well suited to leadership, government, administration and entrepreneurship. Remedy: honour the Sun (Surya Namaskar, offering water at sunrise) and lead with humility.',
+  },
+  2: {
+    planet: 'Moon (Chandra)',
+    summary: 'Cooperation, sensitivity, intuition',
+    detail: 'Ruled by the Moon, number 2 is gentle, intuitive and diplomatic — a natural peacemaker and partner. Strengths: empathy, cooperation and imagination. Watch for: over-sensitivity, indecision and mood swings. Well suited to counselling, hospitality, caregiving and the arts. Remedy: strengthen the Moon — white clothes and foods on Mondays, and respect for the mother.',
+  },
+  3: {
+    planet: 'Jupiter (Guru)',
+    summary: 'Creativity, expression, optimism, wisdom',
+    detail: 'Ruled by Jupiter, number 3 is expressive, knowledgeable and optimistic — the teacher and creator. Strengths: communication, generosity and love of learning. Watch for: scattered focus, over-talking and over-confidence. Well suited to teaching, writing, law, advisory roles and the arts. Remedy: respect elders and gurus, wear yellow, and chant Guru mantras on Thursdays.',
+  },
+  4: {
+    planet: 'Rahu',
+    summary: 'Discipline, structure, hard work',
+    detail: 'Governed by Rahu, number 4 is practical, systematic and unconventional — a builder and reformer. Strengths: reliability, method and endurance. Watch for: stubbornness, sudden ups and downs, and a rebellious streak. Well suited to engineering, technology, real estate and systems work. Remedy: charity to the underprivileged and steady, honest effort.',
+  },
+  5: {
+    planet: 'Mercury (Budha)',
+    summary: 'Freedom, communication, adaptability',
+    detail: 'Ruled by Mercury, number 5 is versatile, quick-witted and business-minded — youthful and adaptable. Strengths: communication, intellect and resourcefulness. Watch for: restlessness, over-indulgence and inconsistency. Well suited to business, trade, media, writing and technology. Remedy: wear green, chant Budha mantras on Wednesdays, and keep the mind healthily engaged.',
+  },
+  6: {
+    planet: 'Venus (Shukra)',
+    summary: 'Love, harmony, beauty, responsibility',
+    detail: 'Ruled by Venus, number 6 is caring, artistic and family-oriented, with a love of beauty and comfort. Strengths: harmony, devotion and aesthetic sense. Watch for: over-attachment, indulgence and people-pleasing. Well suited to the arts, design, fashion, hospitality and luxury fields. Remedy: wear white, honour Shukra on Fridays, and cultivate balance in relationships.',
+  },
+  7: {
+    planet: 'Ketu',
+    summary: 'Spirituality, introspection, analysis',
+    detail: 'Governed by Ketu, number 7 is introspective, analytical and spiritually inclined — a seeker and researcher. Strengths: intuition, depth and independence. Watch for: isolation, over-skepticism and escapism. Well suited to research, spirituality, healing, analysis and philosophy. Remedy: meditation, quiet reflection and Ketu-related spiritual practice.',
+  },
+  8: {
+    planet: 'Saturn (Shani)',
+    summary: 'Ambition, discipline, material mastery',
+    detail: 'Ruled by Saturn, number 8 is hardworking, patient and just — success comes through perseverance and often after delay, but it lasts. Strengths: discipline, responsibility and endurance. Watch for: struggle, pessimism and rigidity. Well suited to administration, law, finance, mining and long-term ventures. Remedy: serve the needy, honour Shani on Saturdays, and act with fairness.',
+  },
+  9: {
+    planet: 'Mars (Mangala)',
+    summary: 'Energy, courage, humanitarian spirit',
+    detail: 'Ruled by Mars, number 9 is bold, energetic and protective — a courageous fighter for causes. Strengths: courage, discipline and compassion for others. Watch for: anger, impatience and aggression. Well suited to defence, sports, surgery, engineering and social service. Remedy: worship Hanuman, channel energy through exercise and discipline, and keep anger in check.',
+  },
 };
 
 const kuaMeanings = {
@@ -301,8 +350,12 @@ export const getNumerologyReading = (firstName: string, lastName: string, dateOf
     destinyNumber,
     kuaNumber,
     loshuGrid,
-    birthNumberMeaning: numberMeanings[birthNumber as keyof typeof numberMeanings],
-    destinyNumberMeaning: numberMeanings[destinyNumber as keyof typeof numberMeanings],
+    birthNumberMeaning: NUMBER_KNOWLEDGE[birthNumber]?.summary ?? '',
+    destinyNumberMeaning: NUMBER_KNOWLEDGE[destinyNumber]?.summary ?? '',
+    birthNumberDetail: NUMBER_KNOWLEDGE[birthNumber]?.detail ?? '',
+    destinyNumberDetail: NUMBER_KNOWLEDGE[destinyNumber]?.detail ?? '',
+    birthNumberPlanet: NUMBER_KNOWLEDGE[birthNumber]?.planet ?? '',
+    destinyNumberPlanet: NUMBER_KNOWLEDGE[destinyNumber]?.planet ?? '',
     kuaNumberMeaning: kuaMeanings[kuaNumber as keyof typeof kuaMeanings] || 'Unique energy pattern',
     loshuAnalysis,
     luckyNumbers: generateUniqueLuckyNumbers(birthNumber, destinyNumber, kuaNumber),
