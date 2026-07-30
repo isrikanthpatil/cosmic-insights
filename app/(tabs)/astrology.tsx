@@ -427,6 +427,9 @@ export default function Astrology() {
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            accessibilityRole="button"
+            accessibilityLabel={`View ${tab.label}`}
+            accessibilityState={{ selected: activeTab === tab.key }}
             onPress={() => {
               tap();
               setActiveTab(tab.key);

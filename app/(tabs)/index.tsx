@@ -281,6 +281,9 @@ export default function Home() {
                       setHoroscopeMode('daily');
                     }}
                     activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel="Show daily horoscope"
+                    accessibilityState={{ selected: horoscopeMode === 'daily' }}
                   >
                     <Text
                       style={[
@@ -301,6 +304,9 @@ export default function Home() {
                       setHoroscopeMode('weekly');
                     }}
                     activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel="Show weekly horoscope"
+                    accessibilityState={{ selected: horoscopeMode === 'weekly' }}
                   >
                     <Text
                       style={[

@@ -191,6 +191,9 @@ export default function BirthDetailsForm({
           <TouchableOpacity
             style={[styles.genderButton, gender === 'male' && styles.genderButtonActive]}
             onPress={() => setGender('male')}
+            accessibilityRole="button"
+            accessibilityLabel="Select male"
+            accessibilityState={{ selected: gender === 'male' }}
           >
             <Text
               style={[
@@ -204,6 +207,9 @@ export default function BirthDetailsForm({
           <TouchableOpacity
             style={[styles.genderButton, gender === 'female' && styles.genderButtonActive]}
             onPress={() => setGender('female')}
+            accessibilityRole="button"
+            accessibilityLabel="Select female"
+            accessibilityState={{ selected: gender === 'female' }}
           >
             <Text
               style={[

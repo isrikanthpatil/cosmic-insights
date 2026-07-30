@@ -340,6 +340,8 @@ export default function Profile() {
               style={styles.headerButton}
               hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               onPress={() => setIsEditing(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Edit profile"
             >
               <Edit3 size={20} color="#E8C87E" />
             </TouchableOpacity>
@@ -349,6 +351,8 @@ export default function Profile() {
               style={[styles.headerButton, styles.clearButton]}
               hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               onPress={handleSignOut}
+              accessibilityRole="button"
+              accessibilityLabel="Sign out"
             >
               <LogOut size={20} color="#FF6B6B" />
             </TouchableOpacity>
@@ -542,6 +546,9 @@ export default function Profile() {
                       editForm.gender === 'male' && styles.genderButtonActive
                     ]}
                     onPress={() => setEditForm({ ...editForm, gender: 'male' })}
+                    accessibilityRole="button"
+                    accessibilityLabel="Select male"
+                    accessibilityState={{ selected: editForm.gender === 'male' }}
                   >
                     <Text style={[
                       styles.genderButtonText,
@@ -554,6 +561,9 @@ export default function Profile() {
                       editForm.gender === 'female' && styles.genderButtonActive
                     ]}
                     onPress={() => setEditForm({ ...editForm, gender: 'female' })}
+                    accessibilityRole="button"
+                    accessibilityLabel="Select female"
+                    accessibilityState={{ selected: editForm.gender === 'female' }}
                   >
                     <Text style={[
                       styles.genderButtonText,

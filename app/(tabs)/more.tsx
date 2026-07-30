@@ -68,6 +68,8 @@ export default function More() {
               style={[styles.card, disabled && styles.cardDisabled]}
               activeOpacity={0.85}
               disabled={disabled}
+              accessibilityRole="button"
+              accessibilityLabel={disabled ? `${feature.title} — coming soon` : `Open ${feature.title}`}
               onPress={() => {
                 if (disabled || !feature.route) return;
                 tap();

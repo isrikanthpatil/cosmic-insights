@@ -753,6 +753,8 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
                   style={styles.suggestionButton}
                   hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                   onPress={() => setInputText(question)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ask: ${question}`}
                 >
                   <Text style={styles.suggestionText}>{question}</Text>
                 </TouchableOpacity>
@@ -829,6 +831,8 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSend}
             disabled={!inputText.trim() || isLoading}
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
           >
             <Send size={20} color={!inputText.trim() ? "#7E7B92" : "#0B0B1A"} />
           </TouchableOpacity>

@@ -385,6 +385,9 @@ export default function AuthScreen() {
                         gender === 'male' && styles.genderButtonActive,
                       ]}
                       onPress={() => setGender('male')}
+                      accessibilityRole="button"
+                      accessibilityLabel="Select male"
+                      accessibilityState={{ selected: gender === 'male' }}
                     >
                       <Text
                         style={[
@@ -401,6 +404,9 @@ export default function AuthScreen() {
                         gender === 'female' && styles.genderButtonActive,
                       ]}
                       onPress={() => setGender('female')}
+                      accessibilityRole="button"
+                      accessibilityLabel="Select female"
+                      accessibilityState={{ selected: gender === 'female' }}
                     >
                       <Text
                         style={[
@@ -446,6 +452,8 @@ export default function AuthScreen() {
                 style={styles.forgotButton}
                 onPress={handleForgotPassword}
                 disabled={submitting}
+                accessibilityRole="button"
+                accessibilityLabel="Reset password"
               >
                 <Text style={styles.forgotText}>Forgot password?</Text>
               </TouchableOpacity>
@@ -476,7 +484,12 @@ export default function AuthScreen() {
               </>
             )}
 
-            <TouchableOpacity style={styles.switchButton} onPress={switchMode}>
+            <TouchableOpacity
+              style={styles.switchButton}
+              onPress={switchMode}
+              accessibilityRole="button"
+              accessibilityLabel={mode === 'login' ? 'Switch to sign up' : 'Switch to sign in'}
+            >
               <Text style={styles.switchText}>
                 {mode === 'login'
                   ? "Don't have an account? "
