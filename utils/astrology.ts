@@ -412,69 +412,96 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
 };
 
 // Enhanced daily horoscope with detailed sections
+// Enhanced daily horoscope grounded in today's Moon transit (Chandra Gochar)
+// relative to the user's natal Moon (Janma Rashi). The transit house changes as
+// the Moon moves (~1 rashi per 2.25 days), so the reading genuinely varies day
+// to day while staying deterministic within any given day.
 export const generateDailyHoroscope = (firstName: string, dateOfBirth: string, placeOfBirth?: string): DailyHoroscope => {
   const sunSign = calculateSunSign(dateOfBirth);
-  const coordinates = placeOfBirth ? getCoordinatesForPlace(placeOfBirth) : null;
   const signData = ZODIAC_KNOWLEDGE[sunSign.toLowerCase()];
+  const { latitude, longitude } = (placeOfBirth ? getCoordinatesForPlace(placeOfBirth) : null) ?? DEFAULT_COORDS;
 
-  // Bounds-safe accessors that lower-case for natural mid-sentence insertion.
   const pick = (arr: string[] | undefined, i: number, fallback: string): string => {
     if (!arr || arr.length === 0) return fallback;
     return arr[i % arr.length];
   };
   const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
-  const element = signData?.element || 'Cosmic';
+  const ordinal = (n: number): string => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return `${n}${s[(v - 20) % 10] || s[v] || s[0]}`;
+  };
 
-  const mainPredictions = [
-    `${firstName}, your ${sunSign} strength of ${lower(pick(signData?.strengths, 0, 'inner resolve'))} is well-supported today. Lean on it and put ${lower(pick(signData?.traits, 0, 'your natural drive'))} to good use.`,
-    `Today rewards your ${element}-sign focus, ${firstName}. Your knack for ${lower(pick(signData?.strengths, 1, 'staying centered'))} will smooth the way; channel it into ${lower(pick(signData?.career, 0, 'your work'))}.`,
-    `${firstName}, ${lower(pick(signData?.traits, 1, 'your steady approach'))} sets the tone today. If ${lower(pick(signData?.challenges, 0, 'restlessness'))} surfaces, ${lower(pick(signData?.remedies, 0, 'pause and breathe'))}.`,
-    `A productive day for you, ${firstName}: your ${sunSign} gift for ${lower(pick(signData?.strengths, 2, 'clear thinking'))} pairs well with ${lower(pick(signData?.traits, 2, 'your initiative'))}. Use it where decisions count.`,
-    `Your ${element} energy runs strong today, ${firstName}. Build on ${lower(pick(signData?.strengths, 3, 'your resilience'))}, and keep ${lower(pick(signData?.challenges, 1, 'impatience'))} from steering — ${lower(pick(signData?.remedies, 1, 'slow down when it does'))}.`
-  ];
-
-  const positiveEnergies = [
-    `Your ${sunSign} talent for ${lower(pick(signData?.strengths, 0, 'connection'))} draws the right people toward you today.`,
-    `${element}-sign vitality favors ${lower(pick(signData?.career, 0, 'meaningful work'))} — a good day to make real progress there.`,
-    `${lower(pick(signData?.traits, 0, 'your warmth'))} is especially magnetic today, deepening the bonds that matter.`,
-    `Your knack for ${lower(pick(signData?.strengths, 1, 'sound judgment'))} is heightened, sharpening the decisions ahead.`,
-    `Confidence rooted in ${lower(pick(signData?.strengths, 2, 'your experience'))} helps you turn intentions into action.`
-  ];
-
-  const advices = [
-    `Lean into ${lower(pick(signData?.strengths, 0, 'your strengths'))} today, ${firstName} — that is where your ${sunSign} energy works best.`,
-    `If ${lower(pick(signData?.challenges, 0, 'doubt'))} creeps in, ${lower(pick(signData?.remedies, 0, 'take a grounding moment'))} before you respond.`,
-    `Put your ${sunSign} gift for ${lower(pick(signData?.strengths, 1, 'follow-through'))} toward ${lower(pick(signData?.career, 0, 'what matters most'))} today.`,
-    `Watch for ${lower(pick(signData?.challenges, 1, 'overcommitting'))}; a simple remedy is to ${lower(pick(signData?.remedies, 1, 'set one clear priority'))}.`,
-    `Honor your ${element} nature: ${lower(pick(signData?.remedies, 2, 'spend a few quiet minutes resetting'))}, then act with intention.`
-  ];
-
-  // Generate today's lucky numbers based on sign and date
   const today = new Date();
+  const todayStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+
+  // Natal Moon (Janma Rashi) and today's transiting Moon (both sidereal).
+  let natalMoonRashi = 0;
+  let transitMoonRashi = 0;
+  try {
+    natalMoonRashi = computeEphemeris({ dateOfBirth, latitude, longitude }).moonRashi;
+    transitMoonRashi = computeEphemeris({ dateOfBirth: todayStr, latitude, longitude }).moonRashi;
+  } catch {
+    // fall through to non-transit framing on any failure
+  }
+  const natalMoonSign = natalMoonRashi ? rashiToSign(natalMoonRashi) : '';
+  const transitHouse = natalMoonRashi && transitMoonRashi
+    ? ((transitMoonRashi - natalMoonRashi + 12) % 12) + 1
+    : 0;
+
+  // Classic Chandra Gochar significations by transit house from the Janma Rashi.
+  const GOCHAR: Record<number, { tone: 'good' | 'caution'; line: string }> = {
+    1: { tone: 'caution', line: 'the Moon sits over your own sign, heightening feelings and restlessness — pace yourself and avoid overreacting' },
+    2: { tone: 'good', line: 'attention turns to family, finances and speech — a good day to save, plan, and speak with care' },
+    3: { tone: 'good', line: 'courage and initiative are favoured — push your efforts and reach out; your words carry weight' },
+    4: { tone: 'caution', line: 'home and comfort need tending and the mind may feel unsettled — keep the day light and avoid needless travel' },
+    5: { tone: 'good', line: 'creativity, romance and a positive mind are supported — express yourself and enjoy learning' },
+    6: { tone: 'good', line: 'you can overcome rivals and obstacles — a strong day to resolve disputes and clear pending work' },
+    7: { tone: 'good', line: 'partnerships, dealings and short journeys flow well — cooperation brings the best results' },
+    8: { tone: 'caution', line: 'this is Chandrashtama — guard your health and emotions, and postpone major decisions where you can' },
+    9: { tone: 'good', line: 'fortune and dharma are supported — favourable for learning, travel and acts of faith' },
+    10: { tone: 'good', line: 'career and visible action are favoured — a productive day to advance your work' },
+    11: { tone: 'good', line: 'gains and the fulfilment of wishes are indicated — network and pursue your goals confidently' },
+    12: { tone: 'caution', line: 'energy turns toward rest, expenses and letting go — good for reflection and spiritual practice, poor for big spending' },
+  };
+
+  const daySeed = `${sunSign}-${getTodayKey(today)}`;
+  const gochar = transitHouse ? GOCHAR[transitHouse] : null;
+  const strength = lower(pick(signData?.strengths, seededIndex(`${daySeed}-str`, signData?.strengths?.length || 1), 'inner resolve'));
+  const challenge = lower(pick(signData?.challenges, seededIndex(`${daySeed}-ch`, signData?.challenges?.length || 1), 'restlessness'));
+  const remedy = lower(pick(signData?.remedies, seededIndex(`${daySeed}-rem`, signData?.remedies?.length || 1), 'pause and breathe'));
+
+  const mainPrediction = gochar
+    ? `${firstName}, today the Moon transits the ${ordinal(transitHouse)} house from your Janma Rashi (${natalMoonSign}) — ${gochar.line}. Your ${sunSign} strength of ${strength} supports you, so ${gochar.tone === 'caution' ? `be mindful of ${challenge}, and ${remedy}` : 'put it to work where it counts'}.`
+    : `${firstName}, your ${sunSign} strength of ${strength} is well-supported today. Put it to good use, and if ${challenge} surfaces, ${remedy}.`;
+
+  const positiveEnergy = gochar
+    ? (gochar.tone === 'caution'
+        ? `Even under today's ${ordinal(transitHouse)}-house Moon, your ${sunSign} gift for ${strength} keeps you steady — a good day for quiet, careful progress.`
+        : `With the Moon well placed in your ${ordinal(transitHouse)} house, your ${sunSign} gift for ${strength} draws the right people and openings toward you.`)
+    : `Your ${sunSign} talent for ${strength} draws the right people toward you today.`;
+
+  const advice = gochar && gochar.tone === 'caution'
+    ? `Go gently today: avoid forcing decisions, watch ${challenge}, and ${remedy}.`
+    : `Lean into ${strength} today, ${firstName} — and channel it into ${lower(pick(signData?.career, seededIndex(`${daySeed}-car`, signData?.career?.length || 1), 'what matters most'))}.`;
+
   const dayNumber = today.getDate();
   const monthNumber = today.getMonth() + 1;
   const baseLuckyNumbers = signData?.numbers || [1, 7, 14];
   const todaysLuckyNumbers = [
     baseLuckyNumbers[0],
     (dayNumber + baseLuckyNumbers[1]) % 31 + 1,
-    (monthNumber + baseLuckyNumbers[2]) % 31 + 1
+    (monthNumber + baseLuckyNumbers[2]) % 31 + 1,
   ];
-
-  // Select today's lucky color
   const signColors = signData?.colors || ['Gold', 'Red'];
-  const colorIndex = dayNumber % signColors.length;
-  const todaysLuckyColor = signColors[colorIndex];
-
-  // Deterministic selection: same sun sign + same day always yields the same
-  // horoscope, and it changes the next day.
-  const daySeed = `${sunSign}-${getTodayKey(today)}`;
+  const todaysLuckyColor = signColors[dayNumber % signColors.length];
 
   return {
-    mainPrediction: mainPredictions[seededIndex(`${daySeed}-main`, mainPredictions.length)],
+    mainPrediction,
     luckyNumbers: todaysLuckyNumbers,
     luckyColor: todaysLuckyColor,
-    positiveEnergy: positiveEnergies[seededIndex(`${daySeed}-energy`, positiveEnergies.length)],
-    advice: advices[seededIndex(`${daySeed}-advice`, advices.length)]
+    positiveEnergy,
+    advice,
   };
 };
 
@@ -534,17 +561,43 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
     `Reflection and personal growth`
   ];
 
-  // Deterministic selection seeded on sun sign + ISO week, so the weekly
-  // overview is stable for the whole week and changes the next week.
+  // Deterministic per ISO week: stable all week, changes next week. A seeded
+  // ROTATION (not a fixed slice) makes highlights/focus/lucky-days differ week
+  // to week instead of always showing the same first entries.
   const weekSeed = `${sunSign}-${getISOWeekKey(today)}`;
+  const rotate = <T,>(arr: T[], seed: string, k: number): T[] => {
+    if (arr.length === 0) return [];
+    const off = seededIndex(seed, arr.length);
+    const out: T[] = [];
+    for (let i = 0; i < Math.min(k, arr.length); i++) out.push(arr[(off + i) % arr.length]);
+    return out;
+  };
+
+  // Lucky days: lead with the day ruled by the sign's lord (a genuinely Vedic
+  // touch), then add a rotated general suggestion.
+  const RULER_DAY: Record<string, string> = {
+    Sun: 'Sunday', Moon: 'Monday', Mars: 'Tuesday', Mercury: 'Wednesday',
+    Jupiter: 'Thursday', Venus: 'Friday', Saturn: 'Saturday',
+  };
+  const lordDay = RULER_DAY[(signData?.ruler || '').trim()] || '';
+  const lordLine = lordDay
+    ? `${lordDay} — ruled by your sign lord ${signData?.ruler}, favourable for important matters`
+    : null;
+  const rotatedDays = rotate(luckyDays, `${weekSeed}-days`, 2);
+  const weeklyLuckyDays = (lordLine ? [lordLine, rotatedDays[0]] : rotatedDays).filter(Boolean).slice(0, 2) as string[];
+
+  // Longer overview: the seeded overview plus a complementary focus sentence.
+  const overview =
+    `${weeklyOverviews[seededIndex(`${weekSeed}-overview`, weeklyOverviews.length)]} ` +
+    `This week's momentum favours ${lower(pick(signData?.career, seededIndex(`${weekSeed}-foc`, signData?.career?.length || 1), 'your goals'))}; keep a light hand on ${lower(pick(signData?.challenges, seededIndex(`${weekSeed}-chal`, signData?.challenges?.length || 1), 'over-commitment'))}.`;
 
   return {
     weekStart,
     weekEnd,
-    overview: weeklyOverviews[seededIndex(`${weekSeed}-overview`, weeklyOverviews.length)],
-    highlights: weeklyHighlights.slice(0, 3),
-    luckyDays: luckyDays.slice(0, 2),
-    focusAreas: focusAreas.slice(0, 3)
+    overview,
+    highlights: rotate(weeklyHighlights, `${weekSeed}-hl`, 3),
+    luckyDays: weeklyLuckyDays,
+    focusAreas: rotate(focusAreas, `${weekSeed}-fa`, 3),
   };
 };
 
