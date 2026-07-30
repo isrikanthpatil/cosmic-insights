@@ -1,5 +1,6 @@
 import { parseDDMMYYYY } from './dateUtils';
 import { ZODIAC_KNOWLEDGE, PLANETARY_KNOWLEDGE, HOUSE_KNOWLEDGE, ZodiacSignData } from './astrologyKnowledge';
+import { computeEphemeris } from './jyotish/ephemeris';
 
 export interface AstrologyReading {
   sunSign: string;
@@ -252,121 +253,111 @@ export const getCoordinatesForPlace = (place: string): { latitude: number; longi
 };
 
 // Enhanced sun sign calculation with proper date parsing
+// Map a sidereal rashi (1-12) to its English sign name (Mesha=Aries ... Meena=Pisces).
+const rashiToSign = (rashi: number): string => zodiacSigns[((rashi - 1) % 12 + 12) % 12];
+
+// Reference location (India centroid) used when no birth place is supplied. The
+// sidereal SUN sign is essentially date-determined, so this only resolves the
+// calendar day -> UT and does not meaningfully shift the 30° rashi bin except
+// within ~1 day of a Sankranti.
+const DEFAULT_COORDS = { latitude: 22, longitude: 79 };
+
+const coordsOrDefault = (placeOfBirth?: string): { latitude: number; longitude: number } => {
+  const c = placeOfBirth ? getCoordinatesForPlace(placeOfBirth) : null;
+  return c ?? DEFAULT_COORDS;
+};
+
+// Sidereal (Lahiri) SUN sign — the Vedic Surya rashi. Location-insensitive, so
+// the reference location is sufficient when a place isn't provided.
 export const calculateSunSign = (dateOfBirth: string, timeOfBirth?: string): string => {
-  const date = parseDDMMYYYY(dateOfBirth);
-  if (!date) {
-    console.error('Invalid date format for sun sign calculation:', dateOfBirth);
-    return 'Aries'; // Default fallback
+  try {
+    const { latitude, longitude } = coordsOrDefault();
+    const eph = computeEphemeris({ dateOfBirth, timeOfBirth, latitude, longitude });
+    return rashiToSign(eph.sunRashi);
+  } catch {
+    return 'Aries';
   }
-  
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  // Basic sun sign calculation (can be enhanced with time and location for more accuracy)
-  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Aries';
-  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Taurus';
-  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return 'Gemini';
-  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return 'Cancer';
-  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Leo';
-  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Virgo';
-  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return 'Libra';
-  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return 'Scorpio';
-  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Sagittarius';
-  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Capricorn';
-  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Aquarius';
-  return 'Pisces';
 };
 
-// Calculate moon sign based on birth details (simplified calculation)
+// Sidereal (Lahiri) MOON sign — the Vedic Janma Rashi. Uses the birth place for
+// timezone; without a birth time it defaults to noon (accurate to within ~1 day
+// of a rashi boundary, since the Moon stays ~2.25 days per rashi).
 export const calculateMoonSign = (dateOfBirth: string, placeOfBirth: string): string => {
-  const date = parseDDMMYYYY(dateOfBirth);
-  if (!date) {
-    console.error('Invalid date format for moon sign calculation:', dateOfBirth);
-    return 'Cancer'; // Default fallback (Moon rules Cancer)
+  try {
+    const { latitude, longitude } = coordsOrDefault(placeOfBirth);
+    const eph = computeEphemeris({ dateOfBirth, latitude, longitude });
+    return rashiToSign(eph.moonRashi);
+  } catch {
+    return 'Cancer';
   }
-  
-  const coordinates = getCoordinatesForPlace(placeOfBirth);
-  
-  // Simplified moon sign calculation
-  // In a real app, this would use complex astronomical calculations
-  const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
-  const moonCycle = (dayOfYear + (coordinates?.longitude || 0) / 15) % 12;
-  
-  return zodiacSigns[Math.floor(moonCycle)];
 };
 
-// Calculate ascendant (rising sign) based on birth time and location
+// Sidereal (Lahiri) ASCENDANT (Lagna). The Lagna genuinely cannot be known
+// without a birth time, so this returns '' when no time is supplied rather than
+// fabricating one. Callers should treat '' as "add birth time".
 export const calculateAscendant = (dateOfBirth: string, placeOfBirth: string, timeOfBirth?: string): string => {
-  const date = parseDDMMYYYY(dateOfBirth);
-  if (!date) {
-    console.error('Invalid date format for ascendant calculation:', dateOfBirth);
-    return 'Leo'; // Default fallback (Sun rules Leo)
+  if (!timeOfBirth || !/^\d{1,2}:\d{2}$/.test(timeOfBirth.trim())) return '';
+  try {
+    const { latitude, longitude } = coordsOrDefault(placeOfBirth);
+    const eph = computeEphemeris({ dateOfBirth, timeOfBirth, latitude, longitude });
+    return eph.ascendantRashi ? rashiToSign(eph.ascendantRashi) : '';
+  } catch {
+    return '';
   }
-  
-  const coordinates = getCoordinatesForPlace(placeOfBirth);
-  
-  if (!coordinates) {
-    // Fallback calculation without coordinates
-    const hour = timeOfBirth ? parseInt(timeOfBirth.split(':')[0]) : 6; // Default to 6 AM
-    const ascendantIndex = (date.getDate() + hour) % 12;
-    return zodiacSigns[ascendantIndex];
-  }
-
-  // Simplified ascendant calculation using coordinates
-  // In a real app, this would use complex astronomical calculations
-  const hour = timeOfBirth ? parseInt(timeOfBirth.split(':')[0]) : 6;
-  const localTimeOffset = coordinates.longitude / 15; // Rough time zone calculation
-  const adjustedHour = (hour + localTimeOffset) % 24;
-  const ascendantIndex = Math.floor((adjustedHour * 12) / 24) % 12;
-  
-  return zodiacSigns[ascendantIndex];
 };
 
 // Enhanced astrology reading with comprehensive knowledge base
 export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, timeOfBirth?: string): AstrologyReading => {
   const coordinates = getCoordinatesForPlace(placeOfBirth);
-  const sunSign = calculateSunSign(dateOfBirth, timeOfBirth);
-  const moonSign = calculateMoonSign(dateOfBirth, placeOfBirth);
-  const ascendant = calculateAscendant(dateOfBirth, placeOfBirth, timeOfBirth);
-  
+
+  // One sidereal (Lahiri) computation drives Sun, Moon and — only when a birth
+  // time is available — the Ascendant (Lagna). Pure Vedic; no tropical fallback.
+  const { latitude, longitude } = coordinates ?? DEFAULT_COORDS;
+  let sunSign = 'Aries';
+  let moonSign = 'Cancer';
+  let ascendant = '';
+  try {
+    const eph = computeEphemeris({ dateOfBirth, timeOfBirth, latitude, longitude });
+    sunSign = rashiToSign(eph.sunRashi);
+    moonSign = rashiToSign(eph.moonRashi);
+    ascendant = eph.ascendantRashi ? rashiToSign(eph.ascendantRashi) : '';
+  } catch {
+    // keep sensible defaults on any parse/compute failure
+  }
+  const hasAsc = ascendant !== '';
+
   // Get detailed data from knowledge base
   const sunSignData = ZODIAC_KNOWLEDGE[sunSign.toLowerCase()];
   const moonSignData = ZODIAC_KNOWLEDGE[moonSign.toLowerCase()];
-  const ascendantData = ZODIAC_KNOWLEDGE[ascendant.toLowerCase()];
+  const ascendantData = hasAsc ? ZODIAC_KNOWLEDGE[ascendant.toLowerCase()] : undefined;
 
-  // Combine traits from all three signs
+  // Combine traits (Ascendant line only when a birth time gave us a Lagna).
   const combinedTraits = [
-    `Core Identity (${sunSign}): ${sunSignData?.traits[0] || 'Strong character'}`,
-    `Emotional Nature (${moonSign}): ${moonSignData?.traits[1] || 'Deep feelings'}`,
-    `Outer Personality (${ascendant}): ${ascendantData?.traits[2] || 'Unique approach'}`
+    `Core Identity (Sun in ${sunSign}): ${sunSignData?.traits[0] || 'Strong character'}`,
+    `Emotional Nature (Moon in ${moonSign}): ${moonSignData?.traits[1] || 'Deep feelings'}`,
+    ...(hasAsc ? [`Outer Personality (${ascendant} Rising): ${ascendantData?.traits[2] || 'Unique approach'}`] : []),
   ];
 
-  // Combine strengths from all three signs
   const combinedStrengths = [
     `Sun in ${sunSign}: ${sunSignData?.strengths[0] || 'Core strength'}`,
     `Moon in ${moonSign}: ${moonSignData?.strengths[1] || 'Emotional strength'}`,
-    `${ascendant} Rising: ${ascendantData?.strengths[2] || 'Social strength'}`,
+    ...(hasAsc ? [`${ascendant} Rising: ${ascendantData?.strengths[2] || 'Social strength'}`] : []),
     ...sunSignData?.strengths.slice(3, 5) || []
   ];
 
-  // Combine challenges from all three signs
   const combinedChallenges = [
     `Sun in ${sunSign}: ${sunSignData?.challenges[0] || 'Core challenge'}`,
     `Moon in ${moonSign}: ${moonSignData?.challenges[1] || 'Emotional challenge'}`,
-    `${ascendant} Rising: ${ascendantData?.challenges[2] || 'Social challenge'}`,
+    ...(hasAsc ? [`${ascendant} Rising: ${ascendantData?.challenges[2] || 'Social challenge'}`] : []),
     ...sunSignData?.challenges.slice(3, 5) || []
   ];
 
-  // Combine remedies from all three signs
   const combinedRemedies = [
     `For ${sunSign} Sun: ${sunSignData?.remedies[0] || 'Practice self-awareness'}`,
     `For ${moonSign} Moon: ${moonSignData?.remedies[1] || 'Balance emotions'}`,
-    `For ${ascendant} Rising: ${ascendantData?.remedies[2] || 'Align expression'}`,
+    ...(hasAsc ? [`For ${ascendant} Rising: ${ascendantData?.remedies[2] || 'Align expression'}`] : []),
     ...sunSignData?.remedies.slice(3, 5) || []
   ];
-
-  // Generate location-based insights
-  const locationInsights = coordinates ? getLocationBasedInsights(coordinates) : [];
 
   // Helpers to safely pull a curated attribute (bounds-safe, lower-cased for
   // natural mid-sentence insertion).
@@ -376,11 +367,15 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
   };
   const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
-  // Generate personalized predictions grounded in curated attributes.
+  // Generate personalized predictions grounded in curated attributes. The
+  // Ascendant-based line is only included when a birth time yielded a Lagna;
+  // otherwise a Moon-based line takes its place.
   const pastPredictions = [
     `Your ${sunSign} Sun gave you ${lower(pick(sunSignData?.strengths, 0, 'inner strength'))}, which carried you through the past year.`,
     `With the Moon in ${moonSign}, you grew by working through ${lower(pick(moonSignData?.challenges, 1, 'old emotional patterns'))}; ${lower(pick(moonSignData?.remedies, 1, 'tending to your feelings'))} steadied you.`,
-    `Your ${ascendant} Rising shaped how others saw you, leaning on ${lower(pick(ascendantData?.strengths, 2, 'your social poise'))} when it mattered most.`,
+    hasAsc
+      ? `Your ${ascendant} Rising shaped how others saw you, leaning on ${lower(pick(ascendantData?.strengths, 2, 'your social poise'))} when it mattered most.`
+      : `Your ${moonSign} Moon shaped how you connected with others, leaning on ${lower(pick(moonSignData?.strengths, 2, 'your emotional insight'))} when it mattered most.`,
     `Drawing on ${lower(pick(sunSignData?.strengths, 3, 'your core gifts'))}, you turned recent setbacks into lasting lessons.`
   ];
 
@@ -388,7 +383,9 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
     `The months ahead favor your ${sunSign} gift of ${lower(pick(sunSignData?.strengths, 1, 'steady focus'))} — let it lead your biggest decisions.`,
     `Your ${moonSign} Moon points to warmer relationships; watch for ${lower(pick(moonSignData?.challenges, 0, 'guardedness'))}, and ${lower(pick(moonSignData?.remedies, 0, 'stay open'))}.`,
     `Career momentum builds where you apply ${lower(pick(sunSignData?.strengths, 2, 'your determination'))}; growth in ${lower(pick(sunSignData?.career, 0, 'your chosen field'))} is well-aspected.`,
-    `To keep the ${ascendant} Rising challenge of ${lower(pick(ascendantData?.challenges, 2, 'self-doubt'))} in check, ${lower(pick(ascendantData?.remedies, 2, 'align your actions with your values'))}.`
+    hasAsc
+      ? `To keep the ${ascendant} Rising challenge of ${lower(pick(ascendantData?.challenges, 2, 'self-doubt'))} in check, ${lower(pick(ascendantData?.remedies, 2, 'align your actions with your values'))}.`
+      : `Add your exact birth time to your profile to unlock your Ascendant (Lagna) and a more precise reading.`
   ];
 
   return {
@@ -405,11 +402,11 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
     luckyColors: sunSignData?.colors || ['Red', 'Gold'],
     compatibility: sunSignData?.compatibility || [],
     coordinates: coordinates || undefined,
-    locationInsights,
+    locationInsights: [],
     detailedAnalysis: {
       sunSignData: sunSignData || ZODIAC_KNOWLEDGE.aries,
       moonSignData: moonSignData || ZODIAC_KNOWLEDGE.cancer,
-      ascendantData: ascendantData || ZODIAC_KNOWLEDGE.leo
+      ascendantData: ascendantData || sunSignData || ZODIAC_KNOWLEDGE.aries
     }
   };
 };
@@ -555,46 +552,6 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
 export const generateSimpleDailyHoroscope = (firstName: string, dateOfBirth: string, placeOfBirth?: string): string => {
   const dailyHoroscope = generateDailyHoroscope(firstName, dateOfBirth, placeOfBirth);
   return dailyHoroscope.mainPrediction;
-};
-
-// Function to get astrological insights based on coordinates
-export const getLocationBasedInsights = (coordinates: { latitude: number; longitude: number }): string[] => {
-  const insights = [];
-  
-  // Northern hemisphere insights
-  if (coordinates.latitude > 0) {
-    insights.push("Being born in the Northern Hemisphere gives you strong connection to solar energies and leadership qualities");
-    insights.push("Your birth location favors pioneering spirit and the ability to initiate new projects");
-  } else {
-    insights.push("Southern Hemisphere birth brings intuitive depth and emotional wisdom");
-    insights.push("Your location enhances spiritual abilities and artistic expression");
-  }
-  
-  // Eastern longitude insights
-  if (coordinates.longitude > 0) {
-    insights.push("Eastern birth coordinates indicate early opportunities and quick manifestation of desires");
-    insights.push("Your location supports innovation, forward-thinking, and technological advancement");
-  } else {
-    insights.push("Western coordinates bring stability, traditional wisdom, and methodical approach");
-    insights.push("Your birth location favors patience, long-term planning, and sustainable growth");
-  }
-  
-  // Tropical zone insights (between 23.5°N and 23.5°S)
-  if (Math.abs(coordinates.latitude) <= 23.5) {
-    insights.push("Tropical birth location enhances creativity, passion, and abundance mindset");
-    insights.push("Your coordinates support growth, fertility, and natural healing abilities");
-  }
-  
-  // Specific latitude insights
-  if (coordinates.latitude > 30) {
-    insights.push("Higher latitude birth enhances mental clarity and philosophical thinking");
-  } else if (coordinates.latitude > 15) {
-    insights.push("Moderate latitude birth balances material and spiritual pursuits");
-  } else {
-    insights.push("Lower latitude birth enhances emotional intelligence and intuitive abilities");
-  }
-  
-  return insights;
 };
 
 // Get detailed sign information

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getAstrologyReading, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
+import { getAstrologyReading, getSignDetails } from '@/utils/astrology';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
@@ -190,11 +190,21 @@ export default function Astrology() {
               <View style={styles.halfCard}>
                 <Star size={24} color="#B49BE6" />
                 <Text style={styles.halfCardTitle}>Ascendant</Text>
-                <Text style={styles.halfCardValue}>{astrologyData.ascendant}</Text>
-                <Text style={styles.halfCardDesc}>How others see you</Text>
-                <Text style={styles.halfCardElement}>
-                  Ruled by {astrologyData.detailedAnalysis.ascendantData.ruler}
-                </Text>
+                {astrologyData.ascendant ? (
+                  <>
+                    <Text style={styles.halfCardValue}>{astrologyData.ascendant}</Text>
+                    <Text style={styles.halfCardDesc}>How others see you</Text>
+                    <Text style={styles.halfCardElement}>
+                      Ruled by {astrologyData.detailedAnalysis.ascendantData.ruler}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.halfCardValue}>—</Text>
+                    <Text style={styles.halfCardDesc}>Add your birth time</Text>
+                    <Text style={styles.halfCardElement}>to reveal your Lagna</Text>
+                  </>
+                )}
               </View>
             </View>
 
@@ -202,13 +212,13 @@ export default function Astrology() {
               <View style={styles.coordinatesCard}>
                 <View style={styles.coordinatesHeader}>
                   <MapPin size={20} color="#69C779" />
-                  <Text style={styles.coordinatesTitle}>Birth Location Influence</Text>
+                  <Text style={styles.coordinatesTitle}>Birth Location</Text>
                 </View>
                 <Text style={styles.coordinatesText}>
                   {userProfile.placeOfBirth} ({astrologyData.coordinates.latitude.toFixed(2)}°N, {astrologyData.coordinates.longitude.toFixed(2)}°E)
                 </Text>
                 <Text style={styles.coordinatesDescription}>
-                  Your birth coordinates add unique celestial influences to your astrological profile
+                  Used to compute your sidereal (Lahiri) chart — Moon sign, Ascendant, and planetary positions.
                 </Text>
               </View>
             )}
@@ -216,7 +226,8 @@ export default function Astrology() {
             <View style={styles.section}>
               <SectionHeader icon={Sparkles} title="Integrated Personality Traits" iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
-                Based on your Sun in {astrologyData.sunSign}, Moon in {astrologyData.moonSign}, and {astrologyData.ascendant} Rising
+                Based on your Sun in {astrologyData.sunSign}, Moon in {astrologyData.moonSign}
+                {astrologyData.ascendant ? `, and ${astrologyData.ascendant} Rising` : ''}
               </Text>
               <View style={styles.chipGroup}>
                 {astrologyData.traits.map((trait, index) => (
@@ -240,7 +251,9 @@ export default function Astrology() {
                 </View>
                 <View style={styles.elementCard}>
                   <Text style={styles.elementLabel}>Rising Quality</Text>
-                  <Text style={styles.elementValue}>{astrologyData.detailedAnalysis.ascendantData.quality}</Text>
+                  <Text style={styles.elementValue}>
+                    {astrologyData.ascendant ? astrologyData.detailedAnalysis.ascendantData.quality : '—'}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -376,7 +389,7 @@ export default function Astrology() {
               <View style={styles.predictionCard}>
                 <Text style={styles.predictionTitle}>Career & Life Path Guidance</Text>
                 <Text style={styles.predictionText}>
-                  Your astrological combination suggests success in fields related to {lc(sd.career?.[0], 'your craft')}, {lc(sd.career?.[1], 'leadership')}, and {lc(sd.career?.[2], 'creative work')}. The {astrologyData.ascendant} Rising enhances your ability to present yourself professionally.
+                  Your astrological combination suggests success in fields related to {lc(sd.career?.[0], 'your craft')}, {lc(sd.career?.[1], 'leadership')}, and {lc(sd.career?.[2], 'creative work')}.{astrologyData.ascendant ? ` The ${astrologyData.ascendant} Rising enhances your ability to present yourself professionally.` : ''}
                 </Text>
               </View>
 
@@ -390,7 +403,7 @@ export default function Astrology() {
               <View style={styles.predictionCard}>
                 <Text style={styles.predictionTitle}>Spiritual Evolution</Text>
                 <Text style={styles.predictionText}>
-                  Your unique combination of {astrologyData.sunSign}, {astrologyData.moonSign}, and {astrologyData.ascendant} indicates a soul journey focused on developing {lc(sd.keywords?.[2], 'wisdom')} and {lc(sd.keywords?.[3], 'compassion')}. This lifetime offers opportunities for significant spiritual growth and self-realization.
+                  Your unique combination of {astrologyData.sunSign}{astrologyData.ascendant ? `, ${astrologyData.moonSign}, and ${astrologyData.ascendant}` : ` and ${astrologyData.moonSign}`} indicates a soul journey focused on developing {lc(sd.keywords?.[2], 'wisdom')} and {lc(sd.keywords?.[3], 'compassion')}. This lifetime offers opportunities for significant spiritual growth and self-realization.
                 </Text>
               </View>
             </View>

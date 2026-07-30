@@ -240,10 +240,14 @@ export default function Home() {
                 <Star size={20} color="#B49BE6" />
                 <Text style={styles.chartLabel}>Rising</Text>
                 <View style={styles.chartValueRow}>
-                  <Text style={styles.chartValue}>{chart?.ascendant}</Text>
                   {chart?.ascendant ? (
-                    <Text style={styles.chartGlyph}>{getZodiacGlyph(chart.ascendant)}</Text>
-                  ) : null}
+                    <>
+                      <Text style={styles.chartValue}>{chart.ascendant}</Text>
+                      <Text style={styles.chartGlyph}>{getZodiacGlyph(chart.ascendant)}</Text>
+                    </>
+                  ) : (
+                    <Text style={styles.chartHint}>Add birth time</Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -519,6 +523,12 @@ const styles = StyleSheet.create({
   chartGlyph: {
     fontSize: 15,
     color: '#E8C87E',
+  },
+  chartHint: {
+    fontSize: 11,
+    fontFamily: 'Inter-Medium',
+    color: '#8B88A0',
+    textAlign: 'center',
   },
   numbersRow: {
     flexDirection: 'row',

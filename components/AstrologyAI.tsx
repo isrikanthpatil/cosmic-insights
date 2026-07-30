@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { useRouter } from 'expo-router';
 import { MessageCircle, Send, Sparkles, LogIn } from 'lucide-react-native';
-import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getLocationBasedInsights, getSignDetails } from '@/utils/astrology';
+import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinatesForPlace, getSignDetails } from '@/utils/astrology';
 import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
 import { pb } from '@/utils/pocketbase';
@@ -412,10 +412,6 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         }
       }
       
-      if (coordinates && (lowerQuestion.includes('location') || lowerQuestion.includes('coordinates') || lowerQuestion.includes('birthplace'))) {
-        const insights = getLocationBasedInsights(coordinates);
-        return `Your birth location (${userProfile.placeOfBirth}) at coordinates ${coordinates.latitude.toFixed(2)}°N, ${coordinates.longitude.toFixed(2)}°E brings special influences:\n\n${insights.join('\n\n')}`;
-      }
     }
     
     // Check for zodiac sign questions
