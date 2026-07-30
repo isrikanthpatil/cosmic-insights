@@ -54,6 +54,8 @@ export interface EphemerisInput {
 }
 
 export interface EphemerisResult {
+  sunSiderealLongitude: number; // deg 0-360 (Lahiri)
+  sunRashi: number; // 1-12 — sidereal Sun sign (Surya rashi)
   moonSiderealLongitude: number; // deg 0-360 (Lahiri)
   nakshatra: number; // 1-27
   pada: number; // 1-4
@@ -204,10 +206,11 @@ function moonTropicalLongitude(jd: number): number {
 }
 
 /**
- * Earth's heliocentric ecliptic longitude (deg), low-precision Sun series
- * (Meeus ch.25). Earth long = Sun's geocentric long + 180.
+ * Sun's geocentric apparent ecliptic longitude (tropical, deg) — low-precision
+ * solar series (Meeus ch.25). Accurate to ~0.01°, far finer than the 30° rashi
+ * bin. Used for the sidereal Sun sign (Surya rashi) in the Vedic reading.
  */
-function earthHeliocentricLongitude(jd: number): number {
+function sunTropicalLongitude(jd: number): number {
   const T = (jd - 2451545.0) / 36525.0;
   const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T; // Sun mean long
   const M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T; // Sun mean anomaly
@@ -215,8 +218,15 @@ function earthHeliocentricLongitude(jd: number): number {
     (1.914602 - 0.004817 * T - 0.000014 * T * T) * sinDeg(M) +
     (0.019993 - 0.000101 * T) * sinDeg(2 * M) +
     0.000289 * sinDeg(3 * M);
-  const sunTrueLong = L0 + C; // Sun's geocentric true longitude
-  return norm360(sunTrueLong + 180); // Earth's heliocentric longitude
+  return norm360(L0 + C); // Sun's geocentric true longitude
+}
+
+/**
+ * Earth's heliocentric ecliptic longitude (deg). Earth long = Sun's geocentric
+ * long + 180.
+ */
+function earthHeliocentricLongitude(jd: number): number {
+  return norm360(sunTropicalLongitude(jd) + 180);
 }
 
 /**
@@ -365,6 +375,10 @@ export function computeEphemeris(input: EphemerisInput): EphemerisResult {
 
   const ayanamsa = lahiriAyanamsa(jdUT);
 
+  const sunTrop = sunTropicalLongitude(jdUT);
+  const sunSid = norm360(sunTrop - ayanamsa);
+  const sunRashi = Math.floor(sunSid / 30) + 1; // 1-12
+
   const moonTrop = moonTropicalLongitude(jdUT);
   const moonSid = norm360(moonTrop - ayanamsa);
 
@@ -384,6 +398,8 @@ export function computeEphemeris(input: EphemerisInput): EphemerisResult {
   }
 
   return {
+    sunSiderealLongitude: sunSid,
+    sunRashi,
     moonSiderealLongitude: moonSid,
     nakshatra,
     pada,
