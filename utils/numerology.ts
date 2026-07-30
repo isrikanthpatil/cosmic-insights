@@ -362,13 +362,12 @@ export const getNumerologyReading = (firstName: string, lastName: string, dateOf
     missingNumbers: [...missingNumbers].sort((a, b) => a - b),
     gridMeanings,
     remedies: [
-      `Strengthen birth number ${birthNumber} energy through meditation and positive affirmations`,
-      `Enhance destiny number ${destinyNumber} qualities in daily life and career choices`,
-      `Use Kua number ${kuaNumber} favorable directions for important activities and sleeping`,
-      'Practice gratitude and maintain positive thoughts to attract abundance',
-      'Wear gemstones and colors associated with your lucky numbers',
-      'For missing numbers, practice activities that develop those qualities',
-      'Chant mantras during early morning hours for spiritual growth'
+      `Birth Number ${birthNumber} is ruled by ${NUMBER_KNOWLEDGE[birthNumber]?.planet ?? 'its graha'} — honour that planet (its weekday, colour and mantra) to strengthen your core nature.`,
+      `Destiny Number ${destinyNumber} (Bhagyank) is ruled by ${NUMBER_KNOWLEDGE[destinyNumber]?.planet ?? 'its graha'} — align major decisions and career choices with its qualities.`,
+      `Use your Kua number ${kuaNumber} favourable directions for sleeping, studying and important work.`,
+      `Chant the ruling graha's mantra in the early morning (brahma muhurta), especially on that planet's weekday.`,
+      `Donate items linked to your ruling planet (its colour, grain or metal) on its weekday to ease obstacles.`,
+      `For any missing Lo Shu numbers, consciously practise the qualities they represent (see the grid analysis above).`,
     ]
   };
 };
