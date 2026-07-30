@@ -305,16 +305,15 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
       }
     },
     planets: {
-      sun: "Represents ego, identity, vitality, and life force. Rules Leo. Shows your core self and life purpose.",
-      moon: "Represents emotions, instincts, subconscious, and nurturing. Rules Cancer. Shows your emotional nature.",
-      mercury: "Represents communication, intellect, and reasoning. Rules Gemini and Virgo. Shows how you think and communicate.",
-      venus: "Represents love, beauty, harmony, and values. Rules Taurus and Libra. Shows what you value and how you love.",
-      mars: "Represents energy, action, desire, and aggression. Rules Aries and Scorpio. Shows how you assert yourself.",
-      jupiter: "Represents expansion, wisdom, luck, and philosophy. Rules Sagittarius and Pisces. Shows growth and opportunities.",
-      saturn: "Represents discipline, responsibility, limitations, and lessons. Rules Capricorn and Aquarius. Shows life lessons.",
-      uranus: "Represents innovation, rebellion, and sudden changes. Co-rules Aquarius. Shows where you're unique.",
-      neptune: "Represents spirituality, dreams, and illusions. Co-rules Pisces. Shows spiritual and creative inspiration.",
-      pluto: "Represents transformation, power, and regeneration. Co-rules Scorpio. Shows deep transformation."
+      sun: "Surya — represents the soul (atma), ego, vitality and life force. Rules Leo (Simha). Shows your core self and purpose.",
+      moon: "Chandra — represents the mind (manas), emotions, instincts and nurturing. Rules Cancer (Karka). Shows your emotional nature.",
+      mercury: "Budha — represents communication, intellect and reasoning. Rules Gemini (Mithuna) and Virgo (Kanya). Shows how you think and speak.",
+      venus: "Shukra — represents love, beauty, harmony and values. Rules Taurus (Vrishabha) and Libra (Tula). Shows what you value and how you love.",
+      mars: "Mangala — represents energy, action, courage and drive. Rules Aries (Mesha) and Scorpio (Vrishchika). Shows how you assert yourself.",
+      jupiter: "Guru (Brihaspati) — represents wisdom, dharma, expansion and fortune. Rules Sagittarius (Dhanu) and Pisces (Meena). Shows growth and blessings.",
+      saturn: "Shani — represents discipline, responsibility, karma and life lessons. Rules Capricorn (Makara) and Aquarius (Kumbha). Shows where you must persevere.",
+      rahu: "The north lunar node — a shadow graha (chhaya) signifying desire, ambition and worldly gains. It has no rulership and amplifies the sign/house it occupies.",
+      ketu: "The south lunar node — a shadow graha signifying detachment, spirituality, past-life karma and moksha. It has no rulership and turns focus inward."
     },
     houses: {
       first: "Self, appearance, first impressions, new beginnings, personality, physical body",

@@ -92,7 +92,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Avoid spicy foods to reduce aggression"
     ],
     keywords: ["Leadership", "Courage", "Initiative", "Energy", "Pioneer", "Warrior"],
-    mythology: "Aries is associated with the Golden Fleece sought by Jason and the Argonauts. The ram represents sacrifice, leadership, and the courage to venture into unknown territories.",
+    mythology: "Mesha, the Ram, is the first rashi of the zodiac — a fiery, movable (chara) sign ruled by Mangala (Mars). It signifies new beginnings, courage and initiative; the Sun is exalted in Mesha, lending strength of will.",
     bodyParts: ["Head", "Brain", "Eyes", "Face"],
     colors: ["Red", "Orange", "Bright Yellow"],
     gemstones: ["Red Coral", "Diamond", "Ruby", "Bloodstone"],
@@ -166,7 +166,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Practice gratitude and contentment"
     ],
     keywords: ["Stability", "Beauty", "Patience", "Loyalty", "Comfort", "Persistence"],
-    mythology: "Taurus represents the bull that carried Europa across the sea in Greek mythology. It symbolizes strength, fertility, and the connection between earthly pleasures and divine beauty.",
+    mythology: "Vrishabha, the Bull, is an earthy, fixed (sthira) rashi ruled by Shukra (Venus). It signifies stability, wealth, patience and enjoyment of the senses; the Moon is exalted here, giving emotional steadiness.",
     bodyParts: ["Neck", "Throat", "Thyroid", "Vocal cords"],
     colors: ["Green", "Pink", "White", "Pastel shades"],
     gemstones: ["Diamond", "White Sapphire", "Emerald", "Rose Quartz"],
@@ -240,7 +240,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Engage in creative writing"
     ],
     keywords: ["Communication", "Versatility", "Intelligence", "Curiosity", "Adaptability", "Duality"],
-    mythology: "Gemini represents Castor and Pollux, the twin brothers in Greek mythology. They symbolize the duality of human nature and the power of communication and brotherhood.",
+    mythology: "Mithuna, the Twins, is an airy, dual (dwiswabhava) rashi ruled by Budha (Mercury). It governs communication, intellect, curiosity and adaptability.",
     bodyParts: ["Lungs", "Arms", "Hands", "Nervous system"],
     colors: ["Green", "Yellow", "Orange", "Light blue"],
     gemstones: ["Emerald", "Agate", "Citrine", "Aquamarine"],
@@ -314,7 +314,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Practice forgiveness and letting go"
     ],
     keywords: ["Emotion", "Nurturing", "Intuition", "Protection", "Family", "Tradition"],
-    mythology: "Cancer represents the crab that pinched Hercules during his battle with the Hydra. It symbolizes protection, tenacity, and the importance of home and emotional security.",
+    mythology: "Karka, the Crab, is a watery, movable rashi ruled by Chandra (the Moon). It signifies emotions, nurturing, home and the mind; Guru (Jupiter) is exalted here.",
     bodyParts: ["Stomach", "Breasts", "Digestive system", "Chest"],
     colors: ["White", "Silver", "Sea green", "Pale blue"],
     gemstones: ["Pearl", "Moonstone", "Silver", "Opal"],
@@ -388,7 +388,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Practice heart-opening yoga poses"
     ],
     keywords: ["Leadership", "Creativity", "Generosity", "Pride", "Performance", "Royalty"],
-    mythology: "Leo represents the Nemean Lion defeated by Hercules. It symbolizes courage, strength, and the divine right to rule, as well as the importance of using power wisely.",
+    mythology: "Simha, the Lion, is a fiery, fixed rashi ruled by Surya (the Sun). It represents authority, dignity, leadership and the radiance of the soul (atma).",
     bodyParts: ["Heart", "Spine", "Back", "Upper back"],
     colors: ["Gold", "Orange", "Red", "Yellow"],
     gemstones: ["Ruby", "Sunstone", "Citrine", "Amber"],
@@ -462,7 +462,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Engage in charitable activities"
     ],
     keywords: ["Analysis", "Service", "Perfection", "Health", "Organization", "Purity"],
-    mythology: "Virgo represents Astraea, the goddess of justice who fled to the heavens. She symbolizes purity, service, and the quest for perfection in an imperfect world.",
+    mythology: "Kanya, the Maiden, is an earthy, dual rashi ruled by Budha (Mercury), who is also exalted here. It signifies discrimination, service, analysis and health.",
     bodyParts: ["Digestive system", "Intestines", "Abdomen", "Nervous system"],
     colors: ["Green", "Brown", "Navy blue", "Beige"],
     gemstones: ["Emerald", "Sapphire", "Carnelian", "Moss Agate"],
@@ -536,7 +536,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Engage in artistic and creative activities"
     ],
     keywords: ["Balance", "Justice", "Harmony", "Beauty", "Partnership", "Diplomacy"],
-    mythology: "Libra represents the scales of justice held by Astraea. It symbolizes the eternal quest for balance, fairness, and harmony in all relationships and endeavors.",
+    mythology: "Tula, the Scales, is an airy, movable rashi ruled by Shukra (Venus). It governs balance, relationships, justice and trade; Shani (Saturn) is exalted here.",
     bodyParts: ["Kidneys", "Lower back", "Skin", "Adrenal glands"],
     colors: ["Blue", "Pink", "White", "Pastel colors"],
     gemstones: ["Diamond", "Opal", "Lapis Lazuli", "Rose Quartz"],
@@ -548,7 +548,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
     dates: "October 23 - November 21",
     element: "Water",
     quality: "Fixed",
-    ruler: "Mars/Pluto",
+    ruler: "Mars",
     symbol: "The Scorpion",
     traits: [
       "Intense and passionate nature",
@@ -610,7 +610,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Maintain healthy boundaries"
     ],
     keywords: ["Intensity", "Transformation", "Mystery", "Power", "Regeneration", "Depth"],
-    mythology: "Scorpio represents the scorpion that stung Orion. It symbolizes death and rebirth, the power of transformation, and the courage to face life's deepest mysteries.",
+    mythology: "Vrishchika, the Scorpion, is a watery, fixed rashi ruled by Mangala (Mars). It signifies depth, transformation, research and hidden matters.",
     bodyParts: ["Reproductive organs", "Elimination system", "Pelvis", "Colon"],
     colors: ["Red", "Maroon", "Black", "Deep crimson"],
     gemstones: ["Red Coral", "Garnet", "Bloodstone", "Topaz"],
@@ -684,7 +684,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Maintain ethical and moral conduct"
     ],
     keywords: ["Adventure", "Philosophy", "Freedom", "Optimism", "Truth", "Expansion"],
-    mythology: "Sagittarius represents Chiron, the wise centaur who taught heroes. It symbolizes the quest for higher knowledge, wisdom, and the journey toward spiritual enlightenment.",
+    mythology: "Dhanu, the Archer, is a fiery, dual rashi ruled by Guru (Jupiter). It represents dharma, higher wisdom, philosophy and good fortune.",
     bodyParts: ["Hips", "Thighs", "Liver", "Sciatic nerve"],
     colors: ["Yellow", "Orange", "Purple", "Turquoise"],
     gemstones: ["Yellow Sapphire", "Turquoise", "Topaz", "Amethyst"],
@@ -758,7 +758,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Maintain ethical business practices"
     ],
     keywords: ["Ambition", "Discipline", "Responsibility", "Achievement", "Tradition", "Authority"],
-    mythology: "Capricorn represents the sea-goat Pricus, who could manipulate time. It symbolizes the climb to success, the importance of patience, and the wisdom that comes with experience.",
+    mythology: "Makara, the sea-goat, is an earthy, movable rashi ruled by Shani (Saturn). It signifies discipline, ambition, duty and lasting achievement; Mangala (Mars) is exalted here.",
     bodyParts: ["Bones", "Joints", "Skin", "Knees"],
     colors: ["Black", "Dark blue", "Brown", "Gray"],
     gemstones: ["Blue Sapphire", "Garnet", "Onyx", "Jet"],
@@ -770,7 +770,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
     dates: "January 20 - February 18",
     element: "Air",
     quality: "Fixed",
-    ruler: "Saturn/Uranus",
+    ruler: "Saturn",
     symbol: "The Water Bearer",
     traits: [
       "Independent and freedom-loving nature",
@@ -832,7 +832,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Practice tolerance and acceptance"
     ],
     keywords: ["Innovation", "Independence", "Humanity", "Progress", "Friendship", "Rebellion"],
-    mythology: "Aquarius represents Ganymede, the cup-bearer to the gods. It symbolizes the pouring forth of knowledge, humanitarian service, and the gift of innovation to humanity.",
+    mythology: "Kumbha, the Pot-bearer, is an airy, fixed rashi ruled by Shani (Saturn). It governs community, innovation, detachment and humanitarian ideals.",
     bodyParts: ["Circulatory system", "Ankles", "Calves", "Shins"],
     colors: ["Blue", "Turquoise", "Silver", "Electric blue"],
     gemstones: ["Blue Sapphire", "Amethyst", "Aquamarine", "Fluorite"],
@@ -844,7 +844,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
     dates: "February 19 - March 20",
     element: "Water",
     quality: "Mutable",
-    ruler: "Jupiter/Neptune",
+    ruler: "Jupiter",
     symbol: "The Fish",
     traits: [
       "Highly intuitive and psychic abilities",
@@ -906,7 +906,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
       "Practice discernment and discrimination"
     ],
     keywords: ["Compassion", "Intuition", "Spirituality", "Imagination", "Sacrifice", "Unity"],
-    mythology: "Pisces represents two fish swimming in opposite directions, symbolizing the dual nature of existence - material and spiritual, conscious and unconscious, finite and infinite.",
+    mythology: "Meena, the Fishes, is a watery, dual rashi ruled by Guru (Jupiter). It signifies compassion, spirituality, imagination and moksha (liberation); Shukra (Venus) is exalted here.",
     bodyParts: ["Feet", "Immune system", "Lymphatic system", "Pineal gland"],
     colors: ["Sea green", "Lavender", "White", "Silver"],
     gemstones: ["Yellow Sapphire", "Aquamarine", "Moonstone", "Amethyst"],
