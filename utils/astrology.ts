@@ -342,21 +342,24 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
     `Sun in ${sunSign}: ${sunSignData?.strengths[0] || 'Core strength'}`,
     `Moon in ${moonSign}: ${moonSignData?.strengths[1] || 'Emotional strength'}`,
     ...(hasAsc ? [`${ascendant} Rising: ${ascendantData?.strengths[2] || 'Social strength'}`] : []),
-    ...sunSignData?.strengths.slice(3, 5) || []
+    ...(sunSignData?.strengths.slice(3, 7) || []),
+    ...(moonSignData?.strengths.slice(2, 4) || []),
   ];
 
   const combinedChallenges = [
     `Sun in ${sunSign}: ${sunSignData?.challenges[0] || 'Core challenge'}`,
     `Moon in ${moonSign}: ${moonSignData?.challenges[1] || 'Emotional challenge'}`,
     ...(hasAsc ? [`${ascendant} Rising: ${ascendantData?.challenges[2] || 'Social challenge'}`] : []),
-    ...sunSignData?.challenges.slice(3, 5) || []
+    ...(sunSignData?.challenges.slice(3, 7) || []),
+    ...(moonSignData?.challenges.slice(2, 4) || []),
   ];
 
   const combinedRemedies = [
     `For ${sunSign} Sun: ${sunSignData?.remedies[0] || 'Practice self-awareness'}`,
     `For ${moonSign} Moon: ${moonSignData?.remedies[1] || 'Balance emotions'}`,
     ...(hasAsc ? [`For ${ascendant} Rising: ${ascendantData?.remedies[2] || 'Align expression'}`] : []),
-    ...sunSignData?.remedies.slice(3, 5) || []
+    ...(sunSignData?.remedies.slice(3, 7) || []),
+    ...(moonSignData?.remedies.slice(2, 4) || []),
   ];
 
   // Helpers to safely pull a curated attribute (bounds-safe, lower-cased for
