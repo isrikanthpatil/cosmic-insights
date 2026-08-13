@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
 import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { searchPlaces } from '@/utils/places';
+import { calculateSunSign, calculateMoonSign } from '@/utils/astrology';
 import { SecurityUtils } from '@/utils/security';
 import { notify, confirmAction } from '@/utils/notify';
 import { showToast } from '@/utils/toast';
@@ -43,6 +44,20 @@ export default function Profile() {
     );
   };
   const userProfile = profile;
+  // Identity flourishes for the profile header: initials + Sun/Moon signs.
+  const initials = userProfile
+    ? `${(userProfile.firstName || '').charAt(0)}${(userProfile.lastName || '').charAt(0)}`.toUpperCase()
+    : '';
+  const signSummary = useMemo(() => {
+    if (!userProfile) return '';
+    try {
+      const sun = calculateSunSign(userProfile.dateOfBirth, userProfile.timeOfBirth);
+      const moon = calculateMoonSign(userProfile.dateOfBirth, userProfile.placeOfBirth);
+      return `Sun in ${sun} · Moon in ${moon}`;
+    } catch {
+      return '';
+    }
+  }, [userProfile]);
   const profileComplete =
     !!profile &&
     !!profile.firstName &&
@@ -619,15 +634,19 @@ export default function Profile() {
             <View style={styles.profileContainer}>
               <View style={styles.profileHeader}>
                 <View style={styles.avatarContainer}>
-                  <User size={48} color="#E8C87E" />
+                  {initials ? (
+                    <Text style={styles.avatarInitials}>{initials}</Text>
+                  ) : (
+                    <User size={40} color="#E8C87E" />
+                  )}
                 </View>
                 <View style={styles.profileInfo}>
                   <Text style={styles.profileName}>
                     {userProfile.firstName} {userProfile.lastName}
                   </Text>
-                  <Text style={styles.profileSubtitle}>
-                    {userProfile.gender === 'male' ? 'Male' : 'Female'}
-                  </Text>
+                  {signSummary ? (
+                    <Text style={styles.profileSubtitle}>{signSummary}</Text>
+                  ) : null}
                 </View>
               </View>
 
@@ -1014,6 +1033,11 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(232, 200, 126, 0.25)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  avatarInitials: {
+    fontSize: 24,
+    fontFamily: 'PlayfairDisplay-Bold',
+    color: '#E8C87E',
   },
   profileInfo: {
     flex: 1,
