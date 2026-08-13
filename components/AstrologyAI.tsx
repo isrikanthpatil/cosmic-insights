@@ -116,8 +116,8 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         return;
       }
 
-      // Reveal 2 words per tick so long replies don't feel slow.
-      index += 2;
+      // Reveal one word per tick for a calm, readable typing pace.
+      index += 1;
       const partial = tokens.slice(0, index).join('');
       setMessages(prev =>
         prev.map(m => (m.id === messageId ? { ...m, text: partial } : m))
@@ -129,7 +129,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           typingIntervalRef.current = null;
         }
       }
-    }, 25);
+    }, 45);
   };
 
   // Enhanced astrology knowledge base with coordinate-based insights

@@ -14,12 +14,15 @@ function tabLabel(title: string) {
     <Text
       numberOfLines={1}
       allowFontScaling={false}
+      adjustsFontSizeToFit
+      minimumFontScale={0.9}
       style={{
         color,
-        fontSize: 10,
+        fontSize: 9.5,
         fontFamily: 'Inter-Medium',
-        letterSpacing: -0.2,
+        letterSpacing: -0.3,
         textAlign: 'center',
+        width: '100%',
       }}
     >
       {title}
