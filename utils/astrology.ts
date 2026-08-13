@@ -468,22 +468,24 @@ export const generateDailyHoroscope = (firstName: string, dateOfBirth: string, p
   const daySeed = `${sunSign}-${getTodayKey(today)}`;
   const gochar = transitHouse ? GOCHAR[transitHouse] : null;
   const strength = lower(pick(signData?.strengths, seededIndex(`${daySeed}-str`, signData?.strengths?.length || 1), 'inner resolve'));
-  const challenge = lower(pick(signData?.challenges, seededIndex(`${daySeed}-ch`, signData?.challenges?.length || 1), 'restlessness'));
+  const challengeRaw = pick(signData?.challenges, seededIndex(`${daySeed}-ch`, signData?.challenges?.length || 1), 'Restlessness');
   const remedy = lower(pick(signData?.remedies, seededIndex(`${daySeed}-rem`, signData?.remedies?.length || 1), 'pause and breathe'));
+  const career = lower(pick(signData?.career, seededIndex(`${daySeed}-car`, signData?.career?.length || 1), 'what matters most'));
+  const trait = lower(pick(signData?.traits, seededIndex(`${daySeed}-tr`, signData?.traits?.length || 1), 'your natural drive'));
 
   const mainPrediction = gochar
-    ? `${firstName}, today the Moon transits the ${ordinal(transitHouse)} house from your Janma Rashi (${natalMoonSign}) — ${gochar.line}. Your ${sunSign} strength of ${strength} supports you, so ${gochar.tone === 'caution' ? `be mindful of ${challenge}, and ${remedy}` : 'put it to work where it counts'}.`
-    : `${firstName}, your ${sunSign} strength of ${strength} is well-supported today. Put it to good use, and if ${challenge} surfaces, ${remedy}.`;
+    ? `${firstName}, today the Moon transits your ${ordinal(transitHouse)} house from your Janma Rashi (${natalMoonSign}) — ${gochar.line}. Your ${sunSign} strength of ${strength} supports you, so ${gochar.tone === 'caution' ? 'move at a steady pace and choose your moments with care' : 'put it to work where it counts and let your initiative lead'}. Watch one thing today: ${challengeRaw.toLowerCase()}; if it surfaces, ${remedy}.`
+    : `${firstName}, your ${sunSign} strength of ${strength} is well-supported today — put it to good use and let ${trait} guide you. Watch one thing today: ${challengeRaw.toLowerCase()}; if it surfaces, ${remedy}.`;
 
   const positiveEnergy = gochar
     ? (gochar.tone === 'caution'
-        ? `Even under today's ${ordinal(transitHouse)}-house Moon, your ${sunSign} gift for ${strength} keeps you steady — a good day for quiet, careful progress.`
-        : `With the Moon well placed in your ${ordinal(transitHouse)} house, your ${sunSign} gift for ${strength} draws the right people and openings toward you.`)
-    : `Your ${sunSign} talent for ${strength} draws the right people toward you today.`;
+        ? `Even under today's ${ordinal(transitHouse)}-house Moon, your ${sunSign} gift for ${strength} keeps you steady — a good day for quiet, careful progress, especially in ${career}.`
+        : `With the Moon well placed in your ${ordinal(transitHouse)} house, your ${sunSign} gift for ${strength} draws the right people and openings toward you — a fine day to make headway in ${career}.`)
+    : `Your ${sunSign} talent for ${strength} draws the right people toward you today and supports real progress in ${career}.`;
 
   const advice = gochar && gochar.tone === 'caution'
-    ? `Go gently today: avoid forcing decisions, watch ${challenge}, and ${remedy}.`
-    : `Lean into ${strength} today, ${firstName} — and channel it into ${lower(pick(signData?.career, seededIndex(`${daySeed}-car`, signData?.career?.length || 1), 'what matters most'))}.`;
+    ? `Go gently today — avoid forcing decisions or big commitments, and ${remedy}. Small, deliberate steps will serve you better than pushing hard.`
+    : `Lean into ${strength} today, ${firstName}, and channel it into ${career}; steady, intentional steps compound into real progress.`;
 
   const dayNumber = today.getDate();
   const monthNumber = today.getMonth() + 1;
@@ -530,10 +532,10 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
   const element = signData?.element || 'Cosmic';
 
   const weeklyOverviews = [
-    `This week plays to your ${sunSign} strength of ${lower(pick(signData?.strengths, 0, 'steady resolve'))}, ${firstName}. Your ${element} drive helps you make headway, while gently working on ${lower(pick(signData?.challenges, 0, 'patience'))} keeps things balanced.`,
-    `A constructive week for you, ${firstName}. Build on ${lower(pick(signData?.strengths, 1, 'your focus'))} and your ${element}-sign momentum; the growth edge to watch is ${lower(pick(signData?.challenges, 1, 'overextending'))}.`,
-    `Your ${sunSign} gift for ${lower(pick(signData?.strengths, 2, 'clear judgment'))} shapes the week ahead, ${firstName}. Channel that ${element} energy into your goals, and ease ${lower(pick(signData?.challenges, 0, 'tension'))} as it arises.`,
-    `This week favors your ${element} nature, ${firstName}. Trust ${lower(pick(signData?.strengths, 3, 'your instincts'))} in key moments, and grow by tempering ${lower(pick(signData?.challenges, 2, 'rigidity'))}.`
+    `This week plays to your ${sunSign} strength of ${lower(pick(signData?.strengths, 0, 'steady resolve'))}, ${firstName}, and your ${element} drive helps you make real headway on what matters most. Lean into that momentum through the busier days, and let your natural initiative set the tone. One growth edge to keep in view this week: ${pick(signData?.challenges, 0, 'Impatience')}.`,
+    `A constructive week lies ahead for you, ${firstName}. Build on ${lower(pick(signData?.strengths, 1, 'your focus'))} and your ${element}-sign momentum, and let steady, consistent effort carry your plans forward rather than rushing them. Keep a gentle check on one tendency: ${pick(signData?.challenges, 1, 'Overextending yourself')}.`,
+    `Your ${sunSign} gift for ${lower(pick(signData?.strengths, 2, 'clear judgment'))} shapes the week ahead, ${firstName}. Channel that ${element} energy into your goals and your relationships alike, and trust the progress you make even when it feels gradual. The area to handle with care this week: ${pick(signData?.challenges, 0, 'Tension under pressure')}.`,
+    `This week favours your ${element} nature, ${firstName}. Trust ${lower(pick(signData?.strengths, 3, 'your instincts'))} in the key moments, pace yourself through the demands, and give the important relationships your attention. Grow by softening one habit: ${pick(signData?.challenges, 2, 'Rigidity')}.`
   ];
 
   const weeklyHighlights = [
@@ -586,10 +588,10 @@ export const generateWeeklyHoroscope = (firstName: string, dateOfBirth: string, 
   const rotatedDays = rotate(luckyDays, `${weekSeed}-days`, 2);
   const weeklyLuckyDays = (lordLine ? [lordLine, rotatedDays[0]] : rotatedDays).filter(Boolean).slice(0, 2) as string[];
 
-  // Longer overview: the seeded overview plus a complementary focus sentence.
+  // Overview = seeded multi-sentence overview + a clean career-focused close.
   const overview =
     `${weeklyOverviews[seededIndex(`${weekSeed}-overview`, weeklyOverviews.length)]} ` +
-    `This week's momentum favours ${lower(pick(signData?.career, seededIndex(`${weekSeed}-foc`, signData?.career?.length || 1), 'your goals'))}; keep a light hand on ${lower(pick(signData?.challenges, seededIndex(`${weekSeed}-chal`, signData?.challenges?.length || 1), 'over-commitment'))}.`;
+    `Career-wise, the week favours progress in ${lower(pick(signData?.career, seededIndex(`${weekSeed}-foc`, signData?.career?.length || 1), 'your chosen field'))}.`;
 
   return {
     weekStart,
