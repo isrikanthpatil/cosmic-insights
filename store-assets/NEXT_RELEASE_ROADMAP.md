@@ -17,8 +17,18 @@ This document has six categories (a–f). Sections **d** and **e** started from 
 - **e-M5** planet-specific general numerology remedies — DONE
 - **e-M6** gemstone (neelam) caution on remedies — DONE
 - **e-M7** disclaimers on Astrology reading (all sub-tabs) + AskAstro — DONE
-- **Remaining in e:** e-M4 (27-nakshatra knowledge base — pairs with feature b2 "surface nakshatra"), e-H6 (dedupe the AskAstro offline zodiac dataset — refactor). Both larger; deferred.
-- **Remaining in d:** density/de-box (d-O1/O2) — pending on-device review.
+- **e-M4** 27-nakshatra knowledge base + Janma Nakshatra card on Kundli — DONE
+- **e-M1 follow-up** fixed stale Western co-rulers in the AskAstro offline dataset — app now fully pure-Vedic everywhere — DONE
+
+## Feedback round 2 (owner device testing) — DONE
+- #1 longer daily/weekly + grammar fix · #2 richer astrology content + full-width list layout · #3 numerology tab label · #4 slower AskAstro streaming · #6 consistent profile keyboard · #7 reminder nudge · #8 profile header (initials avatar + Sun/Moon signs)
+- **#5 Full Vedic Kundli** (9-graha engine verified, South-Indian chart, houses, Vimshottari Dasha) + **Tarot** (78-card RWS deck, daily card + 3-card spread) — DONE
+
+## Still open / deferred
+- e-H6 full structural dedupe of the AskAstro offline dataset (maintainability only — data is now consistent; low priority).
+- d-O1/O2 density/de-box + #2 layout + #8 profile — conservative passes shipped; refine after on-device review.
+- Category c monetisation — deferred by decision.
+- b: Hindi localization, native Google sign-in, iOS build — future.
 
 ## Decisions locked
 - **Pure Vedic.** Remove the Western/tropical and "blended" content entirely — no modern co-rulers (Pluto/Uranus/Neptune), no Greek mythology, no tropical sun signs. The app presents sidereal (Lahiri) Jyotish. (Chinese Feng Shui numerology — Kua/Lo Shu — stays, clearly framed as its own tradition.)
