@@ -285,6 +285,63 @@ function marsTropicalLongitude(jd: number): number {
   return norm360(Math.atan2(yg, xg) / DEG2RAD);
 }
 
+// --- Full-chart planets (Mercury..Saturn + lunar nodes) ---------------------
+// JPL/Standish mean Keplerian elements (valid ~1800-2050). Each entry is
+// [value at J2000, rate per Julian century]. Ample for the 30° rashi bin.
+type ElemPair = readonly [number, number];
+interface PlanetElemDef {
+  a: ElemPair; e: ElemPair; I: ElemPair; L: ElemPair; wbar: ElemPair; Om: ElemPair;
+}
+const PLANET_ELEMENTS: Record<'mercury' | 'venus' | 'jupiter' | 'saturn', PlanetElemDef> = {
+  mercury: { a: [0.38709843, 0], e: [0.20563661, 0.00002123], I: [7.00559432, -0.00590158], L: [252.25166724, 149472.67486623], wbar: [77.45771895, 0.15940013], Om: [48.33961819, -0.12214182] },
+  venus:   { a: [0.72332102, 0], e: [0.00676399, -0.00005107], I: [3.39777545, 0.00043494], L: [181.97970850, 58517.81560260], wbar: [131.76755713, 0.05679648], Om: [76.67261496, -0.27274174] },
+  jupiter: { a: [5.20248019, 0], e: [0.04853590, 0.00018026], I: [1.29861416, -0.00322699], L: [34.33479152, 3034.90371757], wbar: [14.27495244, 0.18199196], Om: [100.29282654, 0.13024619] },
+  saturn:  { a: [9.54149883, 0], e: [0.05550825, -0.00032044], I: [2.49424102, 0.00451969], L: [50.07571329, 1222.11494724], wbar: [92.86136063, 0.54179478], Om: [113.63998702, -0.25015002] },
+};
+
+interface Elements { a: number; e: number; I: number; L: number; wbar: number; Om: number; }
+function elemAt(def: PlanetElemDef, T: number): Elements {
+  const v = (p: ElemPair) => p[0] + p[1] * T;
+  return { a: v(def.a), e: v(def.e), I: v(def.I), L: v(def.L), wbar: v(def.wbar), Om: v(def.Om) };
+}
+
+/**
+ * Geocentric ecliptic longitude (tropical, deg) for a planet given Keplerian
+ * elements — same heliocentric→geocentric reduction as Mars. Accuracy is a
+ * fraction of a degree, sufficient for the 30° rashi bucket used in the chart.
+ */
+function planetGeocentricLongitude(jd: number, el: Elements): number {
+  const Mrad = norm360(el.L - el.wbar) * DEG2RAD;
+  const e = el.e;
+  let E = Mrad + e * Math.sin(Mrad);
+  for (let i = 0; i < 12; i++) {
+    const dE = (E - e * Math.sin(E) - Mrad) / (1 - e * Math.cos(E));
+    E -= dE;
+    if (Math.abs(dE) < 1e-11) break;
+  }
+  const xv = el.a * (Math.cos(E) - e);
+  const yv = el.a * (Math.sqrt(1 - e * e) * Math.sin(E));
+  const r = Math.sqrt(xv * xv + yv * yv);
+  const trueAnom = Math.atan2(yv, xv);
+  const w = (el.wbar - el.Om) * DEG2RAD;
+  const node = el.Om * DEG2RAD;
+  const inc = el.I * DEG2RAD;
+  const u = trueAnom + w;
+  const xh = r * (Math.cos(node) * Math.cos(u) - Math.sin(node) * Math.sin(u) * Math.cos(inc));
+  const yh = r * (Math.sin(node) * Math.cos(u) + Math.cos(node) * Math.sin(u) * Math.cos(inc));
+  const earthLon = earthHeliocentricLongitude(jd) * DEG2RAD;
+  const Re = 1.000001018;
+  const xe = Re * Math.cos(earthLon);
+  const ye = Re * Math.sin(earthLon);
+  return norm360(Math.atan2(yh - ye, xh - xe) / DEG2RAD);
+}
+
+/** Mean longitude of the ascending lunar node (Rahu), tropical deg. Meeus 47.7. */
+function rahuMeanLongitude(jd: number): number {
+  const T = (jd - 2451545.0) / 36525.0;
+  return norm360(125.04452 - 1934.136261 * T + 0.0020708 * T * T + (T * T * T) / 450000);
+}
+
 /** Whether the coordinates fall in the Indian-mainland bounding box. */
 function isIndia(lat: number, lon: number): boolean {
   return lat >= 6 && lat <= 37.5 && lon >= 68 && lon <= 97.5;
@@ -409,6 +466,133 @@ export function computeEphemeris(input: EphemerisInput): EphemerisResult {
     ayanamsa,
     julianDayUT: jdUT,
     timezoneOffsetHours,
+    assumedTimezone,
+    lowConfidence,
+  };
+}
+
+// --- Full chart (all nine grahas + Lagna) -----------------------------------
+
+export type GrahaName =
+  | 'Sun' | 'Moon' | 'Mars' | 'Mercury' | 'Jupiter' | 'Venus' | 'Saturn' | 'Rahu' | 'Ketu';
+
+export interface GrahaPosition {
+  name: GrahaName;
+  siderealLongitude: number; // deg 0-360 (Lahiri)
+  rashi: number; // 1-12
+  nakshatra: number; // 1-27
+  retrograde: boolean;
+}
+
+export interface FullChartResult {
+  grahas: GrahaPosition[]; // classical order (Sun..Ketu)
+  lagnaRashi: number | null; // null if no birth time
+  moonRashi: number;
+  moonNakshatra: number;
+  moonPada: number;
+  moonSiderealLongitude: number;
+  ayanamsa: number;
+  julianDayUT: number;
+  assumedTimezone: 'IST' | 'longitude-estimate';
+  lowConfidence: boolean;
+}
+
+// Internal: resolve local birth clock -> Julian Day (UT), matching computeEphemeris.
+function resolveJdUT(input: EphemerisInput): { jdUT: number; lowConfidence: boolean; assumedTimezone: 'IST' | 'longitude-estimate' } {
+  const date = parseDDMMYYYY(input.dateOfBirth);
+  if (!date) throw new Error(`Invalid dateOfBirth (expected DD/MM/YYYY): ${input.dateOfBirth}`);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  let hour = 12, minute = 0, lowConfidence = false;
+  if (input.timeOfBirth && /^\d{1,2}:\d{2}$/.test(input.timeOfBirth.trim())) {
+    const [h, m] = input.timeOfBirth.trim().split(':').map((s) => parseInt(s, 10));
+    if (!isNaN(h) && !isNaN(m)) { hour = h; minute = m; } else { lowConfidence = true; }
+  } else {
+    lowConfidence = true;
+  }
+
+  let timezoneOffsetHours: number;
+  let assumedTimezone: 'IST' | 'longitude-estimate';
+  if (isIndia(input.latitude, input.longitude)) {
+    timezoneOffsetHours = 5.5; assumedTimezone = 'IST';
+  } else {
+    timezoneOffsetHours = Math.round((input.longitude / 15) * 2) / 2; assumedTimezone = 'longitude-estimate';
+  }
+
+  const localFractionalDay = day + (hour + minute / 60) / 24;
+  const jdUT = julianDay(year, month, localFractionalDay - timezoneOffsetHours / 24);
+  return { jdUT, lowConfidence, assumedTimezone };
+}
+
+/** Tropical geocentric longitude of a graha at a given JD. */
+function grahaTropical(name: GrahaName, jd: number): number {
+  const T = (jd - 2451545.0) / 36525.0;
+  switch (name) {
+    case 'Sun': return sunTropicalLongitude(jd);
+    case 'Moon': return moonTropicalLongitude(jd);
+    case 'Mars': return marsTropicalLongitude(jd);
+    case 'Mercury': return planetGeocentricLongitude(jd, elemAt(PLANET_ELEMENTS.mercury, T));
+    case 'Venus': return planetGeocentricLongitude(jd, elemAt(PLANET_ELEMENTS.venus, T));
+    case 'Jupiter': return planetGeocentricLongitude(jd, elemAt(PLANET_ELEMENTS.jupiter, T));
+    case 'Saturn': return planetGeocentricLongitude(jd, elemAt(PLANET_ELEMENTS.saturn, T));
+    case 'Rahu': return rahuMeanLongitude(jd);
+    case 'Ketu': return norm360(rahuMeanLongitude(jd) + 180);
+  }
+}
+
+/**
+ * Computes all nine grahas (sidereal Lahiri) with rashi/nakshatra and retrograde
+ * status, plus the Lagna (when a birth time is present). Whole-sign Vedic houses
+ * are derived from the Lagna by the caller.
+ */
+export function computeGrahas(input: EphemerisInput): FullChartResult {
+  const { jdUT, lowConfidence, assumedTimezone } = resolveJdUT(input);
+  const ayanamsa = lahiriAyanamsa(jdUT);
+
+  const order: GrahaName[] = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+  const grahas: GrahaPosition[] = order.map((name) => {
+    const trop = grahaTropical(name, jdUT);
+    const sid = norm360(trop - ayanamsa);
+    // Retrograde: nodes are always retrograde; Sun/Moon never; others by sampling.
+    let retrograde = false;
+    if (name === 'Rahu' || name === 'Ketu') {
+      retrograde = true;
+    } else if (name !== 'Sun' && name !== 'Moon') {
+      const next = norm360(grahaTropical(name, jdUT + 1) - ayanamsa);
+      let d = next - sid;
+      if (d > 180) d -= 360; else if (d < -180) d += 360;
+      retrograde = d < 0;
+    }
+    return {
+      name,
+      siderealLongitude: sid,
+      rashi: Math.floor(sid / 30) + 1,
+      nakshatra: Math.floor(sid / NAKSHATRA_SPAN) + 1,
+      retrograde,
+    };
+  });
+
+  const moon = grahas[1];
+  const moonWithin = moon.siderealLongitude - (moon.nakshatra - 1) * NAKSHATRA_SPAN;
+  const moonPada = Math.floor(moonWithin / PADA_SPAN) + 1;
+
+  let lagnaRashi: number | null = null;
+  if (!lowConfidence) {
+    const ascSid = norm360(tropicalAscendant(jdUT, input.latitude, input.longitude) - ayanamsa);
+    lagnaRashi = Math.floor(ascSid / 30) + 1;
+  }
+
+  return {
+    grahas,
+    lagnaRashi,
+    moonRashi: moon.rashi,
+    moonNakshatra: moon.nakshatra,
+    moonPada,
+    moonSiderealLongitude: moon.siderealLongitude,
+    ayanamsa,
+    julianDayUT: jdUT,
     assumedTimezone,
     lowConfidence,
   };
