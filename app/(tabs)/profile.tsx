@@ -32,6 +32,16 @@ export default function Profile() {
   const { isPremium } = usePremium();
   const kb = useKeyboardHeight();
   const scrollViewRef = useRef<ScrollView>(null);
+  // Records each edit-field's y offset (via onLayout) so focusing any text
+  // field scrolls it consistently clear of the keyboard — like the chat screen.
+  const fieldY = useRef<Record<string, number>>({});
+  const scrollToField = (name: string) => {
+    const y = fieldY.current[name] ?? 0;
+    setTimeout(
+      () => scrollViewRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true }),
+      120
+    );
+  };
   const userProfile = profile;
   const profileComplete =
     !!profile &&
@@ -465,7 +475,10 @@ export default function Profile() {
                 {profileComplete ? 'Edit Profile' : 'Create Profile'}
               </Text>
 
-              <View style={styles.inputGroup}>
+              <View
+                style={styles.inputGroup}
+                onLayout={(e) => { fieldY.current.firstName = e.nativeEvent.layout.y; }}
+              >
                 <Text style={styles.inputLabel}>First Name *</Text>
                 <TextInput
                   style={styles.input}
@@ -474,10 +487,14 @@ export default function Profile() {
                   placeholder="Enter your first name"
                   placeholderTextColor="#7E7B92"
                   maxLength={50}
+                  onFocus={() => scrollToField('firstName')}
                 />
               </View>
 
-              <View style={styles.inputGroup}>
+              <View
+                style={styles.inputGroup}
+                onLayout={(e) => { fieldY.current.lastName = e.nativeEvent.layout.y; }}
+              >
                 <Text style={styles.inputLabel}>Last Name *</Text>
                 <TextInput
                   style={styles.input}
@@ -486,6 +503,7 @@ export default function Profile() {
                   placeholder="Enter your last name"
                   placeholderTextColor="#7E7B92"
                   maxLength={50}
+                  onFocus={() => scrollToField('lastName')}
                 />
               </View>
 
@@ -505,7 +523,10 @@ export default function Profile() {
                 />
               </View>
 
-              <View style={styles.inputGroup}>
+              <View
+                style={styles.inputGroup}
+                onLayout={(e) => { fieldY.current.place = e.nativeEvent.layout.y; }}
+              >
                 <Text style={styles.inputLabel}>Place of Birth *</Text>
                 <TextInput
                   style={styles.input}
@@ -514,13 +535,7 @@ export default function Profile() {
                   placeholder="Mumbai, Maharashtra"
                   placeholderTextColor="#7E7B92"
                   maxLength={200}
-                  onFocus={() => {
-                    // Bottom-most field: scroll it clear of the keyboard.
-                    setTimeout(
-                      () => scrollViewRef.current?.scrollToEnd({ animated: true }),
-                      100
-                    );
-                  }}
+                  onFocus={() => scrollToField('place')}
                 />
                 {showPlaceSuggestions && (
                   <View style={styles.suggestionsContainer}>
