@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Platform,
   Share,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tap } from '@/utils/haptics';
@@ -20,14 +21,21 @@ import {
   Star,
   LogIn,
   Share2,
+  Bell,
+  X,
 } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
 import { calculateSunSign, generateDailyHoroscope, generateWeeklyHoroscope, getAstrologyReading, DailyHoroscope, WeeklyHoroscope } from '@/utils/astrology';
 import { getNumerologyReading } from '@/utils/numerology';
+import { enableDailyHoroscopeReminder } from '@/utils/notifications';
 import ScreenBackground from '@/components/ScreenBackground';
 import GuestEntryPrompt from '@/components/GuestEntryPrompt';
 import LoginNudge from '@/components/LoginNudge';
 import { getZodiacGlyph } from '@/utils/zodiac';
+
+const NOTIF_KEY = 'settings_notifications';
+const NUDGE_KEY = 'reminder_nudge_last';
+const NUDGE_INTERVAL_MS = 3.5 * 24 * 60 * 60 * 1000; // ~3–4 days
 
 // Maps a lucky-color name to a displayable swatch hex. Falls back to gold.
 const COLOR_MAP: Record<string, string> = {
@@ -70,6 +78,45 @@ export default function Home() {
   const [refreshNonce, setRefreshNonce] = useState(0);
   // Daily (default) vs weekly horoscope view.
   const [horoscopeMode, setHoroscopeMode] = useState<'daily' | 'weekly'>('daily');
+  // Periodic nudge to enable daily reminders (shows every ~3–4 days if off).
+  const [showReminderNudge, setShowReminderNudge] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const enabled = await AsyncStorage.getItem(NOTIF_KEY);
+        if (enabled === 'true') return; // already on — never nudge
+        const last = await AsyncStorage.getItem(NUDGE_KEY);
+        const lastMs = last ? parseInt(last, 10) : 0;
+        if (Date.now() - lastMs > NUDGE_INTERVAL_MS && active) {
+          setShowReminderNudge(true);
+        }
+      } catch {
+        // ignore storage errors
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
+  const dismissNudge = async () => {
+    setShowReminderNudge(false);
+    try { await AsyncStorage.setItem(NUDGE_KEY, String(Date.now())); } catch {}
+  };
+
+  const enableRemindersFromNudge = async () => {
+    tap();
+    const ok = await enableDailyHoroscopeReminder();
+    try {
+      await AsyncStorage.setItem(NOTIF_KEY, ok ? 'true' : 'false');
+      await AsyncStorage.setItem(NUDGE_KEY, String(Date.now()));
+    } catch {}
+    setShowReminderNudge(false);
+    showToast(
+      ok ? 'Daily horoscope reminders are on ✨' : 'Enable notification permission in settings to turn on reminders.',
+      ok ? 'success' : 'info'
+    );
+  };
 
   const sunSign = useMemo(
     () => (profile ? calculateSunSign(profile.dateOfBirth, profile.timeOfBirth) : null),
@@ -204,6 +251,26 @@ export default function Home() {
         </View>
 
         {isGuest && <LoginNudge />}
+
+        {showReminderNudge && (
+          <View style={styles.nudgeCard}>
+            <Bell size={18} color="#E8C87E" />
+            <View style={styles.nudgeTextWrap}>
+              <Text style={styles.nudgeText}>Never miss your daily reading — turn on horoscope reminders.</Text>
+              <View style={styles.nudgeActions}>
+                <TouchableOpacity onPress={enableRemindersFromNudge} accessibilityRole="button" accessibilityLabel="Enable daily reminders">
+                  <Text style={styles.nudgeEnable}>Enable</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={dismissNudge} accessibilityRole="button" accessibilityLabel="Not now">
+                  <Text style={styles.nudgeDismiss}>Not now</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <TouchableOpacity onPress={dismissNudge} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel="Dismiss">
+              <X size={16} color="#7E7B92" />
+            </TouchableOpacity>
+          </View>
+        )}
 
         {!profile ? (
           <GuestEntryPrompt
@@ -529,6 +596,41 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#8B88A0',
     textAlign: 'center',
+  },
+  nudgeCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.30)',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+  },
+  nudgeTextWrap: {
+    flex: 1,
+    gap: 8,
+  },
+  nudgeText: {
+    fontSize: 13,
+    fontFamily: 'Inter-Regular',
+    color: '#F4F1E8',
+    lineHeight: 18,
+  },
+  nudgeActions: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  nudgeEnable: {
+    fontSize: 13,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+  },
+  nudgeDismiss: {
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#8B88A0',
   },
   numbersRow: {
     flexDirection: 'row',
