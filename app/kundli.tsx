@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { useChart } from '@/contexts/ChartContext';
 import { getCoordinatesForPlace } from '@/utils/astrology';
-import { computeKundli, Kundli, ChartGraha } from '@/utils/jyotish/kundli';
+import { computeKundli, Kundli, ChartGraha, NAKSHATRA_INFO } from '@/utils/jyotish/kundli';
 
 const GRAHA_ABBR: Record<string, string> = {
   Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me', Jupiter: 'Ju',
@@ -126,6 +126,21 @@ export default function KundliScreen() {
             </View>
           </View>
 
+          {/* Janma Nakshatra */}
+          {(() => {
+            const info = NAKSHATRA_INFO[kundli.moonNakshatra - 1];
+            if (!info) return null;
+            return (
+              <View style={styles.nakCard}>
+                <Text style={styles.nakTitle}>Janma Nakshatra · {kundli.moonNakshatraName} (Pada {kundli.moonPada})</Text>
+                <Text style={styles.nakMeta}>
+                  Deity {info.deity}  ·  Symbol {info.symbol}  ·  {info.gana} gana  ·  Lord {info.lord}
+                </Text>
+                <Text style={styles.nakNature}>{info.nature}</Text>
+              </View>
+            );
+          })()}
+
           {/* Planet table */}
           <Text style={styles.sectionTitle}>Graha Positions</Text>
           <View style={styles.table}>
@@ -216,6 +231,10 @@ const styles = StyleSheet.create({
   summaryValue: { fontSize: 15, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8', textAlign: 'center' },
   summaryValueSm: { fontSize: 12, fontFamily: 'Inter-Medium', color: '#F4F1E8', textAlign: 'center' },
 
+  nakCard: { backgroundColor: 'rgba(180,155,230,0.08)', borderWidth: 1, borderColor: 'rgba(180,155,230,0.30)', borderRadius: 12, padding: 14, marginTop: 12 },
+  nakTitle: { fontSize: 14, fontFamily: 'Inter-SemiBold', color: '#F4F1E8', marginBottom: 6 },
+  nakMeta: { fontSize: 11.5, fontFamily: 'Inter-Regular', color: '#B49BE6', lineHeight: 17, marginBottom: 6 },
+  nakNature: { fontSize: 13, fontFamily: 'Inter-Regular', color: '#C7C4D6', lineHeight: 19 },
   sectionTitle: { fontSize: 17, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8', marginTop: 20, marginBottom: 10 },
   table: { backgroundColor: 'rgba(255,255,255,0.03)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)', borderRadius: 12, overflow: 'hidden' },
   tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 12, borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.06)' },

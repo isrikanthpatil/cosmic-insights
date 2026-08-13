@@ -33,6 +33,45 @@ export const NAKSHATRA_NAMES = [
   'Purva Bhadrapada', 'Uttara Bhadrapada', 'Revati',
 ] as const;
 
+export interface NakshatraInfo {
+  deity: string;
+  symbol: string;
+  gana: string; // Deva / Manushya / Rakshasa
+  lord: GrahaName; // Vimshottari lord
+  nature: string;
+}
+
+// The 27 nakshatras with their classical attributes (index = nakshatra - 1).
+export const NAKSHATRA_INFO: NakshatraInfo[] = [
+  { deity: 'Ashwini Kumaras', symbol: "Horse's head", gana: 'Deva', lord: 'Ketu', nature: 'Quick, pioneering and healing — swift to begin and eager to help.' },
+  { deity: 'Yama', symbol: 'Yoni (bearer of new life)', gana: 'Manushya', lord: 'Venus', nature: 'Creative and determined, carrying things through cycles of restraint and transformation.' },
+  { deity: 'Agni', symbol: 'Razor / flame', gana: 'Rakshasa', lord: 'Sun', nature: 'Sharp, purifying and driven — burns away impurity with focused will.' },
+  { deity: 'Brahma (Prajapati)', symbol: 'Ox-cart / chariot', gana: 'Manushya', lord: 'Moon', nature: 'Fertile, sensual and creative — a nakshatra of growth and beauty.' },
+  { deity: 'Soma (Chandra)', symbol: "Deer's head", gana: 'Deva', lord: 'Mars', nature: 'Curious, gentle and searching — forever seeking something finer.' },
+  { deity: 'Rudra', symbol: 'Teardrop', gana: 'Manushya', lord: 'Rahu', nature: 'Intense and transformative — storms clear the way for renewal.' },
+  { deity: 'Aditi', symbol: 'Quiver of arrows', gana: 'Deva', lord: 'Jupiter', nature: 'Optimistic and renewing — a spirit of return, recovery and fresh starts.' },
+  { deity: 'Brihaspati', symbol: "Cow's udder / lotus", gana: 'Deva', lord: 'Saturn', nature: 'Nourishing and auspicious — caring, generous and spiritually inclined.' },
+  { deity: 'The Nagas', symbol: 'Coiled serpent', gana: 'Rakshasa', lord: 'Mercury', nature: 'Intuitive and penetrating — mystical insight beneath a still surface.' },
+  { deity: 'The Pitris (ancestors)', symbol: 'Royal throne', gana: 'Rakshasa', lord: 'Ketu', nature: 'Regal and ancestral — carries dignity, tradition and authority.' },
+  { deity: 'Bhaga', symbol: 'Front legs of a bed', gana: 'Manushya', lord: 'Venus', nature: 'Warm and pleasure-loving — creative, relaxed and sociable.' },
+  { deity: 'Aryaman', symbol: 'Back legs of a bed', gana: 'Manushya', lord: 'Sun', nature: 'Generous and reliable — steady friendship and dependable help.' },
+  { deity: 'Savitar', symbol: 'Open hand', gana: 'Deva', lord: 'Moon', nature: 'Skilful and resourceful — clever hands and a knack for getting things done.' },
+  { deity: 'Vishvakarma (Tvashtar)', symbol: 'Bright jewel', gana: 'Rakshasa', lord: 'Mars', nature: 'Artistic and charismatic — brilliance that draws the eye.' },
+  { deity: 'Vayu', symbol: 'Young sprout / coral', gana: 'Deva', lord: 'Rahu', nature: 'Independent and adaptable — bends like the wind, self-reliant.' },
+  { deity: 'Indra & Agni', symbol: 'Triumphal archway', gana: 'Rakshasa', lord: 'Jupiter', nature: 'Ambitious and goal-focused — determined toward a chosen aim.' },
+  { deity: 'Mitra', symbol: 'Lotus', gana: 'Deva', lord: 'Saturn', nature: 'Devoted and disciplined — loyal friendship and steady effort.' },
+  { deity: 'Indra', symbol: 'Earring / umbrella', gana: 'Rakshasa', lord: 'Mercury', nature: 'Senior and protective — courageous, responsible, a natural elder.' },
+  { deity: 'Nirriti', symbol: 'Bunch of roots', gana: 'Rakshasa', lord: 'Ketu', nature: 'Investigative and transformative — gets to the root of things.' },
+  { deity: 'Apas (the waters)', symbol: 'Winnowing basket / fan', gana: 'Manushya', lord: 'Venus', nature: 'Proud and persuasive — hard to defeat once resolved.' },
+  { deity: 'Vishvedevas', symbol: 'Elephant tusk', gana: 'Manushya', lord: 'Sun', nature: 'Righteous and enduring — lasting victory through integrity.' },
+  { deity: 'Vishnu', symbol: 'Ear / three footprints', gana: 'Deva', lord: 'Moon', nature: 'Attentive and learned — grows through listening and connection.' },
+  { deity: 'The Vasus', symbol: 'Drum', gana: 'Rakshasa', lord: 'Mars', nature: 'Rhythmic and ambitious — energetic, musical, prosperity-minded.' },
+  { deity: 'Varuna', symbol: 'Empty circle / 100 stars', gana: 'Rakshasa', lord: 'Rahu', nature: 'Healing and secretive — mystical, private, quietly powerful.' },
+  { deity: 'Aja Ekapada', symbol: 'Sword / front of a cot', gana: 'Manushya', lord: 'Jupiter', nature: 'Idealistic and intense — passionate about deep transformation.' },
+  { deity: 'Ahir Budhnya', symbol: 'Back of a cot / twins', gana: 'Manushya', lord: 'Saturn', nature: 'Wise and compassionate — deep, patient and far-seeing.' },
+  { deity: 'Pushan', symbol: 'Fish / drum', gana: 'Deva', lord: 'Mercury', nature: 'Nurturing and protective — safe journeys, prosperity and care.' },
+];
+
 // Vimshottari Dasha lords in sequence, with their period lengths (total 120y).
 const DASHA_ORDER: ReadonlyArray<{ lord: GrahaName; years: number }> = [
   { lord: 'Ketu', years: 7 },
