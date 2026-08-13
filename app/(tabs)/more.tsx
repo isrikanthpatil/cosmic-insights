@@ -29,16 +29,16 @@ const FEATURES: FeatureItem[] = [
   {
     key: 'vedic-kundli',
     title: 'Full Vedic Kundli',
-    subtitle: 'Planets, houses & dashas — coming soon',
+    subtitle: 'Planets, houses & Vimshottari Dasha',
     icon: Sparkles,
-    comingSoon: true,
+    route: '/kundli' as Href,
   },
   {
     key: 'tarot-reading',
     title: 'Tarot Reading',
-    subtitle: 'Coming soon',
+    subtitle: 'Daily card & three-card spread',
     icon: ScrollText,
-    comingSoon: true,
+    route: '/tarot' as Href,
   },
 ];
 
