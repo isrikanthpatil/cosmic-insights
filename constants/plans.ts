@@ -11,7 +11,8 @@ export interface PlanFeature {
 export const freeFeatures: PlanFeature[] = [
   { label: 'Browse astrology & numerology' },
   { label: 'Daily & weekly horoscope' },
-  { label: 'Basic compatibility check' },
+  { label: 'Full Vedic Kundli, Dasha & Tarot' },
+  { label: 'Kundli matching (compatibility)' },
   { label: '2 free AskAstro questions/day' },
 ];
 
@@ -19,8 +20,8 @@ export const freeFeatures: PlanFeature[] = [
 // the Subscribe flow is not wired to any billing provider yet.
 export const plusFeatures: PlanFeature[] = [
   { label: 'Unlimited AskAstro' },
-  { label: 'Detailed compatibility & Kundli matching reports' },
-  { label: 'Full Vedic Kundli (coming soon)' },
+  { label: 'In-depth chart, dasha & remedy reports' },
+  { label: 'Detailed compatibility & matching reports' },
   { label: 'Ad-free' },
   { label: 'Priority responses' },
 ];
