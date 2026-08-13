@@ -14,13 +14,11 @@ function tabLabel(title: string) {
     <Text
       numberOfLines={1}
       allowFontScaling={false}
-      adjustsFontSizeToFit
-      minimumFontScale={0.9}
       style={{
         color,
-        fontSize: 9.5,
+        fontSize: 9,
         fontFamily: 'Inter-Medium',
-        letterSpacing: -0.3,
+        letterSpacing: -0.4,
         textAlign: 'center',
         width: '100%',
       }}
@@ -47,7 +45,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.gold,
         tabBarInactiveTintColor: colors.muted,
         tabBarItemStyle: {
-          paddingHorizontal: 2,
+          paddingHorizontal: 0,
         },
       }}
     >

@@ -129,7 +129,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           typingIntervalRef.current = null;
         }
       }
-    }, 45);
+    }, 60);
   };
 
   // Enhanced astrology knowledge base with coordinate-based insights
