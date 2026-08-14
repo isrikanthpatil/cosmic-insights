@@ -33,7 +33,7 @@ Current state at launch: versionCode **8**, versionName **1.0.0**, Expo SDK 53, 
         "targetSdkVersion": 36,
         "buildToolsVersion": "36.0.0",
         "enableProguardInReleaseBuilds": true,
-        "enableShrinkResources": true
+        "enableShrinkResourcesInReleaseBuilds": true
       }
     }
   ]
