@@ -136,7 +136,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const astrologyKnowledge = {
     zodiacSigns: {
       aries: {
-        dates: "March 21 - April 19",
+        dates: "April 14 - May 14",
         element: "Fire",
         quality: "Cardinal",
         ruler: "Mars",
@@ -150,7 +150,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear red coral on Tuesday, chant Hanuman Chalisa, practice meditation for patience"
       },
       taurus: {
-        dates: "April 20 - May 20",
+        dates: "May 15 - June 14",
         element: "Earth",
         quality: "Fixed",
         ruler: "Venus",
@@ -164,7 +164,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear white pearl on Friday, offer white flowers to Venus, practice yoga"
       },
       gemini: {
-        dates: "May 21 - June 20",
+        dates: "June 15 - July 15",
         element: "Air",
         quality: "Mutable",
         ruler: "Mercury",
@@ -178,7 +178,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear emerald on Wednesday, chant Mercury mantras, practice breathing exercises"
       },
       cancer: {
-        dates: "June 21 - July 22",
+        dates: "July 16 - August 16",
         element: "Water",
         quality: "Cardinal",
         ruler: "Moon",
@@ -192,7 +192,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear pearl on Monday, offer milk to Shiva, spend time near water"
       },
       leo: {
-        dates: "July 23 - August 22",
+        dates: "August 17 - September 16",
         element: "Fire",
         quality: "Fixed",
         ruler: "Sun",
@@ -206,7 +206,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear ruby on Sunday, offer water to Sun, practice humility"
       },
       virgo: {
-        dates: "August 23 - September 22",
+        dates: "September 17 - October 16",
         element: "Earth",
         quality: "Mutable",
         ruler: "Mercury",
@@ -220,7 +220,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear emerald on Wednesday, serve the needy, practice acceptance"
       },
       libra: {
-        dates: "September 23 - October 22",
+        dates: "October 17 - November 15",
         element: "Air",
         quality: "Cardinal",
         ruler: "Venus",
@@ -234,7 +234,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear diamond on Friday, maintain life balance, practice decision-making"
       },
       scorpio: {
-        dates: "October 23 - November 21",
+        dates: "November 16 - December 15",
         element: "Water",
         quality: "Fixed",
         ruler: "Mars",
@@ -248,7 +248,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear red coral on Tuesday, practice forgiveness, channel intensity positively"
       },
       sagittarius: {
-        dates: "November 22 - December 21",
+        dates: "December 16 - January 14",
         element: "Fire",
         quality: "Mutable",
         ruler: "Jupiter",
@@ -262,7 +262,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear yellow sapphire on Thursday, study spiritual texts, practice patience"
       },
       capricorn: {
-        dates: "December 22 - January 19",
+        dates: "January 15 - February 12",
         element: "Earth",
         quality: "Cardinal",
         ruler: "Saturn",
@@ -276,7 +276,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Wear blue sapphire on Saturday, balance work and life, practice optimism"
       },
       aquarius: {
-        dates: "January 20 - February 18",
+        dates: "February 13 - March 14",
         element: "Air",
         quality: "Fixed",
         ruler: "Saturn",
@@ -290,7 +290,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         remedies: "Help humanitarian causes, practice emotional connection, meditate regularly"
       },
       pisces: {
-        dates: "February 19 - March 20",
+        dates: "March 15 - April 13",
         element: "Water",
         quality: "Mutable",
         ruler: "Jupiter",

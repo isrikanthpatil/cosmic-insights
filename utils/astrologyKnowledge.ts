@@ -27,7 +27,7 @@ export interface ZodiacSignData {
 
 export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   aries: {
-    dates: "March 21 - April 19",
+    dates: "April 14 - May 14",
     element: "Fire",
     quality: "Cardinal",
     ruler: "Mars",
@@ -101,7 +101,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   taurus: {
-    dates: "April 20 - May 20",
+    dates: "May 15 - June 14",
     element: "Earth",
     quality: "Fixed",
     ruler: "Venus",
@@ -175,7 +175,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   gemini: {
-    dates: "May 21 - June 20",
+    dates: "June 15 - July 15",
     element: "Air",
     quality: "Mutable",
     ruler: "Mercury",
@@ -249,7 +249,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   cancer: {
-    dates: "June 21 - July 22",
+    dates: "July 16 - August 16",
     element: "Water",
     quality: "Cardinal",
     ruler: "Moon",
@@ -323,7 +323,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   leo: {
-    dates: "July 23 - August 22",
+    dates: "August 17 - September 16",
     element: "Fire",
     quality: "Fixed",
     ruler: "Sun",
@@ -397,7 +397,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   virgo: {
-    dates: "August 23 - September 22",
+    dates: "September 17 - October 16",
     element: "Earth",
     quality: "Mutable",
     ruler: "Mercury",
@@ -471,7 +471,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   libra: {
-    dates: "September 23 - October 22",
+    dates: "October 17 - November 15",
     element: "Air",
     quality: "Cardinal",
     ruler: "Venus",
@@ -545,7 +545,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   scorpio: {
-    dates: "October 23 - November 21",
+    dates: "November 16 - December 15",
     element: "Water",
     quality: "Fixed",
     ruler: "Mars",
@@ -619,7 +619,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   sagittarius: {
-    dates: "November 22 - December 21",
+    dates: "December 16 - January 14",
     element: "Fire",
     quality: "Mutable",
     ruler: "Jupiter",
@@ -693,7 +693,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   capricorn: {
-    dates: "December 22 - January 19",
+    dates: "January 15 - February 12",
     element: "Earth",
     quality: "Cardinal",
     ruler: "Saturn",
@@ -767,7 +767,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   aquarius: {
-    dates: "January 20 - February 18",
+    dates: "February 13 - March 14",
     element: "Air",
     quality: "Fixed",
     ruler: "Saturn",
@@ -841,7 +841,7 @@ export const ZODIAC_KNOWLEDGE: { [key: string]: ZodiacSignData } = {
   },
 
   pisces: {
-    dates: "February 19 - March 20",
+    dates: "March 15 - April 13",
     element: "Water",
     quality: "Mutable",
     ruler: "Jupiter",
