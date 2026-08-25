@@ -435,10 +435,24 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
       }
     }
 
-    // Check for planet questions
-    for (const [planet, description] of Object.entries(astrologyKnowledge.planets)) {
-      if (lowerQuestion.includes(planet)) {
-        return `${planet.charAt(0).toUpperCase() + planet.slice(1)}: ${description}`;
+    // "Which sun sign / zodiac sign" questions — answer sensibly instead of
+    // mismatching to a planet definition.
+    if (
+      lowerQuestion.includes('sun sign') ||
+      lowerQuestion.includes('zodiac sign') ||
+      lowerQuestion.includes('star sign') ||
+      lowerQuestion.includes('which sign')
+    ) {
+      return "Your sign depends on your exact birth date. Astropanth uses the Vedic (sidereal) zodiac, which differs by roughly one sign from Western sun signs. Add your birth details in Profile for your precise Sun, Moon and Ascendant — or ask 'what's my sun sign?'.";
+    }
+
+    // Check for planet questions — but not when the question is about a SIGN
+    // (e.g. "which sun sign" should never return the Sun planet definition).
+    if (!lowerQuestion.includes('sign') && !lowerQuestion.includes('zodiac')) {
+      for (const [planet, description] of Object.entries(astrologyKnowledge.planets)) {
+        if (lowerQuestion.includes(planet)) {
+          return `${planet.charAt(0).toUpperCase() + planet.slice(1)}: ${description}`;
+        }
       }
     }
 

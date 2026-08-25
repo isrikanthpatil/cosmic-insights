@@ -491,13 +491,14 @@ export const generateDailyHoroscope = (firstName: string, dateOfBirth: string, p
     : `Lean into ${strength} today, ${firstName}, and channel it into ${career}; steady, intentional steps compound into real progress.`;
 
   const dayNumber = today.getDate();
-  const monthNumber = today.getMonth() + 1;
-  const baseLuckyNumbers = signData?.numbers || [1, 7, 14];
-  const todaysLuckyNumbers = [
-    baseLuckyNumbers[0],
-    (dayNumber + baseLuckyNumbers[1]) % 31 + 1,
-    (monthNumber + baseLuckyNumbers[2]) % 31 + 1,
-  ];
+  // Pick 3 UNIQUE lucky numbers from the sign's set, rotated by the day so they
+  // vary day to day but never repeat within the trio.
+  const baseLuckyNumbers = signData?.numbers || [1, 7, 14, 3, 9];
+  const off = dayNumber % baseLuckyNumbers.length;
+  const rotated = [...baseLuckyNumbers.slice(off), ...baseLuckyNumbers.slice(0, off)];
+  const uniq = Array.from(new Set(rotated));
+  while (uniq.length < 3) uniq.push(((uniq[uniq.length - 1] || 1) % 9) + 1); // pad if needed
+  const todaysLuckyNumbers = uniq.slice(0, 3);
   const signColors = signData?.colors || ['Gold', 'Red'];
   const todaysLuckyColor = signColors[dayNumber % signColors.length];
 

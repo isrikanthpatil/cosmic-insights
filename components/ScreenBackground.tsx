@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { gradientColors } from '@/constants/theme';
 
 interface ScreenBackgroundProps {
@@ -51,6 +52,7 @@ const STARS: Star[] = [
  * on each screen.
  */
 export default function ScreenBackground({ children, style }: ScreenBackgroundProps) {
+  const insets = useSafeAreaInsets();
   return (
     <LinearGradient
       colors={gradientColors as unknown as readonly [string, string, ...string[]]}
@@ -75,6 +77,14 @@ export default function ScreenBackground({ children, style }: ScreenBackgroundPr
         ))}
       </View>
       {children}
+      {/* Opaque scrim over the status-bar area so scrolled content doesn't show
+          through behind the clock/battery on edge-to-edge Android. */}
+      {insets.top > 0 && (
+        <View
+          pointerEvents="none"
+          style={[styles.statusScrim, { height: insets.top }]}
+        />
+      )}
     </LinearGradient>
   );
 }
@@ -83,5 +93,12 @@ const styles = StyleSheet.create({
   star: {
     position: 'absolute',
     backgroundColor: '#FFFFFF',
+  },
+  statusScrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: gradientColors[0], // matches the gradient's top so it blends
   },
 });
