@@ -267,6 +267,28 @@ const coordsOrDefault = (placeOfBirth?: string): { latitude: number; longitude: 
   return c ?? DEFAULT_COORDS;
 };
 
+// Western (tropical) Sun sign + its date range — shown as a familiar SECONDARY
+// reference alongside the Vedic (sidereal) sign. The app stays sidereal
+// everywhere else; this is purely for user familiarity.
+export const getWesternSunSign = (dateOfBirth: string): { sign: string; dates: string } => {
+  const date = parseDDMMYYYY(dateOfBirth);
+  if (!date) return { sign: '', dates: '' };
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  if ((m === 3 && d >= 21) || (m === 4 && d <= 19)) return { sign: 'Aries', dates: 'Mar 21 - Apr 19' };
+  if ((m === 4 && d >= 20) || (m === 5 && d <= 20)) return { sign: 'Taurus', dates: 'Apr 20 - May 20' };
+  if ((m === 5 && d >= 21) || (m === 6 && d <= 20)) return { sign: 'Gemini', dates: 'May 21 - Jun 20' };
+  if ((m === 6 && d >= 21) || (m === 7 && d <= 22)) return { sign: 'Cancer', dates: 'Jun 21 - Jul 22' };
+  if ((m === 7 && d >= 23) || (m === 8 && d <= 22)) return { sign: 'Leo', dates: 'Jul 23 - Aug 22' };
+  if ((m === 8 && d >= 23) || (m === 9 && d <= 22)) return { sign: 'Virgo', dates: 'Aug 23 - Sep 22' };
+  if ((m === 9 && d >= 23) || (m === 10 && d <= 22)) return { sign: 'Libra', dates: 'Sep 23 - Oct 22' };
+  if ((m === 10 && d >= 23) || (m === 11 && d <= 21)) return { sign: 'Scorpio', dates: 'Oct 23 - Nov 21' };
+  if ((m === 11 && d >= 22) || (m === 12 && d <= 21)) return { sign: 'Sagittarius', dates: 'Nov 22 - Dec 21' };
+  if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) return { sign: 'Capricorn', dates: 'Dec 22 - Jan 19' };
+  if ((m === 1 && d >= 20) || (m === 2 && d <= 18)) return { sign: 'Aquarius', dates: 'Jan 20 - Feb 18' };
+  return { sign: 'Pisces', dates: 'Feb 19 - Mar 20' };
+};
+
 // Sidereal (Lahiri) SUN sign — the Vedic Surya rashi. Location-insensitive, so
 // the reference location is sufficient when a place isn't provided.
 export const calculateSunSign = (dateOfBirth: string, timeOfBirth?: string): string => {

@@ -25,7 +25,7 @@ import {
   X,
 } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
-import { calculateSunSign, generateDailyHoroscope, generateWeeklyHoroscope, getAstrologyReading, DailyHoroscope, WeeklyHoroscope } from '@/utils/astrology';
+import { calculateSunSign, generateDailyHoroscope, generateWeeklyHoroscope, getAstrologyReading, getWesternSunSign, DailyHoroscope, WeeklyHoroscope } from '@/utils/astrology';
 import { getNumerologyReading } from '@/utils/numerology';
 import { enableDailyHoroscopeReminder } from '@/utils/notifications';
 import ScreenBackground from '@/components/ScreenBackground';
@@ -318,6 +318,12 @@ export default function Home() {
                 </View>
               </View>
             </View>
+            {profile && (() => {
+              const w = getWesternSunSign(profile.dateOfBirth);
+              return w.sign ? (
+                <Text style={styles.westernCaption}>Western Sun sign: {w.sign} (tropical)</Text>
+              ) : null;
+            })()}
 
             {numbers && (
               <>
@@ -596,6 +602,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#8B88A0',
     textAlign: 'center',
+  },
+  westernCaption: {
+    fontSize: 11,
+    fontFamily: 'Inter-Regular',
+    color: '#8B88A0',
+    textAlign: 'center',
+    marginTop: 8,
   },
   nudgeCard: {
     flexDirection: 'row',

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getAstrologyReading, getSignDetails } from '@/utils/astrology';
+import { getAstrologyReading, getSignDetails, getWesternSunSign } from '@/utils/astrology';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
@@ -170,8 +170,16 @@ export default function Astrology() {
                     </View>
                     <Text style={styles.signDescription}>Your core identity and life purpose</Text>
                     <Text style={styles.signDates}>
-                      {astrologyData.detailedAnalysis.sunSignData.dates}
+                      Vedic (sidereal): {astrologyData.detailedAnalysis.sunSignData.dates}
                     </Text>
+                    {(() => {
+                      const w = getWesternSunSign(userProfile.dateOfBirth);
+                      return w.sign ? (
+                        <Text style={styles.westernNote}>
+                          Western (tropical): {w.sign} · {w.dates}
+                        </Text>
+                      ) : null;
+                    })()}
                   </View>
                 </View>
               </LinearGradient>
@@ -650,6 +658,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Inter-Regular',
     color: '#E8C87E',
+  },
+  westernNote: {
+    fontSize: 11,
+    fontFamily: 'Inter-Regular',
+    color: '#8B88A0',
+    marginTop: 2,
   },
   row: {
     flexDirection: 'row',
