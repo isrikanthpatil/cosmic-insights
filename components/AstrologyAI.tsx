@@ -10,6 +10,7 @@ import { calculateSunSign, calculateMoonSign, calculateAscendant, getCoordinates
 import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
 import { pb } from '@/utils/pocketbase';
+import { useAuth } from '@/contexts/AuthContext';
 import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 
@@ -53,6 +54,13 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   // CTA beneath the conversation.
   const [guestLimitReached, setGuestLimitReached] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
+
+  // Once the user signs in they get unlimited AskAstro, so clear the guest
+  // limit banner (it otherwise lingers after returning from the login screen).
+  useEffect(() => {
+    if (user) setGuestLimitReached(false);
+  }, [user]);
 
   // Keyboard avoidance: Android edge-to-edge breaks the standard
   // KeyboardAvoidingView, so we lift the card manually. The keyboard overlays
