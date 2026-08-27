@@ -53,7 +53,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // promise settles the store has populated its record (if a saved session
     // exists). This avoids briefly showing the login screen to a logged-in
     // user on cold start.
-    AsyncStorage.getItem('pb_auth').then(() => {
+    AsyncStorage.getItem('pb_auth').then(async () => {
+      if (!mounted) return;
+
+      // Validate the restored session. A saved token can be EXPIRED (PocketBase
+      // tokens lapse after ~2 weeks): the record still hydrates, so the app
+      // would think it's logged in while every request 401s and the login modal
+      // auto-dismisses. Clear an invalid/expired session so the user lands in a
+      // clean logged-out state and can sign in fresh.
+      if (pb.authStore.record) {
+        if (!pb.authStore.isValid) {
+          pb.authStore.clear();
+        } else {
+          try {
+            await pb.collection('users').authRefresh(); // rotate + confirm with server
+          } catch {
+            pb.authStore.clear(); // server rejected the token -> log out cleanly
+          }
+        }
+      }
+
       if (!mounted) return;
       setUser(pb.authStore.record ?? null);
       setIsLoading(false);
