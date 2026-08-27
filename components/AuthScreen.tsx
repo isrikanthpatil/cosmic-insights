@@ -39,8 +39,9 @@ export default function AuthScreen() {
   // When used as the modal `login` route, dismiss it once the user becomes
   // authenticated. The hard gate is gone, so this is the screen's only exit.
   useEffect(() => {
-    if (user && router.canGoBack()) {
-      router.back();
+    if (user) {
+      if (router.canGoBack()) router.back();
+      else router.replace('/(tabs)'); // fallback so the modal never traps an authed user
     }
   }, [user, router]);
 
@@ -98,6 +99,7 @@ export default function AuthScreen() {
   const switchMode = () => {
     setMode((m) => (m === 'login' ? 'signup' : 'login'));
     setShowPlaceSuggestions(false);
+    setNotice(null); // don't carry a login-context banner onto the sign-up form
   };
 
   const handleForgotPassword = async () => {

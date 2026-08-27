@@ -20,6 +20,9 @@ import { showToast } from '@/utils/toast';
 const GUEST_LIMIT = 'guest_limit';
 const DEFAULT_GUEST_LIMIT_MESSAGE =
   "You've used your 2 free questions for today. Sign in for unlimited AskAstro.";
+const GREETING_TEXT =
+  "Namaste 🙏 I'm AskAstro. Ask me anything about your chart, zodiac, or numerology — or add your birth details for a personalised reading.";
+const makeGreeting = (): Message => ({ id: '1', text: GREETING_TEXT, isUser: false, timestamp: new Date() });
 
 interface Message {
   id: string;
@@ -40,14 +43,7 @@ interface AstrologyAIProps {
 }
 
 export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Namaste 🙏 I'm AskAstro. Ask me anything about your chart, zodiac, or numerology — or add your birth details for a personalised reading.",
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([makeGreeting()]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // True once a guest has hit the daily free-question limit; shows a sign-in
@@ -56,11 +52,16 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const router = useRouter();
   const { user } = useAuth();
 
-  // Once the user signs in they get unlimited AskAstro, so clear the guest
-  // limit banner (it otherwise lingers after returning from the login screen).
+  // Reset the whole conversation when the subject/identity changes — sign-in,
+  // sign-out, guest→account, or "explore another chart". Otherwise the previous
+  // person's personalized answers, a stale greeting, and the "used your 2 free
+  // questions" bubble linger under a header that now names someone else.
   useEffect(() => {
-    if (user) setGuestLimitReached(false);
-  }, [user]);
+    setMessages([makeGreeting()]);
+    setInputText('');
+    setGuestLimitReached(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile?.firstName, userProfile?.dateOfBirth, user?.id]);
 
   // Keyboard avoidance: Android edge-to-edge breaks the standard
   // KeyboardAvoidingView, so we lift the card manually. The keyboard overlays

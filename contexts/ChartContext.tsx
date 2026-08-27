@@ -27,9 +27,17 @@ interface ChartContextValue {
 const ChartContext = createContext<ChartContextValue | undefined>(undefined);
 
 export function ChartProvider({ children }: { children: React.ReactNode }) {
-  const { profile: authProfile } = useAuth();
+  const { profile: authProfile, user } = useAuth();
   const [override, setOverride] = useState<Profile | null>(null);
   const [guestProfile, setGuestProfileState] = useState<Profile | null>(null);
+
+  // Clear any transient "explore another chart" override whenever the signed-in
+  // identity changes (login OR logout). Otherwise a stranger's chart would keep
+  // driving every screen after an auth transition (Home has no ExploreBar to
+  // reveal it), silently showing the wrong person's reading.
+  useEffect(() => {
+    setOverride(null);
+  }, [user?.id]);
 
   // Hydrate the guest profile from AsyncStorage once on mount.
   useEffect(() => {

@@ -54,6 +54,9 @@ export default function Astrology() {
     } else {
       setAstrologyData(null);
     }
+    // Return to the Overview tab when the subject changes, so we don't land the
+    // new person on, say, the Remedies tab left open for someone else.
+    setActiveTab('overview');
   }, [userProfile]);
 
   const generateAstrologyData = () => {

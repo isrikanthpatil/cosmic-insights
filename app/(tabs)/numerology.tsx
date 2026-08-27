@@ -37,6 +37,9 @@ export default function Numerology() {
     } else {
       setNumerologyReading(null);
     }
+    // Collapse any expanded card when the subject changes, so we don't show a
+    // previous person's number meaning open under the new person's name.
+    setExpandedCard(null);
   }, [userProfile]);
 
   const generateNumerologyReading = () => {
