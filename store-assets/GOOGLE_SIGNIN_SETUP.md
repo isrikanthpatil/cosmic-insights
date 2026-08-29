@@ -48,12 +48,35 @@ You should see JSON that includes an `oauth2` section listing **google** as a pr
 
 ---
 
-## Part 4 — What I do next (client side)
+## Part 4 — Client side (IMPLEMENTED — commit `a11a78c`)
 
-Once Parts 1–3 are done and the auth-methods check shows Google:
-- I implement the React Native OAuth2 **code flow** (`authWithOAuth2Code` + `expo-web-browser` + a deep-link return) and un-hide the "Continue with Google" button on Android.
-- We build a **preview/internal** APK and test the round-trip: tap Google → Google consent → back into the app, signed in.
-- The redirect handoff sometimes needs one tweak (deep link vs. PocketBase redirect); we finalise it on that test build **before** it ever reaches production.
-- A Google sign-in creates a user with an email but no birth details, so after first sign-in the app will prompt them to add birth details (same as an incomplete profile) — that's expected.
+Parts 1–3 are confirmed live: the auth-methods URL lists **google** with a valid
+authURL and our client ID. The client flow is now built:
 
-Tell me when the auth-methods URL shows Google, and I'll wire up the client side.
+- **"Continue with Google" is un-gated on Android** (it was web-only before).
+- The app uses PocketBase's all-in-one `authWithOAuth2`, which receives the code
+  back over a **realtime (SSE)** connection. React Native has no built-in
+  `EventSource`, so we polyfill it with the pure-JS `react-native-sse` (no native
+  module — builds fine on EAS). After the handshake completes, the app dismisses
+  the leftover auth browser tab automatically.
+- **Incomplete-profile handling:** a Google account has an email but no birth
+  details, so the reading screens now detect that and show **"Complete your birth
+  details"** instead of a fabricated chart. Saving there writes to the account.
+
+### How to test (on the internal/preview build)
+1. Make sure your Google account is under **Audience → Test users** in Google Cloud
+   (the app is in "Testing", so only listed testers can sign in).
+2. Open the app → Sign in → **Continue with Google** → pick your account → consent.
+3. You should land back in the app, signed in. Then a reading screen prompts you to
+   **complete birth details** — add them once and readings populate.
+
+### If it doesn't come back cleanly
+The realtime handshake is the one part that occasionally needs a tweak on device.
+If the browser hangs on PocketBase's redirect page instead of returning:
+- First retry (sometimes the SSE connection just needs a moment).
+- If it's consistent, tell me what you see and I'll switch to the fallback
+  approach (a custom `oauth-mobile` redirect page on PocketBase that deep-links
+  the code straight back to the app — no realtime). That needs one extra Google
+  redirect URI + a small server hook, so we only do it if the SSE path misbehaves.
+
+This is client-side only — no new build config, no server change beyond Parts 1–3.
