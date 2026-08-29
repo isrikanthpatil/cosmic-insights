@@ -33,3 +33,8 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Google Play service-account key (NEVER commit — grants upload access to your app)
+play-service-account.json
+*service-account*.json
+api-*.json
