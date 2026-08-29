@@ -227,9 +227,18 @@ export default function AuthScreen() {
           Platform.OS === 'web'
             ? undefined
             : async (url: string) => {
+                // Opens Google in an in-app browser. The final page is
+                // PocketBase's https redirect (not our scheme), so this promise
+                // won't auto-resolve — authWithOAuth2 resolves separately via
+                // realtime once the code comes back, and we dismiss below.
                 await WebBrowser.openAuthSessionAsync(url, 'cosmic-insights://');
               },
       });
+      // On native the auth window can linger on PocketBase's redirect page after
+      // the realtime handshake completes; close it so the user lands back in-app.
+      if (Platform.OS !== 'web') {
+        WebBrowser.dismissAuthSession();
+      }
       // No manual navigation needed; AuthContext reacts to authStore change.
     } catch (error: any) {
       const rawMessage =
@@ -461,30 +470,28 @@ export default function AuthScreen() {
               </TouchableOpacity>
             )}
 
-            {Platform.OS === 'web' && (
-              <>
-                <View style={styles.dividerRow}>
-                  <View style={styles.dividerLine} />
-                  <Text style={styles.dividerText}>or</Text>
-                  <View style={styles.dividerLine} />
-                </View>
+            <>
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.dividerLine} />
+              </View>
 
-                <TouchableOpacity
-                  style={styles.googleButton}
-                  onPress={handleGoogle}
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <ActivityIndicator size={20} color="#1A1A2E" />
-                  ) : (
-                    <>
-                      <Text style={styles.googleG}>G</Text>
-                      <Text style={styles.googleButtonText}>Continue with Google</Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </>
-            )}
+              <TouchableOpacity
+                style={styles.googleButton}
+                onPress={handleGoogle}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <ActivityIndicator size={20} color="#1A1A2E" />
+                ) : (
+                  <>
+                    <Text style={styles.googleG}>G</Text>
+                    <Text style={styles.googleButtonText}>Continue with Google</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </>
 
             <TouchableOpacity
               style={styles.switchButton}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth, Profile } from '@/contexts/AuthContext';
+import { useAuth, Profile, isProfileComplete } from '@/contexts/AuthContext';
 
 const GUEST_PROFILE_KEY = 'guest_profile';
 
@@ -22,6 +22,10 @@ interface ChartContextValue {
   setGuestProfile: (p: Profile) => void;
   /** True when there is no authenticated profile (browsing as a guest). */
   isGuest: boolean;
+  /** True when signed in but the account has no birth details yet (e.g. a fresh
+   *  Google sign-in). Screens use this to prompt for details instead of showing
+   *  a fabricated chart. */
+  needsProfileDetails: boolean;
 }
 
 const ChartContext = createContext<ChartContextValue | undefined>(undefined);
@@ -72,8 +76,13 @@ export function ChartProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem(GUEST_PROFILE_KEY, JSON.stringify(p)).catch(() => {});
   };
 
+  // A signed-in account with no birth date can't drive a reading, so it must not
+  // be treated as the active profile (that would compute a chart from an empty
+  // date). Fall through to the guest profile only when not signed in.
+  const usableAuthProfile = isProfileComplete(authProfile) ? authProfile : null;
+
   const value: ChartContextValue = {
-    activeProfile: override ?? authProfile ?? guestProfile,
+    activeProfile: override ?? usableAuthProfile ?? guestProfile,
     isExploring: override !== null,
     exploreSubject: override,
     setExplore: (p: Profile) => setOverride(p),
@@ -81,6 +90,7 @@ export function ChartProvider({ children }: { children: React.ReactNode }) {
     guestProfile,
     setGuestProfile,
     isGuest: !authProfile,
+    needsProfileDetails: !!authProfile && !isProfileComplete(authProfile) && override === null,
   };
 
   return <ChartContext.Provider value={value}>{children}</ChartContext.Provider>;

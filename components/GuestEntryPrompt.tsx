@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Star, X } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
-import { Profile } from '@/contexts/AuthContext';
+import { Profile, useAuth } from '@/contexts/AuthContext';
 import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
@@ -33,21 +33,45 @@ export default function GuestEntryPrompt({
   message = 'Enter your birth details to unlock your personalized astrology and numerology — no account needed.',
 }: GuestEntryPromptProps) {
   const { setGuestProfile } = useChart();
+  const { user, updateProfile } = useAuth();
+  const authed = !!user;
   const [modalVisible, setModalVisible] = useState(false);
   const kb = useKeyboardHeight();
 
-  const handleSubmit = (profile: Profile) => {
-    setGuestProfile(profile);
-    setModalVisible(false);
-    showToast('Birth details saved on this device.', 'success');
+  // When signed in (e.g. a fresh Google account with no birth details) save to
+  // the account so it syncs and persists; guests save locally on the device.
+  const handleSubmit = async (profile: Profile) => {
+    if (authed) {
+      try {
+        await updateProfile(profile);
+        setModalVisible(false);
+        showToast('Birth details saved to your account.', 'success');
+      } catch {
+        showToast('Could not save. Please try again.', 'error');
+      }
+    } else {
+      setGuestProfile(profile);
+      setModalVisible(false);
+      showToast('Birth details saved on this device.', 'success');
+    }
   };
+
+  // A signed-in user is completing their own profile, so drop the guest-only
+  // "no account needed" framing in favour of account-appropriate copy.
+  const effectiveTitle = authed ? 'Complete your birth details' : title;
+  const effectiveMessage = authed
+    ? 'Add your birth details to unlock your personalized astrology and numerology.'
+    : message;
+  const modalCaption = authed
+    ? 'Saved to your account.'
+    : 'For a free reading. Saved on this device only.';
 
   return (
     <>
       <View style={styles.card}>
         <Star size={48} color="#E8C87E" />
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.text}>{message}</Text>
+        <Text style={styles.title}>{effectiveTitle}</Text>
+        <Text style={styles.text}>{effectiveMessage}</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
@@ -84,9 +108,7 @@ export default function GuestEntryPrompt({
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
-              <Text style={styles.modalCaption}>
-                For a free reading. Saved on this device only.
-              </Text>
+              <Text style={styles.modalCaption}>{modalCaption}</Text>
               <BirthDetailsForm onSubmit={handleSubmit} submitLabel="Get my reading" />
               <TouchableOpacity
                 style={styles.cancelButton}

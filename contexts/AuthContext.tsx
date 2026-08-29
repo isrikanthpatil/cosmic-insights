@@ -24,6 +24,16 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+/**
+ * A profile is only usable for a reading once it has a birth date — the field
+ * every sidereal calculation depends on. Google sign-in creates an account with
+ * an email but no birth details, so we must gate on this rather than merely
+ * "is there a profile object", otherwise we'd compute a chart from an empty date.
+ */
+export function isProfileComplete(p: Profile | null): boolean {
+  return !!(p && p.dateOfBirth);
+}
+
 function toProfile(record: any | null): Profile | null {
   if (!record) return null;
   return {
