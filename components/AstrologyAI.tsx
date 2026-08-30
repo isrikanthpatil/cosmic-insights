@@ -29,6 +29,31 @@ const makeGreeting = (name?: string): Message => ({
   timestamp: new Date(),
 });
 
+// Suggested follow-up questions shown as tappable chips after each reply, so the
+// chat feels like a guided conversation rather than a one-shot Q&A.
+const FOLLOWUP_POOL = [
+  'What about my career?',
+  'How is my love life?',
+  'Any remedies for me?',
+  'What does today hold?',
+  'My lucky numbers & colours?',
+  'What are my strengths?',
+  'Tell me about my Moon sign',
+  'Which planetary period am I in?',
+];
+
+// Deterministic per-turn pick of 3 follow-ups (stable across re-renders via the
+// message-count seed), excluding whatever was just asked.
+const pickFollowUps = (seed: number, exclude: string): string[] => {
+  const ex = exclude.trim().toLowerCase();
+  const pool = FOLLOWUP_POOL.filter((q) => q.toLowerCase() !== ex);
+  const out: string[] = [];
+  for (let i = 0; out.length < 3 && i < pool.length; i++) {
+    out.push(pool[(seed + i) % pool.length]);
+  }
+  return out;
+};
+
 interface Message {
   id: string;
   text: string;
@@ -608,13 +633,16 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     }
   };
 
-  const handleSend = async () => {
-    if (!inputText.trim()) return;
+  const handleSend = async (presetText?: string) => {
+    // `presetText` is a string only when called from a follow-up chip; event
+    // handlers (onPress/onSubmitEditing) pass an event object, so we ignore that.
+    const raw = typeof presetText === 'string' ? presetText : inputText;
+    if (!raw.trim()) return;
     if (isLoading) return; // prevent double-submit from Enter/keyboard while a reply is in flight
     tap();
 
     // Security: Validate and sanitize input
-    const sanitizedInput = sanitizeInput.text(inputText);
+    const sanitizedInput = sanitizeInput.text(raw);
     if (sanitizedInput.length === 0) {
       securityMonitor.logSuspiciousActivity('Empty input after sanitization in astrology AI');
       return;
@@ -700,6 +728,15 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     "What do the houses represent?"
   ];
 
+  // Follow-up chips after the latest reply (not the greeting, not while typing,
+  // not once a guest has hit the limit).
+  const lastMsg = messages[messages.length - 1];
+  const lastUserText = [...messages].reverse().find((m) => m.isUser)?.text ?? '';
+  const followUps =
+    !isLoading && !guestLimitReached && messages.length > 1 && lastMsg && !lastMsg.isUser
+      ? pickFollowUps(messages.length, lastUserText)
+      : [];
+
   return (
     <View
       style={[
@@ -774,6 +811,23 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           </View>
         )}
 
+        {followUps.length > 0 && (
+          <View style={styles.followUpWrap}>
+            {followUps.map((q, i) => (
+              <TouchableOpacity
+                key={i}
+                style={styles.followUpChip}
+                onPress={() => handleSend(q)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={`Ask: ${q}`}
+              >
+                <Text style={styles.followUpText}>{q}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
         {messages.length === 1 && (
           <View style={styles.suggestionsContainer}>
             <Text style={styles.suggestionsTitle}>Try asking:</Text>
@@ -842,7 +896,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
               // When the keyboard opens, keep the latest message + the input in view.
               setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 150);
             }}
-            onSubmitEditing={handleSend}
+            onSubmitEditing={() => handleSend()}
             onKeyPress={(e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
               // Web: send on Enter (without Shift); Shift+Enter inserts a newline.
               if (Platform.OS === 'web') {
@@ -860,7 +914,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
           />
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-            onPress={handleSend}
+            onPress={() => handleSend()}
             disabled={!inputText.trim() || isLoading}
             accessibilityRole="button"
             accessibilityLabel="Send message"
@@ -974,6 +1028,27 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 3.5,
     backgroundColor: '#E8C87E',
+  },
+  followUpWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 6,
+    marginLeft: 38, // align under the AI bubbles (past the avatar)
+  },
+  followUpChip: {
+    backgroundColor: 'rgba(232, 200, 126, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.30)',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  followUpText: {
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#E8C87E',
   },
   messageBubble: {
     maxWidth: '80%',
