@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Platform, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Animated, Platform, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,9 +20,14 @@ import { showToast } from '@/utils/toast';
 const GUEST_LIMIT = 'guest_limit';
 const DEFAULT_GUEST_LIMIT_MESSAGE =
   "You've used your 2 free questions for today. Sign in for unlimited AskAstro.";
-const GREETING_TEXT =
-  "Namaste 🙏 I'm AskAstro. Ask me anything about your chart, zodiac, or numerology — or add your birth details for a personalised reading.";
-const makeGreeting = (): Message => ({ id: '1', text: GREETING_TEXT, isUser: false, timestamp: new Date() });
+const GREETING_BODY =
+  "I'm AskAstro. Ask me anything about your chart, zodiac, or numerology — or add your birth details for a personalised reading.";
+const makeGreeting = (name?: string): Message => ({
+  id: '1',
+  text: name ? `Namaste ${name} 🙏 ${GREETING_BODY}` : `Namaste 🙏 ${GREETING_BODY}`,
+  isUser: false,
+  timestamp: new Date(),
+});
 
 interface Message {
   id: string;
@@ -42,8 +47,37 @@ interface AstrologyAIProps {
   };
 }
 
+// Three gently pulsing dots — the "AskAstro is typing…" affordance shown while a
+// reply is being prepared.
+function TypingDots() {
+  const d0 = useRef(new Animated.Value(0.3)).current;
+  const d1 = useRef(new Animated.Value(0.3)).current;
+  const d2 = useRef(new Animated.Value(0.3)).current;
+  useEffect(() => {
+    const make = (v: Animated.Value, delay: number) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(v, { toValue: 1, duration: 300, useNativeDriver: true }),
+          Animated.timing(v, { toValue: 0.3, duration: 300, useNativeDriver: true }),
+          Animated.delay(360 - delay),
+        ]),
+      );
+    const anims = [make(d0, 0), make(d1, 180), make(d2, 360)];
+    anims.forEach((a) => a.start());
+    return () => anims.forEach((a) => a.stop());
+  }, [d0, d1, d2]);
+  return (
+    <View style={styles.typingDotsRow}>
+      {[d0, d1, d2].map((v, i) => (
+        <Animated.View key={i} style={[styles.typingDot, { opacity: v, transform: [{ scale: v }] }]} />
+      ))}
+    </View>
+  );
+}
+
 export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
-  const [messages, setMessages] = useState<Message[]>([makeGreeting()]);
+  const [messages, setMessages] = useState<Message[]>([makeGreeting(userProfile?.firstName)]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // True once a guest has hit the daily free-question limit; shows a sign-in
@@ -57,7 +91,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   // person's personalized answers, a stale greeting, and the "used your 2 free
   // questions" bubble linger under a header that now names someone else.
   useEffect(() => {
-    setMessages([makeGreeting()]);
+    setMessages([makeGreeting(userProfile?.firstName)]);
     setInputText('');
     setGuestLimitReached(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,75 +105,35 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const tabBarHeight = useBottomTabBarHeight();
   const kb = useKeyboardHeight();
 
-  // Refs for the typewriter reveal: the active interval timer and the
-  // ScrollView so we can keep the view pinned to the bottom as text grows.
-  const typingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const isMountedRef = useRef(true);
 
-  // Clean up any in-flight typing interval on unmount to avoid
-  // state-update-after-unmount warnings.
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      if (typingIntervalRef.current) {
-        clearInterval(typingIntervalRef.current);
-        typingIntervalRef.current = null;
-      }
     };
   }, []);
 
-  // Appends an assistant message with empty text, then progressively fills its
-  // `text` field word-by-word via setInterval until the full reply is shown.
-  const revealAssistantMessage = (fullText: string) => {
-    const messageId = (Date.now() + 1).toString();
+  // Add the assistant's reply as a single, complete message. We deliberately do
+  // NOT stream it character-by-character — a person sends a whole message at once,
+  // so the reply appears in full after the "typing…" indicator, which feels more
+  // human and less like a bot spitting out tokens.
+  const addAssistantMessage = (fullText: string) => {
+    if (!isMountedRef.current) return;
     const aiMessage: Message = {
-      id: messageId,
-      text: '',
+      id: (Date.now() + 1).toString(),
+      text: fullText,
       isUser: false,
       timestamp: new Date(),
     };
-
-    // Stop the loader and show the (empty) bubble immediately.
     setIsLoading(false);
     setMessages(prev => [...prev, aiMessage]);
-
-    // Split into words while preserving the whitespace between them so the
-    // reassembled text matches the original exactly.
-    const tokens = fullText.match(/\S+\s*/g) ?? [fullText];
-    let index = 0;
-
-    // Clear any previous reveal still running.
-    if (typingIntervalRef.current) {
-      clearInterval(typingIntervalRef.current);
-      typingIntervalRef.current = null;
-    }
-
-    typingIntervalRef.current = setInterval(() => {
-      if (!isMountedRef.current) {
-        if (typingIntervalRef.current) {
-          clearInterval(typingIntervalRef.current);
-          typingIntervalRef.current = null;
-        }
-        return;
-      }
-
-      // Reveal one word per tick for a calm, readable typing pace.
-      index += 1;
-      const partial = tokens.slice(0, index).join('');
-      setMessages(prev =>
-        prev.map(m => (m.id === messageId ? { ...m, text: partial } : m))
-      );
-
-      if (index >= tokens.length) {
-        if (typingIntervalRef.current) {
-          clearInterval(typingIntervalRef.current);
-          typingIntervalRef.current = null;
-        }
-      }
-    }, 60);
   };
+
+  // Minimum time the "typing…" indicator stays up, so instant/offline replies
+  // still feel considered rather than robotically immediate.
+  const MIN_THINKING_MS = 900;
 
   // Enhanced astrology knowledge base with coordinate-based insights
   const astrologyKnowledge = {
@@ -652,6 +646,17 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     setInputText('');
     setIsLoading(true);
 
+    const startedAt = Date.now();
+    // Keep the "typing…" indicator up for at least MIN_THINKING_MS, then show the
+    // complete reply at once (applies to LLM and offline-fallback replies alike).
+    const finishWith = async (text: string) => {
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < MIN_THINKING_MS) {
+        await new Promise((r) => setTimeout(r, MIN_THINKING_MS - elapsed));
+      }
+      addAssistantMessage(text);
+    };
+
     // Try the server-side LLM proxy first; fall back to the offline engine.
     let llmReply: string | null = null;
     try {
@@ -664,7 +669,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         // Surface the limit both as a toast and as an assistant message, with a
         // persistent sign-in CTA rendered below the conversation.
         showToast(limitMessage, 'info');
-        revealAssistantMessage(limitMessage);
+        await finishWith(limitMessage);
         return;
       }
       // Any other unexpected throw → fall back to the offline engine.
@@ -676,9 +681,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         ? llmReply
         : generateResponse(sanitizedInput);
 
-    // Reveal the reply with a typewriter animation (turns off the loader as
-    // it begins). Applies equally to LLM and local-fallback replies.
-    revealAssistantMessage(response);
+    await finishWith(response);
 
     securityMonitor.logEvent('AI query processed', {
       userId,
@@ -725,38 +728,48 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         showsVerticalScrollIndicator={false}
         onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
       >
-        {messages.map((message) => (
-          <View
-            key={message.id}
-            style={[
-              styles.messageWrapper,
-              message.isUser ? styles.userMessageWrapper : styles.aiMessageWrapper,
-            ]}
-          >
-            <View
-              style={[
-                styles.messageBubble,
-                message.isUser ? styles.userMessage : styles.aiMessage,
-              ]}
-            >
-              <Text style={[
-                styles.messageText,
-                message.isUser ? styles.userMessageText : styles.aiMessageText,
-              ]}>
-                {message.text}
-              </Text>
+        {messages.map((message) => {
+          const time = message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          if (message.isUser) {
+            return (
+              <View key={message.id} style={[styles.messageWrapper, styles.userMessageWrapper]}>
+                <View style={[styles.messageBubble, styles.userMessage]}>
+                  <Text style={[styles.messageText, styles.userMessageText]}>{message.text}</Text>
+                </View>
+                <Text style={styles.timestamp}>{time}</Text>
+              </View>
+            );
+          }
+          return (
+            <View key={message.id} style={[styles.messageWrapper, styles.aiMessageWrapper]}>
+              <View style={styles.aiRow}>
+                <View style={styles.aiAvatar}>
+                  <Sparkles size={15} color="#E8C87E" />
+                </View>
+                <View style={styles.aiRowBody}>
+                  <Text style={styles.aiName}>AskAstro</Text>
+                  <View style={[styles.messageBubble, styles.aiMessage, styles.aiBubbleFull]}>
+                    <Text style={[styles.messageText, styles.aiMessageText]}>{message.text}</Text>
+                  </View>
+                  <Text style={styles.timestamp}>{time}</Text>
+                </View>
+              </View>
             </View>
-            <Text style={styles.timestamp}>
-              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Text>
-          </View>
-        ))}
+          );
+        })}
 
         {isLoading && (
-          <View style={styles.loadingWrapper}>
-            <View style={styles.loadingBubble}>
-              <ActivityIndicator size="small" color="#E8C87E" />
-              <Text style={styles.loadingText}>Consulting the stars...</Text>
+          <View style={[styles.messageWrapper, styles.aiMessageWrapper]}>
+            <View style={styles.aiRow}>
+              <View style={styles.aiAvatar}>
+                <Sparkles size={15} color="#E8C87E" />
+              </View>
+              <View style={styles.aiRowBody}>
+                <Text style={styles.aiName}>AskAstro is typing…</Text>
+                <View style={[styles.messageBubble, styles.aiMessage, styles.typingBubble]}>
+                  <TypingDots />
+                </View>
+              </View>
             </View>
           </View>
         )}
@@ -916,6 +929,51 @@ const styles = StyleSheet.create({
   },
   aiMessageWrapper: {
     alignItems: 'flex-start',
+  },
+  aiRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    maxWidth: '92%',
+  },
+  aiRowBody: {
+    flexShrink: 1,
+  },
+  aiAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(232, 200, 126, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.30)',
+    marginTop: 2,
+  },
+  aiName: {
+    fontSize: 11,
+    fontFamily: 'Inter-SemiBold',
+    color: '#8B88A0',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  aiBubbleFull: {
+    maxWidth: '100%',
+  },
+  typingBubble: {
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  typingDotsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  typingDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#E8C87E',
   },
   messageBubble: {
     maxWidth: '80%',
