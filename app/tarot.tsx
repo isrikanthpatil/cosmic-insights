@@ -93,7 +93,7 @@ export default function TarotScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 12 },
-  topTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
+  topTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
   header: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerTitle: { fontSize: 17, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
   headerSub: { fontSize: 12, fontFamily: 'Inter-Regular', color: '#8B88A0', marginTop: 4, marginBottom: 12, lineHeight: 17 },

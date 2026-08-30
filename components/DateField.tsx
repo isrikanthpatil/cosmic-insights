@@ -45,7 +45,7 @@ export default function DateField({
       value={value}
       onChangeText={handleChange}
       placeholder={placeholder}
-      placeholderTextColor="#7E7B92"
+      placeholderTextColor="#8B88A0"
       keyboardType="number-pad"
       maxLength={10}
       autoCorrect={false}

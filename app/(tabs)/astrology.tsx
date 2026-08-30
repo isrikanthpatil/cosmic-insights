@@ -79,18 +79,7 @@ export default function Astrology() {
     });
   };
 
-  if (loading) {
-    return (
-      <ScreenBackground style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Sparkles size={64} color="#E8C87E" />
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
-      </ScreenBackground>
-    );
-  }
-
-  if (!userProfile && !isExploring) {
+  if (!loading && !userProfile && !isExploring) {
     return (
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -109,7 +98,7 @@ export default function Astrology() {
     );
   }
 
-  if (!userProfile || !astrologyData) {
+  if (loading || !userProfile || !astrologyData) {
     return (
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -686,7 +675,7 @@ const styles = StyleSheet.create({
   halfCardTitle: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -699,7 +688,7 @@ const styles = StyleSheet.create({
   halfCardDesc: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     textAlign: 'center',
   },
   halfCardElement: {
@@ -738,7 +727,7 @@ const styles = StyleSheet.create({
   coordinatesDescription: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     lineHeight: 17,
   },
   section: {
@@ -764,7 +753,7 @@ const styles = StyleSheet.create({
   sectionDescription: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     marginBottom: 10,
     lineHeight: 17,
   },

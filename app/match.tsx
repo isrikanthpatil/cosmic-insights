@@ -256,9 +256,9 @@ export default function MatchScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.heading}>
-            <Text style={styles.title}>Compatibility</Text>
+            <Text style={styles.title}>Kundli Matching</Text>
             <Text style={styles.subtitle}>
-              Kundli matching · Ashtakoota Guna Milan
+              Ashtakoota Guna Milan · 36 Gunas
             </Text>
           </View>
 
@@ -315,7 +315,7 @@ export default function MatchScreen() {
                   value={firstName}
                   onChangeText={setFirstName}
                   placeholder="Enter first name (optional)"
-                  placeholderTextColor="#7E7B92"
+                  placeholderTextColor="#8B88A0"
                   selectionColor="#E8C87E"
                   maxLength={50}
                 />
@@ -341,7 +341,7 @@ export default function MatchScreen() {
                   value={placeOfBirth}
                   onChangeText={handlePlaceSearch}
                   placeholder="Mumbai, Maharashtra"
-                  placeholderTextColor="#7E7B92"
+                  placeholderTextColor="#8B88A0"
                   selectionColor="#E8C87E"
                   maxLength={200}
                 />
@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
   inputHint: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
   },
   suggestionsContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -750,7 +750,7 @@ const styles = StyleSheet.create({
   heroScoreMax: {
     fontSize: 22,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
   },
   heroBand: {
     fontSize: 18,
@@ -799,7 +799,7 @@ const styles = StyleSheet.create({
   kootaName: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
   kootaMax: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
   },
   kootaNote: {
     fontSize: 12,
@@ -849,7 +849,7 @@ const styles = StyleSheet.create({
   mangalRef: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     marginTop: 8,
   },
   disclaimerCard: {

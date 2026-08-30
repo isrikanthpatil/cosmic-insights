@@ -500,7 +500,7 @@ export default function Profile() {
                   value={editForm.firstName}
                   onChangeText={(text) => setEditForm({ ...editForm, firstName: text })}
                   placeholder="Enter your first name"
-                  placeholderTextColor="#7E7B92"
+                  placeholderTextColor="#8B88A0"
                   maxLength={50}
                   onFocus={() => scrollToField('firstName')}
                 />
@@ -516,7 +516,7 @@ export default function Profile() {
                   value={editForm.lastName}
                   onChangeText={(text) => setEditForm({ ...editForm, lastName: text })}
                   placeholder="Enter your last name"
-                  placeholderTextColor="#7E7B92"
+                  placeholderTextColor="#8B88A0"
                   maxLength={50}
                   onFocus={() => scrollToField('lastName')}
                 />
@@ -548,7 +548,7 @@ export default function Profile() {
                   value={editForm.placeOfBirth}
                   onChangeText={handlePlaceSearch}
                   placeholder="Mumbai, Maharashtra"
-                  placeholderTextColor="#7E7B92"
+                  placeholderTextColor="#8B88A0"
                   maxLength={200}
                   onFocus={() => scrollToField('place')}
                 />
@@ -766,7 +766,7 @@ export default function Profile() {
                     </Text>
                   )}
                 </View>
-                <ChevronRight size={18} color="#7E7B92" />
+                <ChevronRight size={18} color="#8B88A0" />
               </TouchableOpacity>
 
               {/* About */}
@@ -1072,7 +1072,7 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 4,
@@ -1191,7 +1191,7 @@ const styles = StyleSheet.create({
   aboutDisclaimer: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     marginTop: 6,
   },
 });

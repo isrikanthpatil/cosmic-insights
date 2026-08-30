@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   placeholderNote: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     textAlign: 'center',
     marginTop: 8,
   },

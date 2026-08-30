@@ -79,6 +79,8 @@ export default function GuestEntryPrompt({
             setModalVisible(true);
           }}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Enter birth details"
         >
           <Text style={styles.buttonText}>Enter birth details</Text>
         </TouchableOpacity>
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
   modalCaption: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     lineHeight: 17,
   },
   cancelButton: {

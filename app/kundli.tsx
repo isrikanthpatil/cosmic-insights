@@ -209,7 +209,7 @@ export default function KundliScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 12 },
-  topTitle: { fontSize: 18, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
+  topTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
   muted: { fontSize: 14, fontFamily: 'Inter-Regular', color: '#8B88A0', textAlign: 'center', lineHeight: 20 },
   subtitle: { fontSize: 13, fontFamily: 'Inter-Medium', color: '#C7C4D6', marginBottom: 12 },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   cell: { borderWidth: 0.5, borderColor: 'rgba(232,200,126,0.25)', padding: 3 },
   cellCentre: { borderWidth: 0.5, borderColor: 'rgba(232,200,126,0.12)', alignItems: 'center', justifyContent: 'center' },
   cellLagna: { backgroundColor: 'rgba(232,200,126,0.10)', borderColor: 'rgba(232,200,126,0.6)' },
-  centreLabel: { fontSize: 12, fontFamily: 'PlayfairDisplay-Bold', color: '#7E7B92', textAlign: 'center' },
+  centreLabel: { fontSize: 12, fontFamily: 'PlayfairDisplay-Bold', color: '#8B88A0', textAlign: 'center' },
   cellSign: { fontSize: 9, fontFamily: 'Inter-Regular', color: '#6E6B84' },
   lagnaTag: { position: 'absolute', top: 2, right: 3, fontSize: 8, fontFamily: 'Inter-SemiBold', color: '#E8C87E' },
   cellPlanets: { flexDirection: 'row', flexWrap: 'wrap', gap: 3, marginTop: 2 },
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   td: { fontSize: 13, fontFamily: 'Inter-Medium', color: '#F4F1E8' },
   tdSm: { fontSize: 12, fontFamily: 'Inter-Regular', color: '#C7C4D6' },
   colP: { flex: 1.3 }, colR: { flex: 1.2 }, colH: { flex: 0.8 }, colN: { flex: 1.6 },
-  legend: { fontSize: 11, fontFamily: 'Inter-Regular', color: '#7E7B92', marginTop: 8, lineHeight: 16 },
+  legend: { fontSize: 11, fontFamily: 'Inter-Regular', color: '#8B88A0', marginTop: 8, lineHeight: 16 },
 
   dashaNow: { backgroundColor: 'rgba(232,200,126,0.10)', borderWidth: 1, borderColor: 'rgba(232,200,126,0.35)', borderRadius: 12, padding: 14, marginBottom: 10 },
   dashaNowLabel: { fontSize: 10, fontFamily: 'Inter-SemiBold', color: '#E8C87E', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 },

@@ -34,7 +34,7 @@ export default function TimeField({
       value={value}
       onChangeText={handleChange}
       placeholder={placeholder}
-      placeholderTextColor="#7E7B92"
+      placeholderTextColor="#8B88A0"
       keyboardType="number-pad"
       maxLength={5}
       autoCorrect={false}

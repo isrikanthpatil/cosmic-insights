@@ -55,18 +55,7 @@ export default function Numerology() {
     setNumerologyReading(reading);
   };
 
-  if (loading) {
-    return (
-      <ScreenBackground style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Sparkles size={64} color="#E8C87E" />
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
-      </ScreenBackground>
-    );
-  }
-
-  if (!userProfile && !isExploring) {
+  if (!loading && !userProfile && !isExploring) {
     return (
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -85,7 +74,7 @@ export default function Numerology() {
     );
   }
 
-  if (!userProfile || !numerologyReading) {
+  if (loading || !userProfile || !numerologyReading) {
     return (
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -274,9 +263,9 @@ export default function Numerology() {
               </Text>
               <View style={styles.cardHint}>
                 {expandedCard === 'birth' ? (
-                  <ChevronUp size={14} color="#7E7B92" />
+                  <ChevronUp size={14} color="#8B88A0" />
                 ) : (
-                  <ChevronDown size={14} color="#7E7B92" />
+                  <ChevronDown size={14} color="#8B88A0" />
                 )}
                 <Text style={styles.cardHintText}>
                   {expandedCard === 'birth' ? 'less' : 'tap for more'}
@@ -298,9 +287,9 @@ export default function Numerology() {
               </Text>
               <View style={styles.cardHint}>
                 {expandedCard === 'destiny' ? (
-                  <ChevronUp size={14} color="#7E7B92" />
+                  <ChevronUp size={14} color="#8B88A0" />
                 ) : (
-                  <ChevronDown size={14} color="#7E7B92" />
+                  <ChevronDown size={14} color="#8B88A0" />
                 )}
                 <Text style={styles.cardHintText}>
                   {expandedCard === 'destiny' ? 'less' : 'tap for more'}
@@ -324,9 +313,9 @@ export default function Numerology() {
               </Text>
               <View style={styles.cardHint}>
                 {expandedCard === 'kua' ? (
-                  <ChevronUp size={14} color="#7E7B92" />
+                  <ChevronUp size={14} color="#8B88A0" />
                 ) : (
-                  <ChevronDown size={14} color="#7E7B92" />
+                  <ChevronDown size={14} color="#8B88A0" />
                 )}
                 <Text style={styles.cardHintText}>
                   {expandedCard === 'kua' ? 'less' : 'tap for more'}
@@ -531,7 +520,7 @@ const styles = StyleSheet.create({
   compactNumberLabel: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -544,7 +533,7 @@ const styles = StyleSheet.create({
   cardHintText: {
     fontSize: 10,
     fontFamily: 'Inter-Medium',
-    color: '#7E7B92',
+    color: '#8B88A0',
   },
   expandedPanel: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -579,7 +568,7 @@ const styles = StyleSheet.create({
   missingNote: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     lineHeight: 17,
     fontStyle: 'italic',
     marginTop: 2,
@@ -627,7 +616,7 @@ const styles = StyleSheet.create({
   gridSubtitle: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     marginBottom: 8,
   },
   kuaInfo: {
@@ -777,7 +766,7 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
   },
   analysisCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',

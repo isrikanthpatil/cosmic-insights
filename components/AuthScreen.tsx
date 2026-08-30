@@ -289,7 +289,7 @@ export default function AuthScreen() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder="you@example.com"
-                placeholderTextColor="#7E7B92"
+                placeholderTextColor="#8B88A0"
                 selectionColor="#E8C87E"
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -306,7 +306,7 @@ export default function AuthScreen() {
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Enter your password"
-                  placeholderTextColor="#7E7B92"
+                  placeholderTextColor="#8B88A0"
                   selectionColor="#E8C87E"
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
@@ -335,7 +335,7 @@ export default function AuthScreen() {
                     value={firstName}
                     onChangeText={setFirstName}
                     placeholder="Enter your first name"
-                    placeholderTextColor="#7E7B92"
+                    placeholderTextColor="#8B88A0"
                     maxLength={50}
                   />
                 </View>
@@ -347,7 +347,7 @@ export default function AuthScreen() {
                     value={lastName}
                     onChangeText={setLastName}
                     placeholder="Enter your last name"
-                    placeholderTextColor="#7E7B92"
+                    placeholderTextColor="#8B88A0"
                     maxLength={50}
                   />
                 </View>
@@ -369,7 +369,7 @@ export default function AuthScreen() {
                     value={placeOfBirth}
                     onChangeText={handlePlaceSearch}
                     placeholder="Mumbai, Maharashtra"
-                    placeholderTextColor="#7E7B92"
+                    placeholderTextColor="#8B88A0"
                     maxLength={200}
                   />
                   {showPlaceSuggestions && (
@@ -450,7 +450,7 @@ export default function AuthScreen() {
               disabled={submitting}
             >
               {submitting ? (
-                <ActivityIndicator size={20} color="#FFFFFF" />
+                <ActivityIndicator size={20} color="#0B0B1A" />
               ) : (
                 <Text style={styles.submitButtonText}>
                   {mode === 'login' ? 'Sign In' : 'Create Account'}
@@ -656,8 +656,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(232, 200, 126, 0.5)',
   },
   noticeErr: {
-    backgroundColor: 'rgba(224, 122, 95, 0.12)',
-    borderColor: 'rgba(224, 122, 95, 0.5)',
+    backgroundColor: 'rgba(255, 107, 107, 0.12)',
+    borderColor: 'rgba(255, 107, 107, 0.5)',
   },
   noticeText: {
     fontSize: 13,
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
   dividerText: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-    color: '#7E7B92',
+    color: '#8B88A0',
   },
   googleButton: {
     flexDirection: 'row',

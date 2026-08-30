@@ -77,7 +77,7 @@ export default function More() {
               }}
             >
               <View style={[styles.cardIcon, disabled && styles.cardIconDisabled]}>
-                <Icon size={22} color={disabled ? '#7E7B92' : '#E8C87E'} />
+                <Icon size={22} color={disabled ? '#8B88A0' : '#E8C87E'} />
               </View>
               <View style={styles.cardTextWrap}>
                 <View style={styles.cardTitleRow}>
@@ -92,7 +92,7 @@ export default function More() {
                 </View>
                 <Text style={styles.cardSubtitle}>{feature.subtitle}</Text>
               </View>
-              {!disabled && <ChevronRight size={20} color="#7E7B92" />}
+              {!disabled && <ChevronRight size={20} color="#8B88A0" />}
             </TouchableOpacity>
           );
         })}
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   soonPillText: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },

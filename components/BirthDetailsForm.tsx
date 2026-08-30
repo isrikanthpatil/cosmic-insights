@@ -133,7 +133,7 @@ export default function BirthDetailsForm({
           value={firstName}
           onChangeText={setFirstName}
           placeholder="Enter first name"
-          placeholderTextColor="#7E7B92"
+          placeholderTextColor="#8B88A0"
           maxLength={50}
         />
       </View>
@@ -145,7 +145,7 @@ export default function BirthDetailsForm({
           value={lastName}
           onChangeText={setLastName}
           placeholder="Enter last name (optional)"
-          placeholderTextColor="#7E7B92"
+          placeholderTextColor="#8B88A0"
           maxLength={50}
         />
       </View>
@@ -167,7 +167,7 @@ export default function BirthDetailsForm({
           value={placeOfBirth}
           onChangeText={handlePlaceSearch}
           placeholder="Mumbai, Maharashtra"
-          placeholderTextColor="#7E7B92"
+          placeholderTextColor="#8B88A0"
           maxLength={200}
         />
         {showPlaceSuggestions && (
@@ -223,7 +223,13 @@ export default function BirthDetailsForm({
         </View>
       </View>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={handleSubmit}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={submitLabel}
+      >
         <Text style={styles.submitButtonText}>{submitLabel}</Text>
       </TouchableOpacity>
     </View>

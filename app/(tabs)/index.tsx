@@ -267,7 +267,7 @@ export default function Home() {
               </View>
             </View>
             <TouchableOpacity onPress={dismissNudge} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel="Dismiss">
-              <X size={16} color="#7E7B92" />
+              <X size={16} color="#8B88A0" />
             </TouchableOpacity>
           </View>
         )}
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
   chartLabel: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
   numberLabel: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -785,7 +785,7 @@ const styles = StyleSheet.create({
   metaLabel: {
     fontSize: 11,
     fontFamily: 'Inter-SemiBold',
-    color: '#7E7B92',
+    color: '#8B88A0',
     letterSpacing: 1,
     textTransform: 'uppercase',
     marginBottom: 6,

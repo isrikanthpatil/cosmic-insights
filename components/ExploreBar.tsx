@@ -46,6 +46,8 @@ export default function ExploreBar() {
               clearExplore();
             }}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Back to my chart"
           >
             <X size={16} color="#0B0B1A" />
             <Text style={styles.backButtonText}>Back to my chart</Text>
@@ -59,6 +61,8 @@ export default function ExploreBar() {
             setModalVisible(true);
           }}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Explore another chart"
         >
           <UserPlus size={18} color="#E8C87E" />
           <Text style={styles.exploreButtonText}>Explore another chart</Text>

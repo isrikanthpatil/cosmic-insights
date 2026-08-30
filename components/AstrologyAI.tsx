@@ -819,7 +819,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             value={inputText}
             onChangeText={setInputText}
             placeholder={userProfile ? "Ask about your chart..." : "Ask about astrology..."}
-            placeholderTextColor="#7E7B92"
+            placeholderTextColor="#8B88A0"
             selectionColor="#E8C87E"
             multiline
             maxLength={500}
@@ -852,7 +852,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             accessibilityRole="button"
             accessibilityLabel="Send message"
           >
-            <Send size={20} color={!inputText.trim() ? "#7E7B92" : "#0B0B1A"} />
+            <Send size={20} color={!inputText.trim() ? "#8B88A0" : "#0B0B1A"} />
           </TouchableOpacity>
         </View>
         <Text style={styles.disclaimer}>
@@ -947,7 +947,7 @@ const styles = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     fontFamily: 'Inter-Regular',
-    color: '#7E7B92',
+    color: '#8B88A0',
     marginTop: 4,
   },
   loadingWrapper: {
