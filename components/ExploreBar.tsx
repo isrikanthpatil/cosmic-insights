@@ -7,15 +7,17 @@ import {
   ScrollView,
   Modal,
 } from 'react-native';
-import { UserPlus, X } from 'lucide-react-native';
+import { UserPlus, X, Bookmark, BookmarkCheck } from 'lucide-react-native';
 import { useChart } from '@/contexts/ChartContext';
 import { Profile } from '@/contexts/AuthContext';
 import { tap } from '@/utils/haptics';
+import { showToast } from '@/utils/toast';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
 
 export default function ExploreBar() {
-  const { isExploring, exploreSubject, setExplore, clearExplore } = useChart();
+  const { isExploring, exploreSubject, setExplore, clearExplore, saveChart, isChartSaved } = useChart();
+  const saved = exploreSubject ? isChartSaved(exploreSubject) : false;
 
   const [modalVisible, setModalVisible] = useState(false);
   const kb = useKeyboardHeight();
@@ -39,6 +41,20 @@ export default function ExploreBar() {
               Viewing {exploreSubject?.firstName}'s chart
             </Text>
           </View>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => {
+              if (saved || !exploreSubject) return;
+              tap();
+              saveChart(exploreSubject);
+              showToast(`${exploreSubject.firstName || 'Chart'} saved.`, 'success');
+            }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={saved ? 'Chart saved' : 'Save this chart'}
+          >
+            {saved ? <BookmarkCheck size={18} color="#E8C87E" /> : <Bookmark size={18} color="#E8C87E" />}
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => {
@@ -154,6 +170,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
     color: '#F4F1E8',
+  },
+  saveButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(232, 200, 126, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(232, 200, 126, 0.35)',
+    marginRight: 8,
   },
   backButton: {
     flexDirection: 'row',

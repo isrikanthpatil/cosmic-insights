@@ -46,6 +46,7 @@ function RootNavigator() {
           <Stack.Screen name="panchang" options={{ headerShown: false }} />
           <Stack.Screen name="sade-sati" options={{ headerShown: false }} />
           <Stack.Screen name="dasha" options={{ headerShown: false }} />
+          <Stack.Screen name="charts" options={{ headerShown: false }} />
           <Stack.Screen name="premium" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
