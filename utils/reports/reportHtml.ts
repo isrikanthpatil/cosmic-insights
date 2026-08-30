@@ -17,7 +17,7 @@ import { computeBirthAngas } from '../jyotish/panchang';
 import { parseDDMMYYYY } from '../dateUtils';
 import {
   SIGN_LORD, SIGN_NAMES, SIGN_SANSKRIT, interpretPlacement, degWithinSign,
-  planetDignity, ordinal, type Planet,
+  planetDignity, type Planet,
 } from '../jyotish/interpret';
 import { computeNameNumber, numberDetail } from '../numerologyDetail';
 import { computeForecast, type Period } from '../jyotish/forecast';
@@ -242,9 +242,9 @@ export function buildNumerologyReportHtml(p: Profile): string {
     <p>${esc(n.birthNumberMeaning)}</p><p class="meta">${esc(n.birthNumberDetail)}</p></div>
   <div class="section"><h2>Destiny Number ${n.destinyNumber}</h2>
     <p>${esc(n.destinyNumberMeaning)}</p><p class="meta">${esc(n.destinyNumberDetail)}</p></div>
-  <div class="section"><h2>Name Number ${nameNum.number}</h2>
+  ${nameNum.number > 0 ? `<div class="section"><h2>Name Number ${nameNum.number}</h2>
     <p class="meta">From "${esc(fullName)}" (Chaldean total ${nameNum.total} → ${nameNum.number}).</p>
-    ${nameDet ? `<p>As a ${esc(nameDet.title)} vibration ruled by ${esc(nameDet.planet)}, your name reinforces these qualities in how the world receives you.</p>` : ''}</div>
+    ${nameDet ? `<p>As a ${esc(nameDet.title)} vibration ruled by ${esc(nameDet.planet)}, your name reinforces these qualities in how the world receives you.</p>` : ''}</div>` : ''}
   <div class="section"><h2>Kua Number ${n.kuaNumber}</h2><p>${esc(n.kuaNumberMeaning)}</p></div>
   ${bd ? `
   <div class="section"><h2>Career &amp; Vocation</h2><p>${esc(bd.career)}</p></div>

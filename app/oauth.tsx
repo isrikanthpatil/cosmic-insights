@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import ScreenBackground from '@/components/ScreenBackground';
 import { completeGoogleAuth } from '@/utils/googleAuth';
+import { showToast } from '@/utils/toast';
 
 /**
  * OAuth return route. The server redirect page deep-links here as
@@ -17,12 +18,16 @@ export default function OAuthRedirect() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      let ok = false;
       try {
-        if (!error && code) await completeGoogleAuth(String(code));
+        if (!error && code) ok = await completeGoogleAuth(String(code));
       } catch {
-        // Swallow — the login screen will still be usable for a retry.
+        ok = false;
       }
       if (!cancelled) {
+        // Cold-start edge case: if the app was killed during the browser step the
+        // PKCE verifier is gone, so the exchange can't complete — tell the user.
+        if (!ok) showToast('Could not finish Google sign-in. Please try again.', 'info');
         try { if (router.canDismiss()) router.dismissAll(); } catch {}
         router.replace('/(tabs)');
       }
