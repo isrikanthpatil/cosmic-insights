@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Heart, ScrollText, Sparkles, ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { Heart, ScrollText, Sparkles, Sun, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
 
@@ -19,6 +19,13 @@ interface FeatureItem {
 }
 
 const FEATURES: FeatureItem[] = [
+  {
+    key: 'panchang',
+    title: "Today's Panchang",
+    subtitle: 'Tithi, Nakshatra, Yoga & auspicious timings',
+    icon: Sun,
+    route: '/panchang' as Href,
+  },
   {
     key: 'kundli-matching',
     title: 'Kundli Matching',

@@ -127,7 +127,7 @@ export function lahiriAyanamsa(jdUT: number): number {
  * truncated to the leading periodic terms. T is Julian centuries from J2000 TT
  * (we use UT; the resulting <~1s timing error is negligible at our bin sizes).
  */
-function moonTropicalLongitude(jd: number): number {
+export function moonTropicalLongitude(jd: number): number {
   const T = (jd - 2451545.0) / 36525.0;
 
   // Mean elements (Meeus 47.1-47.6), degrees.
@@ -210,7 +210,7 @@ function moonTropicalLongitude(jd: number): number {
  * solar series (Meeus ch.25). Accurate to ~0.01°, far finer than the 30° rashi
  * bin. Used for the sidereal Sun sign (Surya rashi) in the Vedic reading.
  */
-function sunTropicalLongitude(jd: number): number {
+export function sunTropicalLongitude(jd: number): number {
   const T = (jd - 2451545.0) / 36525.0;
   const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T; // Sun mean long
   const M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T; // Sun mean anomaly

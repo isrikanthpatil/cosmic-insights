@@ -43,6 +43,7 @@ function RootNavigator() {
           <Stack.Screen name="match" options={{ headerShown: false }} />
           <Stack.Screen name="kundli" options={{ headerShown: false }} />
           <Stack.Screen name="tarot" options={{ headerShown: false }} />
+          <Stack.Screen name="panchang" options={{ headerShown: false }} />
           <Stack.Screen name="premium" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
