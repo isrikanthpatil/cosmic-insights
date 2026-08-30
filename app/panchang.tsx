@@ -12,21 +12,33 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-/** Device-local clock time, e.g. "5:23 AM". */
+// The Panchang uses an India (IST) reference, so render every instant in IST
+// (UTC+5:30) regardless of the device's own timezone — otherwise a phone set to
+// another zone would show wrong sunrise / Rahu Kalam clock times.
+const IST_OFFSET_MS = 5.5 * 3600000;
+const toIST = (d: Date) => new Date(d.getTime() + IST_OFFSET_MS);
+
+/** IST clock time, e.g. "5:23 AM". */
 const fmt = (d: Date | null): string => {
   if (!d) return '—';
-  let h = d.getHours();
-  const m = d.getMinutes();
+  const t = toIST(d);
+  let h = t.getUTCHours();
+  const m = t.getUTCMinutes();
   const ap = h < 12 ? 'AM' : 'PM';
   h = h % 12;
   if (h === 0) h = 12;
   return `${h}:${String(m).padStart(2, '0')} ${ap}`;
 };
 
-/** "ends 6:50 AM", flagged when it rolls into the next day. */
+/** "ends 6:50 AM", flagged when it rolls into the next IST day. */
 const endsLabel = (from: Date, ends: Date | null): string => {
   if (!ends) return '';
-  const nextDay = ends.getDate() !== from.getDate() || ends.getMonth() !== from.getMonth();
+  const a = toIST(from);
+  const b = toIST(ends);
+  const nextDay =
+    a.getUTCFullYear() !== b.getUTCFullYear() ||
+    a.getUTCMonth() !== b.getUTCMonth() ||
+    a.getUTCDate() !== b.getUTCDate();
   return `ends ${fmt(ends)}${nextDay ? ' (next day)' : ''}`;
 };
 
@@ -35,14 +47,24 @@ export default function PanchangScreen() {
   const insets = useSafeAreaInsets();
 
   const now = useMemo(() => new Date(), []);
-  const p = useMemo(() => computePanchang(now), [now]);
+  const p = useMemo(() => {
+    try {
+      return computePanchang(now);
+    } catch {
+      return null;
+    }
+  }, [now]);
 
   const goBack = () => {
     if (router.canGoBack()) router.back();
     else router.replace('/(tabs)/more');
   };
 
-  const dateLine = `${p.vara.english}, ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  // Header date in IST, to match the IST-based weekday and timings.
+  const istNow = toIST(now);
+  const dateLine = p
+    ? `${p.vara.english}, ${istNow.getUTCDate()} ${MONTHS[istNow.getUTCMonth()]} ${istNow.getUTCFullYear()}`
+    : '';
 
   const AngaRow = ({
     label,
@@ -87,6 +109,13 @@ export default function PanchangScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      {!p ? (
+        <View style={styles.errorWrap}>
+          <Text style={styles.errorText}>
+            Could not compute today's Panchang. Please try again.
+          </Text>
+        </View>
+      ) : (
       <ScrollView
         contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }}
         showsVerticalScrollIndicator={false}
@@ -148,10 +177,11 @@ export default function PanchangScreen() {
 
         <Text style={styles.disclaimer}>
           Computed with the sidereal (Lahiri) system. Sun timings and periods use a
-          central-India reference and may vary by a few minutes from your exact city.
-          Offered for guidance and reflection.
+          central-India reference (times shown in IST) and may vary by a few minutes
+          from your exact city. Offered for guidance and reflection.
         </Text>
       </ScrollView>
+      )}
     </ScreenBackground>
   );
 }
@@ -166,6 +196,8 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   topTitle: { fontSize: 24, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
+  errorWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  errorText: { fontSize: 14, fontFamily: 'Inter-Regular', color: '#8B88A0', textAlign: 'center', lineHeight: 20 },
   dateLine: { fontSize: 20, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
   pakshaLine: {
     fontSize: 13,

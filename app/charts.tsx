@@ -93,7 +93,7 @@ export default function ChartsScreen() {
                   <Text style={styles.meta}>{c.profile.dateOfBirth}{c.profile.placeOfBirth ? ` · ${c.profile.placeOfBirth}` : ''}</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => { tap(); deleteChart(c.id); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={`Delete ${c.profile.firstName}'s chart`}>
+              <TouchableOpacity onPress={() => { tap(); deleteChart(c.id); }} hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }} accessibilityRole="button" accessibilityLabel={`Delete ${c.profile.firstName}'s chart`}>
                 <Trash2 size={18} color="#8B88A0" />
               </TouchableOpacity>
             </View>

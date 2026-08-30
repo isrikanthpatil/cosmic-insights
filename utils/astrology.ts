@@ -85,6 +85,9 @@ const getISOWeekKey = (date: Date = new Date()): string => {
 
 // Function to get coordinates for Indian places
 export const getCoordinatesForPlace = (place: string): { latitude: number; longitude: number } | null => {
+  // Guard against undefined/empty input (e.g. a profile with no place set) so
+  // callers can pass it directly without a null check.
+  if (!place || typeof place !== 'string') return null;
   // This is a simplified mapping. In a real app, you'd use a geocoding service
   const placeCoordinates: { [key: string]: { latitude: number; longitude: number } } = {
     'mumbai': { latitude: 19.0760, longitude: 72.8777 },

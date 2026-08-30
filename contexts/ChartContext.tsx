@@ -92,25 +92,36 @@ export function ChartProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authProfile]);
 
-  // Hydrate saved charts once on mount.
+  // Saved charts are scoped per account (and a 'guest' bucket) so one person's
+  // saved family/friend charts never leak to another account on a shared device.
+  const savedChartsKey = `${SAVED_CHARTS_KEY}:${user?.id ?? 'guest'}`;
+
+  // Load the current scope's charts (re-runs on sign-in / sign-out).
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const raw = await AsyncStorage.getItem(SAVED_CHARTS_KEY);
-        if (mounted && raw) setSavedCharts(JSON.parse(raw) as SavedChart[]);
+        const raw = await AsyncStorage.getItem(savedChartsKey);
+        const parsed = raw ? JSON.parse(raw) : [];
+        const valid: SavedChart[] = Array.isArray(parsed)
+          ? parsed.filter(
+              (c: any) =>
+                c && typeof c.id === 'string' && c.profile && typeof c.profile.firstName === 'string' && typeof c.profile.dateOfBirth === 'string',
+            )
+          : [];
+        if (mounted) setSavedCharts(valid);
       } catch {
-        // ignore — empty list
+        if (mounted) setSavedCharts([]);
       }
     })();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [savedChartsKey]);
 
   const persistCharts = (list: SavedChart[]) => {
     setSavedCharts(list);
-    AsyncStorage.setItem(SAVED_CHARTS_KEY, JSON.stringify(list)).catch(() => {});
+    AsyncStorage.setItem(savedChartsKey, JSON.stringify(list)).catch(() => {});
   };
 
   const setGuestProfile = (p: Profile) => {

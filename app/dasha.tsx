@@ -27,7 +27,9 @@ const dur = (years: number): string => {
 
 /** Percent elapsed of a period at `now`, clamped 0-100. */
 const pctElapsed = (p: DashaPeriod, now: Date): number => {
-  const t = (now.getTime() - p.start.getTime()) / (p.end.getTime() - p.start.getTime());
+  const span = p.end.getTime() - p.start.getTime();
+  if (span <= 0) return 0; // zero/negative span (boundary edge case) — avoid NaN
+  const t = (now.getTime() - p.start.getTime()) / span;
   return Math.max(0, Math.min(100, Math.round(t * 100)));
 };
 

@@ -245,11 +245,15 @@ export function computePanchang(
   const karanaAbs = Math.floor(elong / KARANA_SPAN); // 0..59
   const karana = karanaName(karanaAbs);
 
-  // Vara (weekday) — use the device-local weekday of `now`.
-  const wd = now.getDay(); // 0=Sun..6=Sat
+  // Vara (weekday) — use the IST civil day (the sun timings below are an India
+  // reference), so the weekday and the Rahu-Kalam slot match the displayed day
+  // regardless of the device's own timezone.
+  const IST_OFFSET_MS = 5.5 * 3600000;
+  const wd = new Date(now.getTime() + IST_OFFSET_MS).getUTCDay(); // 0=Sun..6=Sat
 
-  // Sun timings + inauspicious periods.
-  const st = sunriseSunset(now, latitude, eastLongitude);
+  // Sun timings + inauspicious periods — for the IST civil day.
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS);
+  const st = sunriseSunset(istNow, latitude, eastLongitude);
   let rahuKalam: KalamPeriod | null = null;
   let yamaganda: KalamPeriod | null = null;
   let gulika: KalamPeriod | null = null;
