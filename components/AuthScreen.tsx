@@ -260,9 +260,15 @@ export default function AuthScreen() {
         const code = queryParams?.code as string | undefined;
         const oauthError = queryParams?.error as string | undefined;
         if (oauthError) throw new Error('Google sign-in was cancelled.');
-        if (code) await completeGoogleAuth(code);
+        if (code) {
+          const ok = await completeGoogleAuth(code);
+          // Leave the login screen explicitly. The auth-state effect below can
+          // miss firing in the moment the in-app browser returns, which left the
+          // login screen visible until the user pressed back — navigate directly.
+          if (ok) router.replace('/(tabs)');
+        }
       }
-      // AuthContext reacts to the authStore change and dismisses this screen.
+      // (Email/password sign-in still dismisses via the auth-state effect.)
     } catch (error: any) {
       const rawMessage =
         error?.response?.message || error?.message || '';
