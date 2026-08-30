@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Heart, ScrollText, Sparkles, Sun, Orbit, ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { Heart, ScrollText, Sparkles, Sun, Orbit, Clock, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
 
@@ -46,6 +46,13 @@ const FEATURES: FeatureItem[] = [
     subtitle: "Saturn's 7.5-year transit over your Moon",
     icon: Orbit,
     route: '/sade-sati' as Href,
+  },
+  {
+    key: 'dasha',
+    title: 'Dasha Periods',
+    subtitle: 'Current Maha, Antar & Pratyantar dasha',
+    icon: Clock,
+    route: '/dasha' as Href,
   },
   {
     key: 'tarot-reading',

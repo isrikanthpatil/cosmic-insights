@@ -102,6 +102,8 @@ export interface VimshottariResult {
   currentMahaIndex: number;
   antardashas: DashaPeriod[]; // sub-periods within the current Mahadasha
   currentAntar: DashaPeriod | null;
+  pratyantardashas: DashaPeriod[]; // sub-sub-periods within the current Antardasha
+  currentPratyantar: DashaPeriod | null;
 }
 
 /** Vimshottari Dasha from the sidereal Moon longitude and the birth datetime. */
@@ -146,7 +148,24 @@ export function computeVimshottari(moonSiderealLongitude: number, birth: Date): 
   }
   const currentAntar = antardashas.find((a) => now >= a.start && now < a.end) ?? null;
 
-  return { mahadashas, currentMahaIndex, antardashas, currentAntar };
+  // Pratyantardashas (sub-sub-periods) within the current Antardasha, starting
+  // from the antar lord. Each is antar.years * (subLord.years / 120).
+  const pratyantardashas: DashaPeriod[] = [];
+  let currentPratyantar: DashaPeriod | null = null;
+  if (currentAntar) {
+    const antarLordIdx = DASHA_ORDER.findIndex((d) => d.lord === currentAntar.lord);
+    let pc = new Date(currentAntar.start);
+    for (let k = 0; k < 9; k++) {
+      const pl = DASHA_ORDER[(antarLordIdx + k) % 9];
+      const py = currentAntar.years * (pl.years / 120);
+      const pEnd = addYears(pc, py);
+      pratyantardashas.push({ lord: pl.lord, start: new Date(pc), end: pEnd, years: py });
+      pc = pEnd;
+    }
+    currentPratyantar = pratyantardashas.find((p) => now >= p.start && now < p.end) ?? null;
+  }
+
+  return { mahadashas, currentMahaIndex, antardashas, currentAntar, pratyantardashas, currentPratyantar };
 }
 
 export interface ChartGraha extends GrahaPosition {
