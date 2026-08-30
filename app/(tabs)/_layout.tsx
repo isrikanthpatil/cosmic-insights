@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { House, Sparkles, Grid3x3, MessageCircle, LayoutGrid, User } from 'lucide-react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/constants/theme';
+import AdBanner from '@/components/AdBanner';
 
 // Custom tab label: single line at a UNIFORM fixed size for every tab, so long
 // labels like "Numerology" render the same size as the others (no per-label
@@ -32,6 +34,14 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   return (
     <Tabs
+      // Render one gentle banner directly above the tab bar on every tab screen
+      // (hidden for Astropanth Plus / on web via the AdBanner component itself).
+      tabBar={(props) => (
+        <>
+          <AdBanner />
+          <BottomTabBar {...props} />
+        </>
+      )}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
