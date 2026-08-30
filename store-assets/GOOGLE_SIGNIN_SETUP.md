@@ -48,7 +48,40 @@ You should see JSON that includes an `oauth2` section listing **google** as a pr
 
 ---
 
-## Part 4 — Client side (IMPLEMENTED — commit `a11a78c`)
+## Part 4b — Deep-link flow (REVISED after on-device testing)
+
+The first client implementation used PocketBase's realtime OAuth flow. On Android
+that proved unreliable — the in-app browser never returned to the app on its own
+and the SSE handshake raced on first use ("Auth failed"), plus the dismiss call
+crashed (those APIs are iOS-only). Replaced with a deterministic **deep-link**
+flow. Two one-time prerequisites are needed:
+
+**1) Deploy the redirect hook to PocketBase.**
+Copy `pocketbase/pb_hooks/oauth_redirect.pb.js` (in this repo) to the server:
+```
+scp pocketbase/pb_hooks/oauth_redirect.pb.js root@<server>:/root/pocketbase/pb_hooks/
+ssh root@<server> 'systemctl restart pocketbase'
+```
+Quick check — this should return an HTML "Signing you in…" page (not 404):
+```
+https://api.astropanth.com/oauth-redirect
+```
+
+**2) Add the redirect URI in Google Cloud.**
+Google Cloud → Credentials → your Web OAuth client → Authorized redirect URIs →
+add (in addition to the existing one):
+```
+https://api.astropanth.com/oauth-redirect
+```
+
+How it works: the app sends Google to `…/oauth-redirect`; that page bounces the
+browser to `cosmic-insights://oauth?code=…`, which closes the in-app browser and
+returns the code to the app for the PKCE exchange (`authWithOAuth2Code`). No
+realtime, no lingering browser, no dismiss hack.
+
+---
+
+## Part 4 — Client side (initial realtime version, superseded by 4b)
 
 Parts 1–3 are confirmed live: the auth-methods URL lists **google** with a valid
 authURL and our client ID. The client flow is now built:

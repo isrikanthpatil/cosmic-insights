@@ -30,7 +30,6 @@ import { getNumerologyReading } from '@/utils/numerology';
 import { enableDailyHoroscopeReminder } from '@/utils/notifications';
 import ScreenBackground from '@/components/ScreenBackground';
 import GuestEntryPrompt from '@/components/GuestEntryPrompt';
-import LoginNudge from '@/components/LoginNudge';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
 const NOTIF_KEY = 'settings_notifications';
@@ -250,7 +249,9 @@ export default function Home() {
           )}
         </View>
 
-        {isGuest && <LoginNudge />}
+        {/* Home already has a "Sign in" chip in the top bar, so the LoginNudge
+            banner here was a second, redundant sign-in CTA. The nudge still
+            appears on the Astrology/Numerology tabs, which have no top-bar chip. */}
 
         {showReminderNudge && (
           <View style={styles.nudgeCard}>

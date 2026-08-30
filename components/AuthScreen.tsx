@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
@@ -221,30 +222,67 @@ export default function AuthScreen() {
     tap();
     try {
       setSubmitting(true);
-      await pb.collection('users').authWithOAuth2({
-        provider: 'google',
-        urlCallback:
-          Platform.OS === 'web'
-            ? undefined
-            : async (url: string) => {
-                // Opens Google in an in-app browser. The final page is
-                // PocketBase's https redirect (not our scheme), so this promise
-                // won't auto-resolve — authWithOAuth2 resolves separately via
-                // realtime once the code comes back, and we dismiss below.
-                await WebBrowser.openAuthSessionAsync(url, 'cosmic-insights://');
-              },
-      });
-      // On native the auth window can linger on PocketBase's redirect page after
-      // the realtime handshake completes; close it so the user lands back in-app.
-      if (Platform.OS !== 'web') {
-        WebBrowser.dismissAuthSession();
+
+      // Web: the SDK's popup-based all-in-one flow works directly.
+      if (Platform.OS === 'web') {
+        await pb.collection('users').authWithOAuth2({ provider: 'google' });
+        return;
       }
-      // No manual navigation needed; AuthContext reacts to authStore change.
+
+      // Native: manual PKCE code flow with a deep-link return.
+      //
+      // We deliberately avoid the SDK's realtime all-in-one flow on native: it
+      // relies on an SSE handshake that races on first use, and its browser
+      // never returns to the app on its own (Google only allows an https
+      // redirect, so the tab ends on PocketBase's page). Instead we send Google
+      // to our server's /oauth-redirect page, which 302s to our app's scheme —
+      // that deep link closes the in-app browser and hands the code back here.
+      const authMethods: any = await pb.collection('users').listAuthMethods();
+      const google = authMethods?.oauth2?.providers?.find(
+        (p: any) => p.name === 'google'
+      );
+      if (!google) {
+        throw new Error('Google sign-in is unavailable right now. Please try again later.');
+      }
+
+      const pbUrl = process.env.EXPO_PUBLIC_PB_URL ?? 'https://api.astropanth.com';
+      const serverRedirect = `${pbUrl}/oauth-redirect`;
+      const appReturn = 'cosmic-insights://oauth';
+
+      // google.authURL ends with "&redirect_uri="; append our server redirect.
+      const authUrl = google.authURL + encodeURIComponent(serverRedirect);
+
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, appReturn);
+      if (result.type !== 'success' || !result.url) {
+        // User dismissed the browser — fail quietly.
+        return;
+      }
+
+      const { queryParams } = Linking.parse(result.url);
+      const code = queryParams?.code as string | undefined;
+      const returnedState = queryParams?.state as string | undefined;
+      const oauthError = queryParams?.error as string | undefined;
+
+      if (oauthError) {
+        throw new Error('Google sign-in was cancelled.');
+      }
+      if (!code) {
+        throw new Error('No authorization code was returned. Please try again.');
+      }
+      if (returnedState && google.state && returnedState !== google.state) {
+        throw new Error('Sign-in verification failed. Please try again.');
+      }
+
+      // Exchange the code for a PocketBase session (redirectUrl must match the
+      // one Google saw). AuthContext reacts to the authStore change.
+      await pb
+        .collection('users')
+        .authWithOAuth2Code('google', code, google.codeVerifier, serverRedirect);
     } catch (error: any) {
       const rawMessage =
         error?.response?.message || error?.message || '';
       // User closed/cancelled the popup — fail quietly, no scary error.
-      if (/cancel|closed/i.test(rawMessage)) {
+      if (/cancel|closed|dismiss/i.test(rawMessage)) {
         return;
       }
       const message = rawMessage || SecurityUtils.handleSecureError(error, 'auth');

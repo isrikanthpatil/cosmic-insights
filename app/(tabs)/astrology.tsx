@@ -83,7 +83,7 @@ export default function Astrology() {
     return (
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={styles.exploreBarWrap}>
+          <View style={[styles.exploreBarWrap, { paddingTop: insets.top + 16 }]}>
             {isGuest && <LoginNudge />}
             <ExploreBar />
           </View>
@@ -102,7 +102,7 @@ export default function Astrology() {
     return (
       <ScreenBackground style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={styles.exploreBarWrap}>
+          <View style={[styles.exploreBarWrap, { paddingTop: insets.top + 16 }]}>
             <ExploreBar />
           </View>
           <View style={styles.skeletonWrap}>
@@ -470,7 +470,7 @@ export default function Astrology() {
         }
       >
         {activeTab === 'overview' && (
-          <View style={styles.exploreBarWrap}>
+          <View style={[styles.exploreBarWrap, { paddingTop: insets.top + 16 }]}>
             {isGuest && !isExploring && <LoginNudge />}
             <ExploreBar />
           </View>
