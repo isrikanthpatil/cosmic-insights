@@ -49,6 +49,8 @@ function RootNavigator() {
           <Stack.Screen name="dasha" options={{ headerShown: false }} />
           <Stack.Screen name="charts" options={{ headerShown: false }} />
           <Stack.Screen name="oauth" options={{ headerShown: false }} />
+          <Stack.Screen name="reports" options={{ headerShown: false }} />
+          <Stack.Screen name="report" options={{ headerShown: false }} />
           <Stack.Screen name="premium" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>

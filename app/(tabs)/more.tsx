@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Heart, ScrollText, Sparkles, Sun, Orbit, Clock, Users, ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { Heart, ScrollText, Sparkles, Sun, Orbit, Clock, Users, FileText, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
 
@@ -25,6 +25,13 @@ const FEATURES: FeatureItem[] = [
     subtitle: 'Tithi, Nakshatra, Yoga & auspicious timings',
     icon: Sun,
     route: '/panchang' as Href,
+  },
+  {
+    key: 'reports',
+    title: 'Reports',
+    subtitle: 'Astrology, Numerology & Gemstone PDFs',
+    icon: FileText,
+    route: '/reports' as Href,
   },
   {
     key: 'kundli-matching',
