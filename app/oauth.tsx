@@ -22,7 +22,10 @@ export default function OAuthRedirect() {
       } catch {
         // Swallow — the login screen will still be usable for a retry.
       }
-      if (!cancelled) router.replace('/(tabs)');
+      if (!cancelled) {
+        try { if (router.canDismiss()) router.dismissAll(); } catch {}
+        router.replace('/(tabs)');
+      }
     })();
     return () => {
       cancelled = true;

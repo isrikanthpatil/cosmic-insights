@@ -262,10 +262,14 @@ export default function AuthScreen() {
         if (oauthError) throw new Error('Google sign-in was cancelled.');
         if (code) {
           const ok = await completeGoogleAuth(code);
-          // Leave the login screen explicitly. The auth-state effect below can
-          // miss firing in the moment the in-app browser returns, which left the
-          // login screen visible until the user pressed back — navigate directly.
-          if (ok) router.replace('/(tabs)');
+          // Leave the login screen explicitly. The auth-state effect can miss
+          // firing the moment the in-app browser returns, which left the login
+          // screen visible until a manual back-press. Dismiss any modal, then
+          // land on the tabs.
+          if (ok) {
+            try { if (router.canDismiss()) router.dismissAll(); } catch {}
+            router.replace('/(tabs)');
+          }
         }
       }
       // (Email/password sign-in still dismisses via the auth-state effect.)

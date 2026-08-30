@@ -21,7 +21,7 @@ export default function AdBanner() {
     <View style={styles.wrap}>
       <BannerAd
         unitId={UNIT_ID}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        size={BannerAdSize.BANNER}
         requestOptions={{ requestNonPersonalizedAdsOnly: false }}
       />
     </View>

@@ -156,10 +156,6 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     setMessages(prev => [...prev, aiMessage]);
   };
 
-  // Minimum time the "typing…" indicator stays up, so instant/offline replies
-  // still feel considered rather than robotically immediate.
-  const MIN_THINKING_MS = 900;
-
   // Enhanced astrology knowledge base with coordinate-based insights
   const astrologyKnowledge = {
     zodiacSigns: {
@@ -675,12 +671,13 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     setIsLoading(true);
 
     const startedAt = Date.now();
-    // Keep the "typing…" indicator up for at least MIN_THINKING_MS, then show the
-    // complete reply at once (applies to LLM and offline-fallback replies alike).
+    // Hold the "typing…" indicator for a natural, varied 3–5s (randomised per reply)
+    // so answers feel considered rather than machine-instant, then show the reply.
+    const thinkMs = 3000 + Math.floor(Math.random() * 2001);
     const finishWith = async (text: string) => {
       const elapsed = Date.now() - startedAt;
-      if (elapsed < MIN_THINKING_MS) {
-        await new Promise((r) => setTimeout(r, MIN_THINKING_MS - elapsed));
+      if (elapsed < thinkMs) {
+        await new Promise((r) => setTimeout(r, thinkMs - elapsed));
       }
       addAssistantMessage(text);
     };
