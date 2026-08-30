@@ -279,3 +279,29 @@ export function computePanchang(
     timingsApproximate: true,
   };
 }
+
+/**
+ * Tithi (paksha + name), Nithya Yoga and Karana at a specific instant, from the
+ * sidereal Sun & Moon longitudes — used for the "birth panchanga" in reports.
+ */
+export function computeBirthAngas(sunSid: number, moonSid: number): {
+  paksha: 'Shukla' | 'Krishna';
+  tithiName: string;
+  tithiNumber: number;
+  yogaName: string;
+  karanaName: string;
+} {
+  const elong = norm360(moonSid - sunSid);
+  const tithiAbs = Math.floor(elong / TITHI_SPAN);
+  const paksha: 'Shukla' | 'Krishna' = tithiAbs < 15 ? 'Shukla' : 'Krishna';
+  const inPaksha = tithiAbs % 15;
+  const tName = inPaksha === 14 ? (paksha === 'Shukla' ? 'Purnima' : 'Amavasya') : TITHI_NAMES[inPaksha];
+  const yogaName = YOGA_NAMES[Math.floor(norm360(sunSid + moonSid) / NAK_SPAN)] ?? 'Yoga';
+  return {
+    paksha,
+    tithiName: tName,
+    tithiNumber: inPaksha + 1,
+    yogaName,
+    karanaName: karanaName(Math.floor(elong / KARANA_SPAN)),
+  };
+}
