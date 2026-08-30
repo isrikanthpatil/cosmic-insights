@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Heart, ScrollText, Sparkles, Sun, ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { Heart, ScrollText, Sparkles, Sun, Orbit, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
 
@@ -39,6 +39,13 @@ const FEATURES: FeatureItem[] = [
     subtitle: 'Planets, houses & Vimshottari Dasha',
     icon: Sparkles,
     route: '/kundli' as Href,
+  },
+  {
+    key: 'sade-sati',
+    title: 'Sade Sati',
+    subtitle: "Saturn's 7.5-year transit over your Moon",
+    icon: Orbit,
+    route: '/sade-sati' as Href,
   },
   {
     key: 'tarot-reading',
