@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { initMobileAds } from '@/utils/ads';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts } from 'expo-font';
 import {
@@ -74,16 +74,10 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  // Initialize the Google Mobile Ads SDK once at startup (native only; the web
-  // build has no ads module).
+  // Initialize the Google Mobile Ads SDK once at startup. On web this resolves to
+  // utils/ads.web.ts (a no-op), so the native ads module is never bundled for web.
   useEffect(() => {
-    if (Platform.OS === 'web') return;
-    try {
-      const mobileAds = require('react-native-google-mobile-ads').default;
-      mobileAds().initialize();
-    } catch {
-      // SDK not available (e.g. Expo Go) — banners simply won't render.
-    }
+    initMobileAds();
   }, []);
 
   if (!fontsLoaded) {
