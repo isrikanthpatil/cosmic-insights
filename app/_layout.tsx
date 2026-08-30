@@ -47,6 +47,7 @@ function RootNavigator() {
           <Stack.Screen name="sade-sati" options={{ headerShown: false }} />
           <Stack.Screen name="dasha" options={{ headerShown: false }} />
           <Stack.Screen name="charts" options={{ headerShown: false }} />
+          <Stack.Screen name="oauth" options={{ headerShown: false }} />
           <Stack.Screen name="premium" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>

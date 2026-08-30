@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
+import { beginGoogleAuth, completeGoogleAuth, GOOGLE_SERVER_REDIRECT } from '@/utils/googleAuth';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
 import { tap } from '@/utils/haptics';
@@ -231,12 +232,11 @@ export default function AuthScreen() {
 
       // Native: manual PKCE code flow with a deep-link return.
       //
-      // We deliberately avoid the SDK's realtime all-in-one flow on native: it
-      // relies on an SSE handshake that races on first use, and its browser
-      // never returns to the app on its own (Google only allows an https
-      // redirect, so the tab ends on PocketBase's page). Instead we send Google
-      // to our server's /oauth-redirect page, which 302s to our app's scheme —
-      // that deep link closes the in-app browser and hands the code back here.
+      // Google (a Web OAuth client) only allows an https redirect, so we send it
+      // to our server's /oauth-redirect page, which 302s to cosmic-insights://oauth.
+      // That deep link is delivered to the app, where EITHER expo-web-browser's
+      // auth session (this function) OR the /oauth route handles the code — the
+      // exchange itself is guarded to run exactly once (see utils/googleAuth).
       const authMethods: any = await pb.collection('users').listAuthMethods();
       const google = authMethods?.oauth2?.providers?.find(
         (p: any) => p.name === 'google'
@@ -245,39 +245,24 @@ export default function AuthScreen() {
         throw new Error('Google sign-in is unavailable right now. Please try again later.');
       }
 
-      const pbUrl = process.env.EXPO_PUBLIC_PB_URL ?? 'https://api.astropanth.com';
-      const serverRedirect = `${pbUrl}/oauth-redirect`;
       const appReturn = 'cosmic-insights://oauth';
-
       // google.authURL ends with "&redirect_uri="; append our server redirect.
-      const authUrl = google.authURL + encodeURIComponent(serverRedirect);
+      const authUrl = google.authURL + encodeURIComponent(GOOGLE_SERVER_REDIRECT);
 
+      beginGoogleAuth(google.codeVerifier);
       const result = await WebBrowser.openAuthSessionAsync(authUrl, appReturn);
-      if (result.type !== 'success' || !result.url) {
-        // User dismissed the browser — fail quietly.
-        return;
-      }
 
-      const { queryParams } = Linking.parse(result.url);
-      const code = queryParams?.code as string | undefined;
-      const returnedState = queryParams?.state as string | undefined;
-      const oauthError = queryParams?.error as string | undefined;
-
-      if (oauthError) {
-        throw new Error('Google sign-in was cancelled.');
+      // If the auth session caught the redirect, redeem the code here. If it was
+      // instead delivered to the /oauth route (result 'dismiss'/'cancel'), that
+      // route redeems it — so a non-success result is NOT an error here.
+      if (result.type === 'success' && result.url) {
+        const { queryParams } = Linking.parse(result.url);
+        const code = queryParams?.code as string | undefined;
+        const oauthError = queryParams?.error as string | undefined;
+        if (oauthError) throw new Error('Google sign-in was cancelled.');
+        if (code) await completeGoogleAuth(code);
       }
-      if (!code) {
-        throw new Error('No authorization code was returned. Please try again.');
-      }
-      if (returnedState && google.state && returnedState !== google.state) {
-        throw new Error('Sign-in verification failed. Please try again.');
-      }
-
-      // Exchange the code for a PocketBase session (redirectUrl must match the
-      // one Google saw). AuthContext reacts to the authStore change.
-      await pb
-        .collection('users')
-        .authWithOAuth2Code('google', code, google.codeVerifier, serverRedirect);
+      // AuthContext reacts to the authStore change and dismisses this screen.
     } catch (error: any) {
       const rawMessage =
         error?.response?.message || error?.message || '';
