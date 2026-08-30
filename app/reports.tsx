@@ -2,15 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Sparkles, Hash, Gem, ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { ArrowLeft, Sparkles, Hash, Gem, TrendingUp, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
-import { ReportType } from '@/utils/reports/reportHtml';
 
-const REPORTS: { type: ReportType; title: string; subtitle: string; icon: LucideIcon }[] = [
-  { type: 'astrology', title: 'Astrology Report', subtitle: 'Chart, planets, houses, dasha, remedies', icon: Sparkles },
-  { type: 'numerology', title: 'Numerology Report', subtitle: 'Birth, Destiny & Kua numbers + Lo Shu grid', icon: Hash },
-  { type: 'gemstone', title: 'Gemstone Recommendation', subtitle: 'Your life, lucky & creative stones', icon: Gem },
+const REPORTS: { key: string; href: string; title: string; subtitle: string; icon: LucideIcon }[] = [
+  { key: 'astrology', href: '/report?type=astrology', title: 'Astrology Report', subtitle: 'Chart, planets, houses, dasha, remedies', icon: Sparkles },
+  { key: 'numerology', href: '/report?type=numerology', title: 'Numerology Report', subtitle: 'Birth, Destiny, Name & Kua numbers + Lo Shu', icon: Hash },
+  { key: 'gemstone', href: '/report?type=gemstone', title: 'Gemstone Recommendation', subtitle: 'Your life, lucky & creative stones', icon: Gem },
+  { key: 'forecast', href: '/report?type=forecast', title: 'Forecast', subtitle: 'Monthly or yearly — transits, dasha & month-by-month', icon: TrendingUp },
 ];
 
 export default function ReportsScreen() {
@@ -41,14 +41,14 @@ export default function ReportsScreen() {
           const Icon = r.icon;
           return (
             <TouchableOpacity
-              key={r.type}
+              key={r.key}
               style={styles.card}
               activeOpacity={0.85}
               accessibilityRole="button"
               accessibilityLabel={`Open ${r.title}`}
               onPress={() => {
                 tap();
-                router.push(`/report?type=${r.type}` as Href);
+                router.push(r.href as Href);
               }}
             >
               <View style={styles.cardIcon}><Icon size={22} color="#E8C87E" /></View>

@@ -597,3 +597,20 @@ export function computeGrahas(input: EphemerisInput): FullChartResult {
     lowConfidence,
   };
 }
+
+/**
+ * Sidereal graha rashis at an arbitrary calendar instant (used for TRANSITS —
+ * including future dates, which the birth-date parser rejects). Precision to the
+ * rashi/nakshatra is ample for gochara. `date` is treated as noon of that day.
+ */
+export function grahaRashisAtDate(date: Date): Record<GrahaName, number> {
+  const jdUT = julianDay(date.getFullYear(), date.getMonth() + 1, date.getDate() + 0.5);
+  const ayanamsa = lahiriAyanamsa(jdUT);
+  const order: GrahaName[] = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+  const out = {} as Record<GrahaName, number>;
+  for (const name of order) {
+    const sid = norm360(grahaTropical(name, jdUT) - ayanamsa);
+    out[name] = Math.floor(sid / 30) + 1;
+  }
+  return out;
+}

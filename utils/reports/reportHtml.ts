@@ -20,6 +20,7 @@ import {
   planetDignity, ordinal, type Planet,
 } from '../jyotish/interpret';
 import { computeNameNumber, numberDetail } from '../numerologyDetail';
+import { computeForecast, type Period } from '../jyotish/forecast';
 
 const GRAHA_ORDER: Planet[] = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
 const NAK_SPAN = 360 / 27;
@@ -288,6 +289,40 @@ export function buildGemstoneReportHtml(p: Profile): string {
     </ul></div>
   <div class="section"><div class="caution"><b>Important:</b> Gemstones are considered powerful in Jyotish and are not one-size-fits-all. Blue Sapphire (Neelam) in particular is very fast-acting and must be trialled carefully. Please consult a qualified astrologer with your full chart before wearing any gemstone.</div></div>`;
   return shell('Gemstone Recommendation', p, body);
+}
+
+// ------------------------------------------------------------------ Forecast --
+export function buildForecastReportHtml(p: Profile, period: Period): string {
+  const f = computeForecast(p, period);
+
+  const transits = f.transits
+    .map((t) => `<div class="interp"><b>${esc(t.planet)}</b> — ${esc(t.text)}</div>`)
+    .join('');
+
+  const focus = f.focus
+    .map((a) => `<div class="card"><b>${esc(a.area)}</b><p style="margin:6px 0 0">${esc(a.text)}</p></div>`)
+    .join('');
+
+  const monthsHtml = period === 'yearly' && f.months.length
+    ? `<div class="section"><h2>Month by Month</h2>
+        <table><thead><tr><th>Month</th><th>Tone</th><th>Note</th></tr></thead><tbody>
+        ${f.months.map((m) => `<tr><td>${esc(m.label)}</td><td>${m.favourable ? 'Active' : 'Quieter'}</td><td>${esc(m.text)}</td></tr>`).join('')}
+        </tbody></table></div>`
+    : '';
+
+  const body = `
+  <div class="section"><h2>Overview</h2>
+    <p><b>Period:</b> ${esc(f.rangeLabel)} &nbsp;·&nbsp; <b>Moon sign:</b> ${esc(f.moonSignName)}</p>
+    <p>${esc(f.dashaLine)}</p>
+    ${f.sadeSatiLine ? `<p class="meta">${esc(f.sadeSatiLine)}</p>` : ''}
+  </div>
+  <div class="section"><h2>Major Influences · Transits from your Moon</h2>${transits}</div>
+  <div class="section"><h2>Focus Areas</h2>${focus}</div>
+  ${monthsHtml}
+  <div class="section"><h2>Guidance</h2>${list(f.guidance)}</div>
+  <div class="section"><div class="caution">A forecast describes the prevailing planetary influences and tendencies for the period — not fixed events. Use it as a guide for <i>timing and focus</i>; your own choices and effort shape the outcome.</div></div>`;
+
+  return shell(period === 'yearly' ? 'Yearly Forecast' : 'Monthly Forecast', p, body);
 }
 
 export type ReportType = 'astrology' | 'numerology' | 'gemstone';
