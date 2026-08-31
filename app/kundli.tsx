@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import ShareCardButton from '@/components/ShareCardButton';
+import { registerPositiveMoment } from '@/utils/review';
 import { useChart } from '@/contexts/ChartContext';
 import { getCoordinatesForPlace } from '@/utils/astrology';
 import { computeKundli, Kundli, ChartGraha, NAKSHATRA_INFO } from '@/utils/jyotish/kundli';
@@ -42,6 +43,12 @@ export default function KundliScreen() {
       return null;
     }
   }, [profile]);
+
+  // Viewing a full Kundli is a high-satisfaction moment — a good time to (rarely)
+  // ask for a Play rating. The helper self-gates so this fires at most once.
+  useEffect(() => {
+    if (kundli) registerPositiveMoment();
+  }, [kundli]);
 
   const goBack = () => {
     if (router.canGoBack()) router.back();

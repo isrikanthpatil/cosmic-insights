@@ -9,6 +9,7 @@ import { useChart } from '@/contexts/ChartContext';
 import { buildReportHtml, buildForecastReportHtml, REPORT_META, ReportType } from '@/utils/reports/reportHtml';
 import type { Period } from '@/utils/jyotish/forecast';
 import { tap } from '@/utils/haptics';
+import { registerPositiveMoment } from '@/utils/review';
 
 const isReportType = (t: unknown): t is ReportType =>
   t === 'astrology' || t === 'numerology' || t === 'gemstone';
@@ -74,6 +75,12 @@ export default function ReportScreen() {
     return () => clearInterval(id);
     // Re-prepare only when the underlying report identity changes, not on every render.
   }, [isForecast, type, html === null]);
+
+  // Finishing a report is a high-satisfaction moment — quietly (and at most once)
+  // ask for a Play rating.
+  useEffect(() => {
+    if (ready) registerPositiveMoment();
+  }, [ready]);
 
   const goBack = () => {
     if (router.canGoBack()) router.back();
