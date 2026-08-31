@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -30,6 +30,8 @@ import { getNumerologyReading } from '@/utils/numerology';
 import { enableDailyHoroscopeReminder } from '@/utils/notifications';
 import ScreenBackground from '@/components/ScreenBackground';
 import GuestEntryPrompt from '@/components/GuestEntryPrompt';
+import ShareCard, { ShareCardData } from '@/components/ShareCard';
+import { shareCardImage } from '@/utils/shareCard';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
 const NOTIF_KEY = 'settings_notifications';
@@ -163,6 +165,34 @@ export default function Home() {
     [profile]
   );
 
+  // Off-screen branded card that the Share button rasterises to a PNG.
+  const cardRef = useRef<View>(null);
+  const shareCardData: ShareCardData | null = useMemo(() => {
+    const sun = chart?.sunSign ?? sunSign ?? '';
+    const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (horoscopeMode === 'weekly' && weeklyHoroscope) {
+      return {
+        eyebrow: 'This week',
+        title: sun || 'My week ahead',
+        subtitle: sun ? 'Weekly horoscope' : undefined,
+        body: weeklyHoroscope.overview,
+      };
+    }
+    if (horoscope) {
+      return {
+        eyebrow: `Today · ${today}`,
+        title: sun || 'My reading today',
+        subtitle: sun ? 'Daily horoscope' : undefined,
+        body: horoscope.mainPrediction,
+        chips: [
+          { label: 'Lucky no', value: horoscope.luckyNumbers.slice(0, 3).join(' · ') },
+          { label: 'Colour', value: horoscope.luckyColor },
+        ],
+      };
+    }
+    return null;
+  }, [horoscopeMode, weeklyHoroscope, horoscope, chart, sunSign]);
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setRefreshNonce((n) => n + 1);
@@ -205,7 +235,12 @@ export default function Home() {
         }
         return;
       }
-      await Share.share({ message });
+      // Native: share a branded image card (with a text fallback baked in).
+      if (shareCardData) {
+        await shareCardImage(cardRef, message);
+      } else {
+        await Share.share({ message });
+      }
     } catch {
       // User cancelled or sharing unavailable — ignore quietly.
     }
@@ -213,6 +248,12 @@ export default function Home() {
 
   return (
     <ScreenBackground style={styles.container}>
+      {/* Off-screen branded card used only for image sharing (native). */}
+      {Platform.OS !== 'web' && shareCardData && (
+        <View style={styles.offscreenCard} pointerEvents="none">
+          <ShareCard ref={cardRef} data={shareCardData} />
+        </View>
+      )}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 88 }]}
@@ -499,6 +540,12 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  // Rendered but pushed far off-screen so it can be captured without being seen.
+  offscreenCard: {
+    position: 'absolute',
+    left: -10000,
+    top: 0,
   },
   scrollView: {
     flex: 1,

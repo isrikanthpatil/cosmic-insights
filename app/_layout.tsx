@@ -18,6 +18,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ChartProvider } from '@/contexts/ChartContext';
 import { PremiumProvider } from '@/contexts/PremiumContext';
 import ToastHost from '@/components/ToastHost';
+import DesktopGate from '@/components/DesktopGate';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -88,9 +89,11 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <RootNavigator />
-      <ToastHost />
-      <StatusBar style="auto" />
+      <DesktopGate>
+        <RootNavigator />
+        <ToastHost />
+        <StatusBar style="auto" />
+      </DesktopGate>
     </AuthProvider>
   );
 }
