@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Sunrise, Sunset, AlertTriangle } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
+import ShareCardButton from '@/components/ShareCardButton';
 import { tap } from '@/utils/haptics';
 import { computePanchang, KalamPeriod } from '@/utils/jyotish/panchang';
 
@@ -66,6 +67,28 @@ export default function PanchangScreen() {
     ? `${p.vara.english}, ${istNow.getUTCDate()} ${MONTHS[istNow.getUTCMonth()]} ${istNow.getUTCFullYear()}`
     : '';
 
+  const rahuStr = p?.rahuKalam ? `${fmt(p.rahuKalam.start)}–${fmt(p.rahuKalam.end)}` : '—';
+  const panchangShareData = p
+    ? {
+        eyebrow: dateLine,
+        title: p.tithi.name,
+        subtitle: `${p.nakshatra.name} Nakshatra · ${p.paksha} Paksha`,
+        body:
+          `Tithi ${p.tithi.name}, Nakshatra ${p.nakshatra.name}, Yoga ${p.yoga.name}, Karana ${p.karana.name}. ` +
+          `Sunrise ${fmt(p.sunrise)}, Sunset ${fmt(p.sunset)}.`,
+        chips: [
+          { label: 'Rahu Kalam', value: rahuStr },
+          { label: 'Sunrise', value: fmt(p.sunrise) },
+          { label: 'Sunset', value: fmt(p.sunset) },
+        ],
+      }
+    : null;
+  const panchangShareMsg = p
+    ? `आज का पंचांग · Today's Panchang ✨ ${dateLine}\n` +
+      `Tithi ${p.tithi.name}, Nakshatra ${p.nakshatra.name}. Rahu Kalam ${rahuStr}.\n\n` +
+      `Free daily Panchang: https://www.astropanth.com`
+    : '';
+
   const AngaRow = ({
     label,
     value,
@@ -106,7 +129,11 @@ export default function PanchangScreen() {
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>Panchang</Text>
-        <View style={{ width: 24 }} />
+        {panchangShareData ? (
+          <ShareCardButton data={panchangShareData} message={panchangShareMsg} label="Share" />
+        ) : (
+          <View style={{ width: 24 }} />
+        )}
       </View>
 
       {!p ? (

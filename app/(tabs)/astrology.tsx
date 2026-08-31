@@ -12,6 +12,7 @@ import LoginNudge from '@/components/LoginNudge';
 import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
+import ShareCardButton from '@/components/ShareCardButton';
 import { getZodiacGlyph } from '@/utils/zodiac';
 import { tap } from '@/utils/haptics';
 
@@ -416,11 +417,33 @@ export default function Astrology() {
     }
   };
 
+  const astroAsc = astrologyData.ascendant ? ` · ${astrologyData.ascendant} rising` : '';
+  const astroShareData = {
+    eyebrow: 'Vedic Astrology',
+    title: astrologyData.sunSign,
+    subtitle: `Moon ${astrologyData.moonSign}${astroAsc}`,
+    body:
+      `Sun in ${astrologyData.sunSign}, Moon in ${astrologyData.moonSign}` +
+      `${astrologyData.ascendant ? `, ${astrologyData.ascendant} rising` : ''}. ` +
+      `${(astrologyData.traits || []).slice(0, 3).join(', ')}.`,
+    chips: [
+      { label: 'Sun', value: astrologyData.sunSign },
+      { label: 'Moon', value: astrologyData.moonSign },
+      { label: 'Rising', value: astrologyData.ascendant || '—' },
+    ],
+  };
+  const astroShareMsg =
+    `My Astropanth chart ✨ Sun ${astrologyData.sunSign}, Moon ${astrologyData.moonSign}${astrologyData.ascendant ? `, ${astrologyData.ascendant} rising` : ''}\n\n` +
+    `Get your free Vedic reading: https://www.astropanth.com`;
+
   return (
     <ScreenBackground style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.title}>Astrology Reading</Text>
-        <Text style={styles.subtitle}>Ancient wisdom for {userProfile.firstName}</Text>
+      <View style={[styles.header, styles.headerRow, { paddingTop: insets.top + 12 }]}>
+        <View style={styles.headerTextWrap}>
+          <Text style={styles.title}>Astrology Reading</Text>
+          <Text style={styles.subtitle}>Ancient wisdom for {userProfile.firstName}</Text>
+        </View>
+        <ShareCardButton data={astroShareData} message={astroShareMsg} />
       </View>
 
       <ScrollView 
@@ -550,6 +573,13 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 16,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  headerTextWrap: { flex: 1 },
   title: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',

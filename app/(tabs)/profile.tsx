@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
-import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight } from 'lucide-react-native';
+import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight, Share2, Star } from 'lucide-react-native';
+import Constants from 'expo-constants';
+import { shareApp, rateApp } from '@/utils/appShare';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,6 +32,8 @@ export default function Profile() {
   const insets = useSafeAreaInsets();
   const { profile, user, isLoading: loading, updateProfile, signOut, requestPasswordReset } = useAuth();
   const { isGuest, guestProfile, setGuestProfile } = useChart();
+  // Read the real app version so the About card never drifts from the build.
+  const appVersion = Constants.expoConfig?.version ?? '1.0.2';
   const { isPremium } = usePremium();
   const kb = useKeyboardHeight();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -461,7 +465,7 @@ export default function Profile() {
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
                 <Text style={styles.aboutAppName}>Astropanth</Text>
-                <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+                <Text style={styles.aboutVersion}>Version {appVersion}</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
                 </Text>
@@ -721,6 +725,30 @@ export default function Profile() {
 
                 <TouchableOpacity
                   style={styles.settingRow}
+                  onPress={() => { tap(); shareApp(); }}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.settingIcon}>
+                    <Share2 size={18} color="#E8C87E" />
+                  </View>
+                  <Text style={styles.settingLabel}>Share Astropanth</Text>
+                  <ChevronRight size={18} color="#5A5768" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.settingRow}
+                  onPress={() => { tap(); rateApp(); }}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.settingIcon}>
+                    <Star size={18} color="#E8C87E" />
+                  </View>
+                  <Text style={styles.settingLabel}>Rate Astropanth</Text>
+                  <ChevronRight size={18} color="#5A5768" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.settingRow}
                   onPress={handleSignOut}
                   activeOpacity={0.7}
                 >
@@ -776,7 +804,7 @@ export default function Profile() {
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
                 <Text style={styles.aboutAppName}>Astropanth</Text>
-                <Text style={styles.aboutVersion}>Version 1.0.0</Text>
+                <Text style={styles.aboutVersion}>Version {appVersion}</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
                 </Text>
