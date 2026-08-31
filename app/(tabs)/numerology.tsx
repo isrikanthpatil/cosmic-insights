@@ -12,6 +12,7 @@ import LoginNudge from '@/components/LoginNudge';
 import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
+import ShareCardButton from '@/components/ShareCardButton';
 
 export default function Numerology() {
   const insets = useSafeAreaInsets();
@@ -224,11 +225,29 @@ export default function Numerology() {
     );
   };
 
+  const numeroShareData = {
+    eyebrow: 'Numerology',
+    title: `Destiny No. ${numerologyReading.destinyNumber}`,
+    subtitle: numerologyReading.destinyNumberMeaning,
+    body: numerologyReading.destinyNumberDetail || numerologyReading.destinyNumberMeaning,
+    chips: [
+      { label: 'Birth', value: String(numerologyReading.birthNumber) },
+      { label: 'Destiny', value: String(numerologyReading.destinyNumber) },
+      { label: 'Kua', value: String(numerologyReading.kuaNumber) },
+    ],
+  };
+  const numeroShareMsg =
+    `My Astropanth numerology ✨ Destiny Number ${numerologyReading.destinyNumber} — ${numerologyReading.destinyNumberMeaning}\n\n` +
+    `Get your free reading: https://www.astropanth.com`;
+
   return (
     <ScreenBackground style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.title}>Numerology Analysis</Text>
-        <Text style={styles.subtitle}>Numbers that define {userProfile.firstName}</Text>
+      <View style={[styles.header, styles.headerRow, { paddingTop: insets.top + 12 }]}>
+        <View style={styles.headerTextWrap}>
+          <Text style={styles.title}>Numerology Analysis</Text>
+          <Text style={styles.subtitle}>Numbers that define {userProfile.firstName}</Text>
+        </View>
+        <ShareCardButton data={numeroShareData} message={numeroShareMsg} />
       </View>
 
       <ScrollView
@@ -479,6 +498,13 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 16,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  headerTextWrap: { flex: 1 },
   title: {
     fontSize: 24,
     fontFamily: 'PlayfairDisplay-Bold',

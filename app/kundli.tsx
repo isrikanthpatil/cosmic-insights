@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
+import ShareCardButton from '@/components/ShareCardButton';
 import { useChart } from '@/contexts/ChartContext';
 import { getCoordinatesForPlace } from '@/utils/astrology';
 import { computeKundli, Kundli, ChartGraha, NAKSHATRA_INFO } from '@/utils/jyotish/kundli';
@@ -47,6 +48,27 @@ export default function KundliScreen() {
     else router.replace('/(tabs)/more');
   };
 
+  const sunRashiName = kundli?.grahas.find((g) => g.name === 'Sun')?.rashiName ?? '—';
+  const kundliShareData = kundli
+    ? {
+        eyebrow: 'Vedic Kundli',
+        title: kundli.lagnaName ? `${kundli.lagnaName} Lagna` : `${kundli.moonRashiName} Moon`,
+        subtitle: `Moon in ${kundli.moonRashiName} · ${kundli.moonNakshatraName}`,
+        body:
+          `${kundli.lagnaName ? `${kundli.lagnaName} ascendant. ` : ''}` +
+          `Sun in ${sunRashiName}, Moon in ${kundli.moonRashiName}, nakshatra ${kundli.moonNakshatraName}.`,
+        chips: [
+          { label: 'Lagna', value: kundli.lagnaName ?? '—' },
+          { label: 'Moon', value: kundli.moonRashiName },
+          { label: 'Sun', value: sunRashiName },
+        ],
+      }
+    : null;
+  const kundliShareMsg = kundli
+    ? `My Astropanth Kundli ✨ ${kundli.lagnaName ? `${kundli.lagnaName} Lagna, ` : ''}Moon in ${kundli.moonRashiName} (${kundli.moonNakshatraName})\n\n` +
+      `Get your free Kundli: https://www.astropanth.com`
+    : '';
+
   const screenW = Dimensions.get('window').width;
   const cell = Math.floor((Math.min(screenW, 520) - 32) / 4);
 
@@ -63,7 +85,11 @@ export default function KundliScreen() {
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>Vedic Kundli</Text>
-        <View style={{ width: 24 }} />
+        {kundliShareData ? (
+          <ShareCardButton data={kundliShareData} message={kundliShareMsg} label="Share" />
+        ) : (
+          <View style={{ width: 24 }} />
+        )}
       </View>
 
       {!profile ? (

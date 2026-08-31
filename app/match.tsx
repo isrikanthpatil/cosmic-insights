@@ -30,6 +30,7 @@ import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
+import ShareCardButton from '@/components/ShareCardButton';
 
 // Map the engine's 4 bands to a neutral one-line descriptor.
 const BAND_DESCRIPTOR: Record<AshtakootaResult['band'], string> = {
@@ -420,6 +421,16 @@ function ResultView({
 
   const accent = bandColor(result.band);
 
+  const matchShareData = {
+    eyebrow: 'Kundli match',
+    title: `${result.total} / 36`,
+    subtitle: `${personAName} & ${personBName}`,
+    body: `${result.band} — ${BAND_DESCRIPTOR[result.band]}`,
+  };
+  const matchShareMsg =
+    `Our Astropanth compatibility ✨ ${personAName} & ${personBName}: ${result.total}/36 (${result.band})\n\n` +
+    `Check yours free: https://www.astropanth.com`;
+
   return (
     <View>
       {/* Hero card */}
@@ -435,6 +446,9 @@ function ResultView({
         <Text style={styles.heroDescriptor}>
           {BAND_DESCRIPTOR[result.band]}
         </Text>
+        <View style={styles.heroShareRow}>
+          <ShareCardButton data={matchShareData} message={matchShareMsg} label="Share result" />
+        </View>
       </View>
 
       {lowConfidence && (
@@ -731,6 +745,9 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: 'center',
     gap: 6,
+  },
+  heroShareRow: {
+    marginTop: 12,
   },
   heroNames: {
     fontSize: 12,
