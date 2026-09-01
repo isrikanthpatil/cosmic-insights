@@ -67,6 +67,10 @@ function shell(reportTitle: string, subject: Profile, bodyHtml: string): string 
   h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; color: #1A1638; margin: 0; }
   .brandbar { display: flex; align-items: center; justify-content: space-between;
     border-bottom: 2px solid #C9A24B; padding-bottom: 14px; margin-bottom: 16px; }
+  .brandlock { display: flex; align-items: center; gap: 8px; }
+  .mark { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; background: rgba(184,137,47,0.10); border: 1px solid rgba(184,137,47,0.45);
+    color: #B8892F; font-size: 15px; line-height: 1; }
   .brand { font-family: Georgia, serif; font-size: 20px; color: #1A1638; letter-spacing: .5px; }
   .brand span { color: #B8892F; }
   .kicker { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #B8892F; }
@@ -97,7 +101,7 @@ function shell(reportTitle: string, subject: Profile, bodyHtml: string): string 
   .footer { margin-top: 30px; border-top: 1px solid #E7DFCB; padding-top: 12px; color: #9A8F6B; font-size: 10.5px; text-align: center; }
 </style></head>
 <body><div class="page">
-  <div class="brandbar"><div class="brand">Astro<span>panth</span></div><div class="kicker">${esc(today())}</div></div>
+  <div class="brandbar"><div class="brandlock"><div class="mark">✦</div><div class="brand">Astro<span>panth</span></div></div><div class="kicker">${esc(today())}</div></div>
   <div class="kicker">${esc(reportTitle)}</div>
   <div class="title">${esc(fullName)}</div>
   <div class="subject">${born || 'Birth details not provided'}</div>

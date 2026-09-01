@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Activi
 import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight, Share2, Star } from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { shareApp, rateApp } from '@/utils/appShare';
+import BrandLogo from '@/components/BrandLogo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -464,7 +465,7 @@ export default function Profile() {
                   <Info size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
-                <Text style={styles.aboutAppName}>Astropanth</Text>
+                <BrandLogo size={30} style={styles.aboutBrand} />
                 <Text style={styles.aboutVersion}>Version {appVersion}</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
@@ -803,7 +804,7 @@ export default function Profile() {
                   <Info size={18} color="#E8C87E" />
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
-                <Text style={styles.aboutAppName}>Astropanth</Text>
+                <BrandLogo size={30} style={styles.aboutBrand} />
                 <Text style={styles.aboutVersion}>Version {appVersion}</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
@@ -1203,6 +1204,7 @@ const styles = StyleSheet.create({
     color: '#F4F1E8',
     marginTop: 2,
   },
+  aboutBrand: { marginTop: 2, marginBottom: 2 },
   aboutVersion: {
     fontSize: 12,
     fontFamily: 'Inter-Medium',

@@ -31,6 +31,7 @@ import { enableDailyHoroscopeReminder } from '@/utils/notifications';
 import ScreenBackground from '@/components/ScreenBackground';
 import GuestEntryPrompt from '@/components/GuestEntryPrompt';
 import ShareCard, { ShareCardData } from '@/components/ShareCard';
+import BrandLogo from '@/components/BrandLogo';
 import { shareCardImage } from '@/utils/shareCard';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
@@ -268,14 +269,12 @@ export default function Home() {
         }
       >
         <View style={styles.headerRow}>
-          <View style={styles.brandIcon}>
-            <Sparkles size={28} color="#E8C87E" />
-          </View>
+          <BrandLogo size={38} showWordmark={false} />
           <View style={styles.headerText}>
             <Text style={styles.greeting}>
               {profile ? `Welcome back, ${profile.firstName}` : 'Welcome to'}
             </Text>
-            <Text style={styles.name}>Astropanth</Text>
+            <Text style={styles.name}>Astro<Text style={styles.nameGold}>panth</Text></Text>
           </View>
           {isGuest && (
             <TouchableOpacity
@@ -584,6 +583,7 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
+  nameGold: { color: '#E8C87E' },
   signInChip: {
     flexDirection: 'row',
     alignItems: 'center',

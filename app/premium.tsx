@@ -8,8 +8,9 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Check, Sparkles } from 'lucide-react-native';
+import { ArrowLeft, Check } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
+import BrandLogo from '@/components/BrandLogo';
 import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 import { usePremium } from '@/contexts/PremiumContext';
@@ -59,9 +60,7 @@ export default function PremiumScreen() {
       >
         {/* Hero */}
         <View style={styles.hero}>
-          <View style={styles.heroIcon}>
-            <Sparkles size={28} color="#E8C87E" />
-          </View>
+          <BrandLogo size={46} showWordmark={false} style={styles.heroMark} />
           <Text style={styles.heroTitle}>{plusTagline}</Text>
           <Text style={styles.heroSubtitle}>
             Go deeper with {plusPlanName} — unlimited guidance and detailed
@@ -155,6 +154,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 48,
   },
+  heroMark: { marginBottom: 4 },
   hero: {
     alignItems: 'center',
     gap: 10,

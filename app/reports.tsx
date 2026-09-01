@@ -4,6 +4,7 @@ import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Sparkles, Hash, Gem, TrendingUp, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
+import { useAuth } from '@/contexts/AuthContext';
 import { tap } from '@/utils/haptics';
 
 const REPORTS: { key: string; href: string; title: string; subtitle: string; icon: LucideIcon }[] = [
@@ -16,6 +17,7 @@ const REPORTS: { key: string; href: string; title: string; subtitle: string; ico
 export default function ReportsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
 
   const goBack = () => {
     if (router.canGoBack()) router.back();
@@ -32,6 +34,23 @@ export default function ReportsScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      {!user ? (
+        <View style={styles.gate}>
+          <Sparkles size={40} color="#E8C87E" />
+          <Text style={styles.gateTitle}>Sign in to view reports</Text>
+          <Text style={styles.gateText}>
+            Detailed astrology, numerology, gemstone and forecast reports are available to signed-in members. Sign in or create a free account to generate yours.
+          </Text>
+          <TouchableOpacity
+            style={styles.gateBtn}
+            onPress={() => { tap(); router.push('/login'); }}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in"
+          >
+            <Text style={styles.gateBtnText}>Sign in / Sign up</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
         <Text style={styles.intro}>
           Beautifully formatted reports from your birth chart — read them here, or save and share as a PDF.
@@ -63,6 +82,7 @@ export default function ReportsScreen() {
 
         <Text style={styles.note}>Free to generate. Reports are for guidance and reflection.</Text>
       </ScrollView>
+      )}
     </ScreenBackground>
   );
 }
@@ -85,4 +105,9 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 17, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
   cardSubtitle: { fontSize: 12, fontFamily: 'Inter-Regular', color: '#C7C4D6', marginTop: 2 },
   note: { fontSize: 12, fontFamily: 'Inter-Regular', color: '#8B88A0', textAlign: 'center', marginTop: 8 },
+  gate: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 32 },
+  gateTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
+  gateText: { fontSize: 14, fontFamily: 'Inter-Regular', color: '#8B88A0', textAlign: 'center', lineHeight: 20 },
+  gateBtn: { marginTop: 18, backgroundColor: '#E8C87E', paddingHorizontal: 22, paddingVertical: 12, borderRadius: 12 },
+  gateBtnText: { color: '#161225', fontSize: 15, fontFamily: 'Inter-SemiBold' },
 });

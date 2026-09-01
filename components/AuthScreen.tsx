@@ -13,7 +13,7 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
-import { Sparkles, Eye, EyeOff } from 'lucide-react-native';
+import { Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
 import { beginGoogleAuth, completeGoogleAuth, GOOGLE_SERVER_REDIRECT } from '@/utils/googleAuth';
@@ -25,6 +25,7 @@ import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
+import BrandLogo from '@/components/BrandLogo';
 
 type Mode = 'login' | 'signup';
 
@@ -303,10 +304,8 @@ export default function AuthScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.brandContainer}>
-            <View style={styles.brandIcon}>
-              <Sparkles size={40} color="#E8C87E" />
-            </View>
-            <Text style={styles.brandTitle}>Astropanth</Text>
+            <BrandLogo size={52} showWordmark={false} style={styles.brandMark} />
+            <Text style={styles.brandTitle}>Astro<Text style={styles.brandTitleGold}>panth</Text></Text>
             <Text style={styles.brandSubtitle}>
               {mode === 'login'
                 ? 'Sign in to access your cosmic blueprint'
@@ -578,11 +577,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  brandMark: { alignSelf: 'center', marginBottom: 14 },
   brandTitle: {
     fontSize: 32,
     fontFamily: 'PlayfairDisplay-Bold',
     color: '#F4F1E8',
   },
+  brandTitleGold: { color: '#E8C87E' },
   brandSubtitle: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',

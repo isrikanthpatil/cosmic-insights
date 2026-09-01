@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, FileText, Sparkles } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScreenBackground from '@/components/ScreenBackground';
 import ReportViewer from '@/components/ReportViewer';
 import { useChart } from '@/contexts/ChartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { buildReportHtml, buildForecastReportHtml, REPORT_META, ReportType } from '@/utils/reports/reportHtml';
 import type { Period } from '@/utils/jyotish/forecast';
 import { tap } from '@/utils/haptics';
@@ -32,6 +34,7 @@ export default function ReportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { activeProfile: profile } = useChart();
+  const { user } = useAuth();
   const params = useLocalSearchParams<{ type?: string; period?: string }>();
 
   const rawType = String(params.type ?? 'astrology');
@@ -55,26 +58,46 @@ export default function ReportScreen() {
     ? (period === 'yearly' ? 'Astropanth-Yearly-Forecast' : 'Astropanth-Monthly-Forecast')
     : REPORT_META[type].file;
 
+  // Once a given report has been generated, we remember it and skip the ~1 minute
+  // "preparing" gate on every later open — so it only feels hand-prepared the first
+  // time, and is instant thereafter. Keyed per user + report (period for forecast).
+  const reportKey = isForecast ? `forecast-${period}` : type;
+  const doneKey = `report_done_v1:${user?.id ?? 'me'}:${reportKey}`;
+
   // Preparation gate: fill a progress bar over ~1 minute, then reveal the report.
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState(0);
   const startRef = useRef(Date.now());
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => {
     if (!html) return; // nothing to prepare (no birth details)
-    startRef.current = Date.now();
-    setReady(false);
-    setProgress(0);
-    const id = setInterval(() => {
-      const t = Math.min(1, (Date.now() - startRef.current) / PREPARE_MS);
-      setProgress(t);
-      if (t >= 1) {
-        clearInterval(id);
+    let cancelled = false;
+    const clear = () => { if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; } };
+    (async () => {
+      let alreadyDone = false;
+      try { alreadyDone = (await AsyncStorage.getItem(doneKey)) === '1'; } catch {}
+      if (cancelled) return;
+      if (alreadyDone) {
+        setProgress(1);
         setReady(true);
+        return;
       }
-    }, 300);
-    return () => clearInterval(id);
+      startRef.current = Date.now();
+      setReady(false);
+      setProgress(0);
+      intervalRef.current = setInterval(() => {
+        const t = Math.min(1, (Date.now() - startRef.current) / PREPARE_MS);
+        setProgress(t);
+        if (t >= 1) {
+          clear();
+          setReady(true);
+          AsyncStorage.setItem(doneKey, '1').catch(() => {});
+        }
+      }, 300);
+    })();
+    return () => { cancelled = true; clear(); };
     // Re-prepare only when the underlying report identity changes, not on every render.
-  }, [isForecast, type, html === null]);
+  }, [doneKey, html === null]);
 
   // Finishing a report is a high-satisfaction moment — quietly (and at most once)
   // ask for a Play rating.
@@ -99,7 +122,7 @@ export default function ReportScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      {isForecast && (
+      {user && isForecast && (
         <View style={styles.segment}>
           {(['monthly', 'yearly'] as Period[]).map((per) => (
             <TouchableOpacity
@@ -117,7 +140,23 @@ export default function ReportScreen() {
         </View>
       )}
 
-      {!html ? (
+      {!user ? (
+        <View style={styles.center}>
+          <FileText size={40} color="#E8C87E" />
+          <Text style={styles.emptyTitle}>Sign in to view reports</Text>
+          <Text style={styles.muted}>
+            Detailed reports are available to signed-in members. Sign in or create a free account to generate and save yours.
+          </Text>
+          <TouchableOpacity
+            style={styles.signInBtn}
+            onPress={() => { tap(); router.push('/login'); }}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in"
+          >
+            <Text style={styles.signInBtnText}>Sign in / Sign up</Text>
+          </TouchableOpacity>
+        </View>
+      ) : !html ? (
         <View style={styles.center}>
           <FileText size={40} color="#E8C87E" />
           <Text style={styles.emptyTitle}>Add your birth details</Text>
@@ -159,6 +198,10 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
   emptyTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay-Bold', color: '#F4F1E8' },
   muted: { fontSize: 14, fontFamily: 'Inter-Regular', color: '#8B88A0', textAlign: 'center', lineHeight: 20 },
+  signInBtn: {
+    marginTop: 18, backgroundColor: '#E8C87E', paddingHorizontal: 22, paddingVertical: 12, borderRadius: 12,
+  },
+  signInBtnText: { color: '#161225', fontSize: 15, fontFamily: 'Inter-SemiBold' },
   prepStep: { fontSize: 14, fontFamily: 'Inter-Medium', color: '#E8C87E', textAlign: 'center' },
   progressTrack: {
     width: '78%', height: 6, borderRadius: 3, overflow: 'hidden', marginTop: 4,
