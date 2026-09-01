@@ -16,6 +16,7 @@
       "package": "com.astropanth.cosmicinsights",
       "versionCode": 1,
       "allowBackup": false,
+      "permissions": ["com.google.android.gms.permission.AD_ID"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0B0B1A"
