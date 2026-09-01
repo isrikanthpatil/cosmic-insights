@@ -16,7 +16,6 @@
       "package": "com.astropanth.cosmicinsights",
       "versionCode": 1,
       "allowBackup": false,
-      "permissions": ["com.google.android.gms.permission.AD_ID"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0B0B1A"
@@ -30,6 +29,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "./plugins/withAdIdPermission",
       "expo-router",
       "expo-font",
       "expo-web-browser",
