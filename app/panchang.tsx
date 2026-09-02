@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Sunrise, Sunset, AlertTriangle } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import ShareCardButton from '@/components/ShareCardButton';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { tap } from '@/utils/haptics';
 import { computePanchang, KalamPeriod } from '@/utils/jyotish/panchang';
 
@@ -46,6 +47,7 @@ const endsLabel = (from: Date, ends: Date | null): string => {
 export default function PanchangScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
 
   const now = useMemo(() => new Date(), []);
   const p = useMemo(() => {
@@ -128,7 +130,7 @@ export default function PanchangScreen() {
         >
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Panchang</Text>
+        <Text style={styles.topTitle}>{t('nav.panchang')}</Text>
         {panchangShareData ? (
           <ShareCardButton data={panchangShareData} message={panchangShareMsg} label="Share" />
         ) : (

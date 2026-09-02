@@ -11,6 +11,7 @@ import { getNumerologyReading } from '@/utils/numerology';
 import { sanitizeInput, securityMonitor, rateLimiter } from '@/utils/security';
 import { pb } from '@/utils/pocketbase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 
@@ -102,6 +103,7 @@ function TypingDots() {
 }
 
 export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
+  const { lang } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([makeGreeting(userProfile?.firstName)]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -598,7 +600,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
       const result = await pb.send('/api/ask', {
         method: 'POST',
-        body: { question, context, history },
+        body: { question, context, history, lang },
         signal: controller.signal,
       });
 

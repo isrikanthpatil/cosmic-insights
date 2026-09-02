@@ -73,6 +73,21 @@ const en: Dict = {
   // auth
   'auth.loginSubtitle': 'Sign in to access your cosmic blueprint',
   'auth.signupSubtitle': 'Create an account to begin your journey',
+  // screen titles
+  'nav.kundli': 'Vedic Kundli',
+  'nav.panchang': 'Panchang',
+  'nav.compatibility': 'Compatibility',
+  'nav.dasha': 'Dasha Periods',
+  'nav.sadeSati': 'Sade Sati',
+  // premium
+  'premium.included': "What's included",
+  'premium.comingSoon': 'Astropanth Plus is coming soon',
+  'premium.comingSoonNote': "We're putting the finishing touches on Plus. Pricing will be announced at launch.",
+  'premium.notify': 'Notify me at launch',
+  'premium.haveCode': 'Have a code?',
+  'premium.enterCode': 'Enter code',
+  'premium.redeem': 'Redeem',
+  'premium.disclaimer': "Free features remain free. Astropanth Plus adds extras — your current experience won't change.",
 };
 
 const hi: Dict = {
@@ -126,6 +141,19 @@ const hi: Dict = {
   'numero.subtitle': '{name} को परिभाषित करने वाले अंक',
   'auth.loginSubtitle': 'अपना कॉस्मिक ब्लूप्रिंट देखने के लिए साइन इन करें',
   'auth.signupSubtitle': 'अपनी यात्रा शुरू करने के लिए खाता बनाएं',
+  'nav.kundli': 'वैदिक कुंडली',
+  'nav.panchang': 'पंचांग',
+  'nav.compatibility': 'अनुकूलता',
+  'nav.dasha': 'दशा काल',
+  'nav.sadeSati': 'साढ़ेसाती',
+  'premium.included': 'क्या शामिल है',
+  'premium.comingSoon': 'Astropanth Plus जल्द आ रहा है',
+  'premium.comingSoonNote': 'हम Plus को अंतिम रूप दे रहे हैं। कीमत लॉन्च पर घोषित की जाएगी।',
+  'premium.notify': 'लॉन्च पर मुझे सूचित करें',
+  'premium.haveCode': 'कोई कोड है?',
+  'premium.enterCode': 'कोड डालें',
+  'premium.redeem': 'रिडीम करें',
+  'premium.disclaimer': 'मुफ़्त सुविधाएँ मुफ़्त रहेंगी। Astropanth Plus अतिरिक्त जोड़ता है — आपका मौजूदा अनुभव नहीं बदलेगा।',
 };
 
 const mr: Dict = {
@@ -179,6 +207,19 @@ const mr: Dict = {
   'numero.subtitle': '{name} ला परिभाषित करणारे अंक',
   'auth.loginSubtitle': 'तुमचा कॉस्मिक आराखडा पाहण्यासाठी साइन इन करा',
   'auth.signupSubtitle': 'तुमचा प्रवास सुरू करण्यासाठी खाते तयार करा',
+  'nav.kundli': 'वैदिक कुंडली',
+  'nav.panchang': 'पंचांग',
+  'nav.compatibility': 'सुसंगतता',
+  'nav.dasha': 'दशा काळ',
+  'nav.sadeSati': 'साडेसाती',
+  'premium.included': 'काय समाविष्ट आहे',
+  'premium.comingSoon': 'Astropanth Plus लवकरच येत आहे',
+  'premium.comingSoonNote': 'आम्ही Plus ला अंतिम रूप देत आहोत. किंमत लॉंच वेळी जाहीर केली जाईल.',
+  'premium.notify': 'लॉंच वेळी मला कळवा',
+  'premium.haveCode': 'कोड आहे का?',
+  'premium.enterCode': 'कोड टाका',
+  'premium.redeem': 'रिडीम करा',
+  'premium.disclaimer': 'मोफत वैशिष्ट्ये मोफतच राहतील. Astropanth Plus अतिरिक्त गोष्टी जोडते — तुमचा सध्याचा अनुभव बदलणार नाही.',
 };
 
 export const DICTS: Record<Lang, Dict> = { en, hi, mr };

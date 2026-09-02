@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, Orbit } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { useChart } from '@/contexts/ChartContext';
@@ -14,6 +15,7 @@ const PHASES: SadeSatiPhase[] = ['Rising', 'Peak', 'Setting'];
 export default function SadeSatiScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const { activeProfile: profile } = useChart();
 
   const result = useMemo(() => {
@@ -46,7 +48,7 @@ export default function SadeSatiScreen() {
         <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Sade Sati</Text>
+        <Text style={styles.topTitle}>{t('nav.sadeSati')}</Text>
         <View style={{ width: 24 }} />
       </View>
 

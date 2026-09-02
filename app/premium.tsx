@@ -19,6 +19,7 @@ import { usePremium } from '@/contexts/PremiumContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { redeemCode } from '@/utils/promo';
 import { startCheckout } from '@/utils/razorpay';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   plusFeatures,
   plusPlanName,
@@ -32,6 +33,7 @@ export default function PremiumScreen() {
   const insets = useSafeAreaInsets();
   const { isPremium, grant } = usePremium();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const [code, setCode] = useState('');
   const [redeeming, setRedeeming] = useState(false);
@@ -122,7 +124,7 @@ export default function PremiumScreen() {
 
         {/* Plus benefits */}
         <View style={styles.benefitsCard}>
-          <Text style={styles.benefitsTitle}>What's included</Text>
+          <Text style={styles.benefitsTitle}>{t('premium.included')}</Text>
           {plusFeatures.map((feature) => (
             <View key={feature.label} style={styles.benefitRow}>
               <View style={styles.checkIcon}>
@@ -170,10 +172,8 @@ export default function PremiumScreen() {
               )
             ) : (
               <>
-                <Text style={styles.comingSoonHeadline}>Astropanth Plus is coming soon</Text>
-                <Text style={styles.placeholderNote}>
-                  We're putting the finishing touches on Plus. Pricing will be announced at launch.
-                </Text>
+                <Text style={styles.comingSoonHeadline}>{t('premium.comingSoon')}</Text>
+                <Text style={styles.placeholderNote}>{t('premium.comingSoonNote')}</Text>
                 <TouchableOpacity
                   style={styles.primaryButton}
                   onPress={handleNotify}
@@ -181,20 +181,20 @@ export default function PremiumScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="Notify me when Astropanth Plus launches"
                 >
-                  <Text style={styles.primaryButtonText}>Notify me at launch</Text>
+                  <Text style={styles.primaryButtonText}>{t('premium.notify')}</Text>
                 </TouchableOpacity>
               </>
             )}
 
             {/* Promo code — unlock Plus with a code (for early testers/friends). */}
             <View style={styles.codeCard}>
-              <Text style={styles.codeTitle}>Have a code?</Text>
+              <Text style={styles.codeTitle}>{t('premium.haveCode')}</Text>
               <View style={styles.codeRow}>
                 <TextInput
                   style={styles.codeInput}
                   value={code}
                   onChangeText={setCode}
-                  placeholder="Enter code"
+                  placeholder={t('premium.enterCode')}
                   placeholderTextColor="#6E6B84"
                   autoCapitalize="characters"
                   autoCorrect={false}
@@ -209,7 +209,7 @@ export default function PremiumScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="Redeem code"
                 >
-                  <Text style={styles.codeButtonText}>{redeeming ? '…' : 'Redeem'}</Text>
+                  <Text style={styles.codeButtonText}>{redeeming ? '…' : t('premium.redeem')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -217,10 +217,7 @@ export default function PremiumScreen() {
         )}
 
         <View style={styles.disclaimerCard}>
-          <Text style={styles.disclaimerText}>
-            Free features remain free. Astropanth Plus adds extras — your
-            current experience won't change.
-          </Text>
+          <Text style={styles.disclaimerText}>{t('premium.disclaimer')}</Text>
         </View>
       </ScrollView>
     </ScreenBackground>

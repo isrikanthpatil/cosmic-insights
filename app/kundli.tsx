@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import ShareCardButton from '@/components/ShareCardButton';
 import { registerPositiveMoment } from '@/utils/review';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useChart } from '@/contexts/ChartContext';
 import { getCoordinatesForPlace } from '@/utils/astrology';
 import { computeKundli, Kundli, ChartGraha, NAKSHATRA_INFO } from '@/utils/jyotish/kundli';
@@ -28,6 +29,7 @@ export default function KundliScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { activeProfile: profile } = useChart();
+  const { t } = useLanguage();
 
   const kundli: Kundli | null = useMemo(() => {
     if (!profile) return null;
@@ -91,7 +93,7 @@ export default function KundliScreen() {
         <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Vedic Kundli</Text>
+        <Text style={styles.topTitle}>{t('nav.kundli')}</Text>
         {kundliShareData ? (
           <ShareCardButton data={kundliShareData} message={kundliShareMsg} label="Share" />
         ) : (

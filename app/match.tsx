@@ -31,6 +31,7 @@ import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import ShareCardButton from '@/components/ShareCardButton';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Map the engine's 4 bands to a neutral one-line descriptor.
 const BAND_DESCRIPTOR: Record<AshtakootaResult['band'], string> = {
@@ -68,6 +69,7 @@ export default function MatchScreen() {
 
   const [error, setError] = useState<string | null>(null);
   const [match, setMatch] = useState<MatchResult | null>(null);
+  const { t } = useLanguage();
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -238,7 +240,7 @@ export default function MatchScreen() {
         >
           <ArrowLeft size={22} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Compatibility</Text>
+        <Text style={styles.topBarTitle}>{t('nav.compatibility')}</Text>
         <View style={styles.backButton} />
       </View>
 

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, Clock } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { useChart } from '@/contexts/ChartContext';
@@ -36,6 +37,7 @@ const pctElapsed = (p: DashaPeriod, now: Date): number => {
 export default function DashaScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const { activeProfile: profile } = useChart();
   const now = useMemo(() => new Date(), []);
 
@@ -90,7 +92,7 @@ export default function DashaScreen() {
         <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Dasha Periods</Text>
+        <Text style={styles.topTitle}>{t('nav.dasha')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
