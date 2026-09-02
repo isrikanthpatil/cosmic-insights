@@ -66,7 +66,13 @@ routerAdd("POST", "/create-order", (e) => {
     timeout: 20,
   });
   if (res.statusCode >= 300 || !res.json || !res.json.id) {
-    return e.json(502, { ok: false, message: "Could not create the order." });
+    var detail = "";
+    try {
+      detail = (res.json && res.json.error && res.json.error.description)
+        ? res.json.error.description
+        : String(res.raw || res.body || "");
+    } catch (_) {}
+    return e.json(502, { ok: false, message: "Razorpay error (" + res.statusCode + "): " + detail });
   }
 
   return e.json(200, {
