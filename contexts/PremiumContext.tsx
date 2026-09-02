@@ -27,6 +27,10 @@ interface PremiumContextValue {
   isLoading: boolean;
   /** Re-read the entitlement from its source. */
   refresh: () => Promise<void>;
+  /** Grant the entitlement locally. Permanent by default, or until `untilMs`
+   *  (epoch ms) for time-limited grants such as a promo-code trial. Real
+   *  billing (Razorpay / Play) will call this on a verified purchase. */
+  grant: (untilMs?: number) => Promise<void>;
 }
 
 const PremiumContext = createContext<PremiumContextValue | undefined>(undefined);
@@ -34,14 +38,24 @@ const PremiumContext = createContext<PremiumContextValue | undefined>(undefined)
 // The ONLY place that knows how an entitlement is sourced. Swap the body of
 // this function later for a RevenueCat / server / store check — the return
 // type (a boolean) and every consumer stays the same.
+// Stored value is either 'true' (permanent) or JSON {"until": <epoch ms>}.
 async function readEntitlement(): Promise<boolean> {
   try {
     const raw = await AsyncStorage.getItem(PREMIUM_ENTITLEMENT_KEY);
-    return raw === 'true';
+    if (!raw) return false;
+    if (raw === 'true') return true;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed.until === 'number') return Date.now() < parsed.until;
+    return false;
   } catch {
     // On any read error, fail closed (treat as free).
     return false;
   }
+}
+
+async function writeEntitlement(untilMs?: number): Promise<void> {
+  const value = untilMs ? JSON.stringify({ until: untilMs }) : 'true';
+  await AsyncStorage.setItem(PREMIUM_ENTITLEMENT_KEY, value);
 }
 
 export function PremiumProvider({ children }: { children: React.ReactNode }) {
@@ -53,6 +67,15 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
     const entitled = await readEntitlement();
     setIsPremium(entitled);
     setIsLoading(false);
+  }, []);
+
+  const grant = useCallback(async (untilMs?: number) => {
+    try {
+      await writeEntitlement(untilMs);
+      setIsPremium(true);
+    } catch {
+      // ignore write failure; user can retry
+    }
   }, []);
 
   // Load the entitlement once on mount.
@@ -74,6 +97,7 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
     isPremium,
     isLoading,
     refresh,
+    grant,
   };
 
   return (

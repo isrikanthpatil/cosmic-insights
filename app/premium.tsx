@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +15,8 @@ import BrandLogo from '@/components/BrandLogo';
 import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 import { usePremium } from '@/contexts/PremiumContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { redeemCode } from '@/utils/promo';
 import {
   plusFeatures,
   plusPlanName,
@@ -23,12 +26,31 @@ import {
 export default function PremiumScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isPremium } = usePremium();
+  const { isPremium, grant } = usePremium();
+  const { user } = useAuth();
+
+  const [code, setCode] = useState('');
+  const [redeeming, setRedeeming] = useState(false);
 
   // Plus isn't live yet — capture interest instead of a dead Subscribe button.
   const handleNotify = () => {
     tap();
     showToast("Thanks! We'll let you know when Astropanth Plus is ready.", 'success');
+  };
+
+  const handleRedeem = async () => {
+    if (redeeming) return;
+    tap();
+    setRedeeming(true);
+    const res = await redeemCode(code, user?.id);
+    setRedeeming(false);
+    if (res.ok) {
+      await grant(res.untilMs);
+      setCode('');
+      showToast(res.message, 'success');
+    } else {
+      showToast(res.message, 'info');
+    }
   };
 
   return (
@@ -110,6 +132,34 @@ export default function PremiumScreen() {
             >
               <Text style={styles.primaryButtonText}>Notify me at launch</Text>
             </TouchableOpacity>
+
+            {/* Promo code — unlock Plus with a code (for early testers/friends). */}
+            <View style={styles.codeCard}>
+              <Text style={styles.codeTitle}>Have a code?</Text>
+              <View style={styles.codeRow}>
+                <TextInput
+                  style={styles.codeInput}
+                  value={code}
+                  onChangeText={setCode}
+                  placeholder="Enter code"
+                  placeholderTextColor="#6E6B84"
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  editable={!redeeming}
+                  returnKeyType="done"
+                  onSubmitEditing={handleRedeem}
+                />
+                <TouchableOpacity
+                  style={[styles.codeButton, (!code.trim() || redeeming) && styles.codeButtonDisabled]}
+                  onPress={handleRedeem}
+                  disabled={!code.trim() || redeeming}
+                  accessibilityRole="button"
+                  accessibilityLabel="Redeem code"
+                >
+                  <Text style={styles.codeButtonText}>{redeeming ? '…' : 'Redeem'}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </>
         )}
 
@@ -310,6 +360,44 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
   },
+  codeCard: {
+    marginTop: 18,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(232,200,126,0.20)',
+    borderRadius: 16,
+    padding: 16,
+  },
+  codeTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    color: '#C7C4D6',
+    marginBottom: 10,
+  },
+  codeRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  codeInput: {
+    flex: 1,
+    height: 46,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(232,200,126,0.25)',
+    color: '#F4F1E8',
+    fontFamily: 'Inter-Medium',
+    fontSize: 15,
+    letterSpacing: 1,
+  },
+  codeButton: {
+    height: 46,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: '#E8C87E',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  codeButtonDisabled: { opacity: 0.5 },
+  codeButtonText: { fontSize: 15, fontFamily: 'Inter-SemiBold', color: '#161225' },
   comingSoonNote: {
     fontSize: 12,
     fontFamily: 'Inter-Medium',
