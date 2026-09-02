@@ -14,6 +14,7 @@ import type { Period } from '@/utils/jyotish/forecast';
 import { tap } from '@/utils/haptics';
 import { registerPositiveMoment } from '@/utils/review';
 import { getOrStartDelivery, formatReadyBy } from '@/utils/reportDelivery';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const isReportType = (t: unknown): t is ReportType =>
   t === 'astrology' || t === 'numerology' || t === 'gemstone';
@@ -24,6 +25,7 @@ export default function ReportScreen() {
   const { activeProfile: profile } = useChart();
   const { user } = useAuth();
   const { hasReports } = usePremium();
+  const { t } = useLanguage();
   const locked = REPORTS_REQUIRE_ENTITLEMENT && !hasReports;
   const params = useLocalSearchParams<{ type?: string; period?: string }>();
 
@@ -120,7 +122,7 @@ export default function ReportScreen() {
       {!user ? (
         <View style={styles.center}>
           <FileText size={40} color="#E8C87E" />
-          <Text style={styles.emptyTitle}>Sign in to view reports</Text>
+          <Text style={styles.emptyTitle}>{t('report.signInTitle')}</Text>
           <Text style={styles.muted}>
             Detailed reports are available to signed-in members. Sign in or create a free account to generate and save yours.
           </Text>
@@ -130,13 +132,13 @@ export default function ReportScreen() {
             accessibilityRole="button"
             accessibilityLabel="Sign in"
           >
-            <Text style={styles.signInBtnText}>Sign in / Sign up</Text>
+            <Text style={styles.signInBtnText}>{t('common.signInUp')}</Text>
           </TouchableOpacity>
         </View>
       ) : locked ? (
         <View style={styles.center}>
           <FileText size={40} color="#E8C87E" />
-          <Text style={styles.emptyTitle}>Unlock detailed reports</Text>
+          <Text style={styles.emptyTitle}>{t('report.unlockTitle')}</Text>
           <Text style={styles.muted}>
             Reports are a premium feature — a beautifully formatted, multi-page reading from your chart. Unlock with a code, or with Astropanth Plus.
           </Text>
@@ -146,7 +148,7 @@ export default function ReportScreen() {
             accessibilityRole="button"
             accessibilityLabel="Unlock reports"
           >
-            <Text style={styles.signInBtnText}>Unlock reports</Text>
+            <Text style={styles.signInBtnText}>{t('common.unlock')}</Text>
           </TouchableOpacity>
         </View>
       ) : !html ? (
@@ -160,18 +162,16 @@ export default function ReportScreen() {
       ) : !ready ? (
         <View style={styles.center}>
           <Sparkles size={44} color="#E8C87E" />
-          <Text style={styles.emptyTitle}>Preparing your report</Text>
-          <Text style={styles.muted}>
-            We prepare each reading individually from your birth chart. It'll be ready within 24 hours — we'll send you a notification the moment it's done.
-          </Text>
-          {readyAt ? <Text style={styles.prepStep}>Usually ready by {formatReadyBy(readyAt)}</Text> : null}
+          <Text style={styles.emptyTitle}>{t('report.preparingTitle')}</Text>
+          <Text style={styles.muted}>{t('report.preparingBody')}</Text>
+          {readyAt ? <Text style={styles.prepStep}>{t('report.readyBy', { time: formatReadyBy(readyAt) })}</Text> : null}
           <TouchableOpacity
             style={styles.signInBtn}
             onPress={() => { tap(); goBack(); }}
             accessibilityRole="button"
             accessibilityLabel="Done"
           >
-            <Text style={styles.signInBtnText}>Got it</Text>
+            <Text style={styles.signInBtnText}>{t('common.gotIt')}</Text>
           </TouchableOpacity>
         </View>
       ) : (

@@ -4,6 +4,8 @@ import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, Log
 import Constants from 'expo-constants';
 import { shareApp, rateApp } from '@/utils/appShare';
 import BrandLogo from '@/components/BrandLogo';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { LANGUAGES } from '@/i18n/strings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,6 +37,7 @@ export default function Profile() {
   const { isGuest, guestProfile, setGuestProfile } = useChart();
   // Read the real app version so the About card never drifts from the build.
   const appVersion = Constants.expoConfig?.version ?? '1.0.2';
+  const { t, lang, setLang } = useLanguage();
   const { isPremium } = usePremium();
   const kb = useKeyboardHeight();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -466,7 +469,7 @@ export default function Profile() {
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
                 <BrandLogo size={30} style={styles.aboutBrand} />
-                <Text style={styles.aboutVersion}>Version {appVersion}</Text>
+                <Text style={styles.aboutVersion}>{t('profile.version', { v: appVersion })}</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
                 </Text>
@@ -708,20 +711,43 @@ export default function Profile() {
                   <View style={styles.settingIcon}>
                     <KeyRound size={18} color="#E8C87E" />
                   </View>
-                  <Text style={styles.settingLabel}>Change Password</Text>
+                  <Text style={styles.settingLabel}>{t('profile.changePassword')}</Text>
                 </TouchableOpacity>
 
                 <View style={styles.settingRow}>
                   <View style={styles.settingIcon}>
                     <Bell size={18} color="#E8C87E" />
                   </View>
-                  <Text style={styles.settingLabel}>Daily Horoscope Reminders</Text>
+                  <Text style={styles.settingLabel}>{t('profile.reminders')}</Text>
                   <Switch
                     value={notificationsEnabled}
                     onValueChange={toggleNotifications}
                     trackColor={{ false: 'rgba(255,255,255,0.10)', true: '#E8C87E' }}
                     thumbColor="#F4F1E8"
                   />
+                </View>
+
+                <View style={styles.settingRow}>
+                  <View style={styles.settingIcon}>
+                    <Settings size={18} color="#E8C87E" />
+                  </View>
+                  <Text style={styles.settingLabel}>{t('profile.language')}</Text>
+                  <View style={styles.langRow}>
+                    {LANGUAGES.map((l) => (
+                      <TouchableOpacity
+                        key={l.code}
+                        style={[styles.langChip, lang === l.code && styles.langChipActive]}
+                        onPress={() => { tap(); setLang(l.code); }}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: lang === l.code }}
+                        accessibilityLabel={l.label}
+                      >
+                        <Text style={[styles.langChipText, lang === l.code && styles.langChipTextActive]}>
+                          {l.native}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 </View>
 
                 <TouchableOpacity
@@ -732,7 +758,7 @@ export default function Profile() {
                   <View style={styles.settingIcon}>
                     <Share2 size={18} color="#E8C87E" />
                   </View>
-                  <Text style={styles.settingLabel}>Share Astropanth</Text>
+                  <Text style={styles.settingLabel}>{t('profile.shareApp')}</Text>
                   <ChevronRight size={18} color="#5A5768" />
                 </TouchableOpacity>
 
@@ -744,7 +770,7 @@ export default function Profile() {
                   <View style={styles.settingIcon}>
                     <Star size={18} color="#E8C87E" />
                   </View>
-                  <Text style={styles.settingLabel}>Rate Astropanth</Text>
+                  <Text style={styles.settingLabel}>{t('profile.rateApp')}</Text>
                   <ChevronRight size={18} color="#5A5768" />
                 </TouchableOpacity>
 
@@ -756,7 +782,7 @@ export default function Profile() {
                   <View style={styles.settingIcon}>
                     <LogOut size={18} color="#C7C4D6" />
                   </View>
-                  <Text style={styles.settingLabel}>Sign Out</Text>
+                  <Text style={styles.settingLabel}>{t('profile.signOut')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -768,7 +794,7 @@ export default function Profile() {
                     <Trash2 size={18} color="#FF6B6B" />
                   </View>
                   <Text style={[styles.settingLabel, styles.settingLabelDanger]}>
-                    Delete Account
+                    {t('profile.deleteAccount')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -805,7 +831,7 @@ export default function Profile() {
                   <Text style={styles.cardTitle}>About</Text>
                 </View>
                 <BrandLogo size={30} style={styles.aboutBrand} />
-                <Text style={styles.aboutVersion}>Version {appVersion}</Text>
+                <Text style={styles.aboutVersion}>{t('profile.version', { v: appVersion })}</Text>
                 <Text style={styles.aboutDescription}>
                   Personalized astrology & numerology guidance.
                 </Text>
@@ -1156,6 +1182,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#F4F1E8',
   },
+  langRow: { flexDirection: 'row', gap: 6 },
+  langChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(232,200,126,0.30)',
+  },
+  langChipActive: { backgroundColor: '#E8C87E', borderColor: '#E8C87E' },
+  langChipText: { fontSize: 13, fontFamily: 'Inter-Medium', color: '#C7C4D6' },
+  langChipTextActive: { color: '#161225', fontFamily: 'Inter-SemiBold' },
   settingLabelDanger: {
     color: '#FF6B6B',
   },

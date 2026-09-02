@@ -19,6 +19,7 @@ import { ChartProvider } from '@/contexts/ChartContext';
 import { PremiumProvider } from '@/contexts/PremiumContext';
 import ToastHost from '@/components/ToastHost';
 import DesktopGate from '@/components/DesktopGate';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -88,12 +89,14 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <DesktopGate>
-        <RootNavigator />
-        <ToastHost />
-        <StatusBar style="auto" />
-      </DesktopGate>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <DesktopGate>
+          <RootNavigator />
+          <ToastHost />
+          <StatusBar style="auto" />
+        </DesktopGate>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }

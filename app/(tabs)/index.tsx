@@ -33,6 +33,7 @@ import GuestEntryPrompt from '@/components/GuestEntryPrompt';
 import ShareCard, { ShareCardData } from '@/components/ShareCard';
 import BrandLogo from '@/components/BrandLogo';
 import { shareCardImage } from '@/utils/shareCard';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
 const NOTIF_KEY = 'settings_notifications';
@@ -119,6 +120,8 @@ export default function Home() {
       ok ? 'success' : 'info'
     );
   };
+
+  const { t } = useLanguage();
 
   const sunSign = useMemo(
     () => (profile ? calculateSunSign(profile.dateOfBirth, profile.timeOfBirth) : null),
@@ -272,7 +275,7 @@ export default function Home() {
           <BrandLogo size={38} showWordmark={false} />
           <View style={styles.headerText}>
             <Text style={styles.greeting}>
-              {profile ? `Welcome back, ${profile.firstName}` : 'Welcome to'}
+              {profile ? t('home.welcomeBack', { name: profile.firstName }) : t('home.welcomeTo')}
             </Text>
             <Text style={styles.name}>Astro<Text style={styles.nameGold}>panth</Text></Text>
           </View>

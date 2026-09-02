@@ -6,6 +6,7 @@ import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/constants/theme';
 import AdBanner from '@/components/AdBanner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Custom tab label: single line at a UNIFORM fixed size for every tab, so long
 // labels like "Numerology" render the same size as the others (no per-label
@@ -32,6 +33,7 @@ function tabLabel(title: string) {
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   return (
     <Tabs
       // Render one gentle banner directly above the tab bar on every tab screen
@@ -62,8 +64,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarLabel: tabLabel('Home'),
+          title: t('tab.home'),
+          tabBarLabel: tabLabel(t('tab.home')),
           tabBarIcon: ({ size, color }) => (
             <House size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -72,8 +74,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="astrology"
         options={{
-          title: 'Astrology',
-          tabBarLabel: tabLabel('Astrology'),
+          title: t('tab.astrology'),
+          tabBarLabel: tabLabel(t('tab.astrology')),
           tabBarIcon: ({ size, color }) => (
             <Sparkles size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -82,8 +84,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="numerology"
         options={{
-          title: 'Numerology',
-          tabBarLabel: tabLabel('Numerology'),
+          title: t('tab.numerology'),
+          tabBarLabel: tabLabel(t('tab.numerology')),
           tabBarIcon: ({ size, color }) => (
             <Grid3x3 size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -92,8 +94,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="askastro"
         options={{
-          title: 'AskAstro',
-          tabBarLabel: tabLabel('AskAstro'),
+          title: t('tab.askastro'),
+          tabBarLabel: tabLabel(t('tab.askastro')),
           tabBarIcon: ({ size, color }) => (
             <MessageCircle size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -102,8 +104,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="more"
         options={{
-          title: 'More',
-          tabBarLabel: tabLabel('More'),
+          title: t('tab.more'),
+          tabBarLabel: tabLabel(t('tab.more')),
           tabBarIcon: ({ size, color }) => (
             <LayoutGrid size={size - 2} color={color} strokeWidth={1.8} />
           ),
@@ -112,8 +114,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarLabel: tabLabel('Profile'),
+          title: t('tab.profile'),
+          tabBarLabel: tabLabel(t('tab.profile')),
           tabBarIcon: ({ size, color }) => (
             <User size={size - 2} color={color} strokeWidth={1.8} />
           ),
