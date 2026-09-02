@@ -5,7 +5,6 @@ import Constants from 'expo-constants';
 import { shareApp, rateApp } from '@/utils/appShare';
 import BrandLogo from '@/components/BrandLogo';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { LANGUAGES } from '@/i18n/strings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,7 +36,7 @@ export default function Profile() {
   const { isGuest, guestProfile, setGuestProfile } = useChart();
   // Read the real app version so the About card never drifts from the build.
   const appVersion = Constants.expoConfig?.version ?? '1.0.2';
-  const { t, lang, setLang } = useLanguage();
+  const { t, lang, setLang, availableLangs } = useLanguage();
   const { isPremium } = usePremium();
   const kb = useKeyboardHeight();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -733,7 +732,7 @@ export default function Profile() {
                   </View>
                   <Text style={styles.settingLabel}>{t('profile.language')}</Text>
                   <View style={styles.langRow}>
-                    {LANGUAGES.map((l) => (
+                    {availableLangs.map((l) => (
                       <TouchableOpacity
                         key={l.code}
                         style={[styles.langChip, lang === l.code && styles.langChipActive]}

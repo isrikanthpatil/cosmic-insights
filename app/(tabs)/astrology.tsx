@@ -13,6 +13,7 @@ import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
 import ShareCardButton from '@/components/ShareCardButton';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getZodiacGlyph } from '@/utils/zodiac';
 import { tap } from '@/utils/haptics';
 
@@ -37,6 +38,7 @@ export default function Astrology() {
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
+  const { t } = useLanguage();
   const [astrologyData, setAstrologyData] = useState<AstrologyData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -440,8 +442,8 @@ export default function Astrology() {
     <ScreenBackground style={styles.container}>
       <View style={[styles.header, styles.headerRow, { paddingTop: insets.top + 12 }]}>
         <View style={styles.headerTextWrap}>
-          <Text style={styles.title}>Astrology Reading</Text>
-          <Text style={styles.subtitle}>Ancient wisdom for {userProfile.firstName}</Text>
+          <Text style={styles.title}>{t('astro.title')}</Text>
+          <Text style={styles.subtitle}>{t('astro.subtitle', { name: userProfile.firstName })}</Text>
         </View>
         <ShareCardButton data={astroShareData} message={astroShareMsg} />
       </View>
@@ -453,11 +455,11 @@ export default function Astrology() {
         contentContainerStyle={styles.tabContent}
       >
         {[
-          { key: 'overview', label: 'Overview', icon: Star },
-          { key: 'positive', label: 'Strengths', icon: TrendingUp },
-          { key: 'negative', label: 'Growth', icon: AlertTriangle },
-          { key: 'remedies', label: 'Remedies', icon: Heart },
-          { key: 'predictions', label: 'Guidance', icon: Sparkles },
+          { key: 'overview', label: t('astro.tab.overview'), icon: Star },
+          { key: 'positive', label: t('astro.tab.strengths'), icon: TrendingUp },
+          { key: 'negative', label: t('astro.tab.growth'), icon: AlertTriangle },
+          { key: 'remedies', label: t('astro.tab.remedies'), icon: Heart },
+          { key: 'predictions', label: t('astro.tab.guidance'), icon: Sparkles },
         ].map((tab) => (
           <TouchableOpacity
             key={tab.key}

@@ -13,11 +13,13 @@ import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
 import ShareCardButton from '@/components/ShareCardButton';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Numerology() {
   const insets = useSafeAreaInsets();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
+  const { t } = useLanguage();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   // Which compact number card (if any) is expanded to show its full meaning.
@@ -244,8 +246,8 @@ export default function Numerology() {
     <ScreenBackground style={styles.container}>
       <View style={[styles.header, styles.headerRow, { paddingTop: insets.top + 12 }]}>
         <View style={styles.headerTextWrap}>
-          <Text style={styles.title}>Numerology Analysis</Text>
-          <Text style={styles.subtitle}>Numbers that define {userProfile.firstName}</Text>
+          <Text style={styles.title}>{t('numero.title')}</Text>
+          <Text style={styles.subtitle}>{t('numero.subtitle', { name: userProfile.firstName })}</Text>
         </View>
         <ShareCardButton data={numeroShareData} message={numeroShareMsg} />
       </View>

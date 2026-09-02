@@ -7,13 +7,14 @@ import ScreenBackground from '@/components/ScreenBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePremium } from '@/contexts/PremiumContext';
 import { REPORTS_REQUIRE_ENTITLEMENT } from '@/constants/plans';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { tap } from '@/utils/haptics';
 
-const REPORTS: { key: string; href: string; title: string; subtitle: string; icon: LucideIcon }[] = [
-  { key: 'astrology', href: '/report?type=astrology', title: 'Astrology Report', subtitle: 'Chart, planets, houses, dasha, remedies', icon: Sparkles },
-  { key: 'numerology', href: '/report?type=numerology', title: 'Numerology Report', subtitle: 'Birth, Destiny, Name & Kua numbers + Lo Shu', icon: Hash },
-  { key: 'gemstone', href: '/report?type=gemstone', title: 'Gemstone Recommendation', subtitle: 'Your life, lucky & creative stones', icon: Gem },
-  { key: 'forecast', href: '/report?type=forecast', title: 'Forecast', subtitle: 'Monthly or yearly — transits, dasha & month-by-month', icon: TrendingUp },
+const REPORTS: { key: string; href: string; titleKey: string; subKey: string; icon: LucideIcon }[] = [
+  { key: 'astrology', href: '/report?type=astrology', titleKey: 'reports.astrologyTitle', subKey: 'reports.astrologySub', icon: Sparkles },
+  { key: 'numerology', href: '/report?type=numerology', titleKey: 'reports.numerologyTitle', subKey: 'reports.numerologySub', icon: Hash },
+  { key: 'gemstone', href: '/report?type=gemstone', titleKey: 'reports.gemstoneTitle', subKey: 'reports.gemstoneSub', icon: Gem },
+  { key: 'forecast', href: '/report?type=forecast', titleKey: 'reports.forecastTitle', subKey: 'reports.forecastSub', icon: TrendingUp },
 ];
 
 export default function ReportsScreen() {
@@ -21,6 +22,7 @@ export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { hasReports } = usePremium();
+  const { t } = useLanguage();
   const locked = REPORTS_REQUIRE_ENTITLEMENT && !hasReports;
 
   const goBack = () => {
@@ -34,7 +36,7 @@ export default function ReportsScreen() {
         <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Reports</Text>
+        <Text style={styles.topTitle}>{t('reports.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -72,9 +74,7 @@ export default function ReportsScreen() {
         </View>
       ) : (
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
-        <Text style={styles.intro}>
-          Beautifully formatted reports from your birth chart — read them here, or save and share as a PDF.
-        </Text>
+        <Text style={styles.intro}>{t('reports.intro')}</Text>
 
         {REPORTS.map((r) => {
           const Icon = r.icon;
@@ -84,7 +84,7 @@ export default function ReportsScreen() {
               style={styles.card}
               activeOpacity={0.85}
               accessibilityRole="button"
-              accessibilityLabel={`Open ${r.title}`}
+              accessibilityLabel={t(r.titleKey)}
               onPress={() => {
                 tap();
                 router.push(r.href as Href);
@@ -92,15 +92,15 @@ export default function ReportsScreen() {
             >
               <View style={styles.cardIcon}><Icon size={22} color="#E8C87E" /></View>
               <View style={styles.cardText}>
-                <Text style={styles.cardTitle}>{r.title}</Text>
-                <Text style={styles.cardSubtitle}>{r.subtitle}</Text>
+                <Text style={styles.cardTitle}>{t(r.titleKey)}</Text>
+                <Text style={styles.cardSubtitle}>{t(r.subKey)}</Text>
               </View>
               <ChevronRight size={20} color="#8B88A0" />
             </TouchableOpacity>
           );
         })}
 
-        <Text style={styles.note}>Free to generate. Reports are for guidance and reflection.</Text>
+        <Text style={styles.note}>{t('reports.note')}</Text>
       </ScrollView>
       )}
     </ScreenBackground>

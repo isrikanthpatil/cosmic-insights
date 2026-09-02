@@ -26,11 +26,13 @@ import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
 import ScreenBackground from '@/components/ScreenBackground';
 import BrandLogo from '@/components/BrandLogo';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Mode = 'login' | 'signup';
 
 export default function AuthScreen() {
   const { signIn, signUp, requestPasswordReset, user } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
   const kb = useKeyboardHeight();
   const [mode, setMode] = useState<Mode>('login');
@@ -307,9 +309,7 @@ export default function AuthScreen() {
             <BrandLogo size={52} showWordmark={false} style={styles.brandMark} />
             <Text style={styles.brandTitle}>Astro<Text style={styles.brandTitleGold}>panth</Text></Text>
             <Text style={styles.brandSubtitle}>
-              {mode === 'login'
-                ? 'Sign in to access your cosmic blueprint'
-                : 'Create an account to begin your journey'}
+              {mode === 'login' ? t('auth.loginSubtitle') : t('auth.signupSubtitle')}
             </Text>
           </View>
 
