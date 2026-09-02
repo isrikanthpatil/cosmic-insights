@@ -58,6 +58,19 @@ export const plusPrices: PlanPrice[] = [
 export const plusPlanName = 'Astropanth Plus';
 export const plusTagline = 'Unlock the full cosmos';
 
+// Master switch for showing real "Buy" buttons (Razorpay on web). Keep false
+// until you're ready to charge — the checkout route is built and testable by
+// flipping this to true (promo codes work regardless).
+export const BILLING_ENABLED = false;
+
+// Purchasable items. `id` maps to the server-side catalog in razorpay.pb.js
+// (which holds the authoritative amounts so the client can't tamper with price).
+export const PRODUCTS = {
+  plus_monthly: { id: 'plus_monthly', label: 'Astropanth Plus — Monthly', price: '₹99/mo' },
+  plus_yearly: { id: 'plus_yearly', label: 'Astropanth Plus — Yearly', price: '₹499/yr' },
+  reports_all: { id: 'reports_all', label: 'Unlock all reports', price: '₹149' },
+} as const;
+
 // Feature gating toggle. When true, the detailed Reports require a `reports`
 // (or `plus`) entitlement — obtained via a promo code today, and via Razorpay/
 // Play once billing is wired. Set to false to make reports free for all

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,10 +18,13 @@ import { showToast } from '@/utils/toast';
 import { usePremium } from '@/contexts/PremiumContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { redeemCode } from '@/utils/promo';
+import { startCheckout } from '@/utils/razorpay';
 import {
   plusFeatures,
   plusPlanName,
   plusTagline,
+  BILLING_ENABLED,
+  PRODUCTS,
 } from '@/constants/plans';
 
 export default function PremiumScreen() {
@@ -31,6 +35,21 @@ export default function PremiumScreen() {
 
   const [code, setCode] = useState('');
   const [redeeming, setRedeeming] = useState(false);
+  const [buying, setBuying] = useState(false);
+
+  const handleBuy = async (item: string) => {
+    if (buying) return;
+    tap();
+    setBuying(true);
+    const res = await startCheckout(item, { userId: user?.id, email: (user as any)?.email });
+    setBuying(false);
+    if (res.ok) {
+      await grant(res.plan, res.untilMs);
+      showToast(res.message, 'success');
+    } else {
+      showToast(res.message, 'info');
+    }
+  };
 
   // Plus isn't live yet — capture interest instead of a dead Subscribe button.
   const handleNotify = () => {
@@ -118,20 +137,54 @@ export default function PremiumScreen() {
             pricing or a dead Subscribe button. */}
         {!isPremium && (
           <>
-            <Text style={styles.comingSoonHeadline}>Astropanth Plus is coming soon</Text>
-            <Text style={styles.placeholderNote}>
-              We're putting the finishing touches on Plus. Pricing will be announced at launch.
-            </Text>
-
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={handleNotify}
-              activeOpacity={0.85}
-              accessibilityRole="button"
-              accessibilityLabel="Notify me when Astropanth Plus launches"
-            >
-              <Text style={styles.primaryButtonText}>Notify me at launch</Text>
-            </TouchableOpacity>
+            {BILLING_ENABLED ? (
+              Platform.OS === 'web' ? (
+                <>
+                  <TouchableOpacity
+                    style={[styles.primaryButton, buying && styles.primaryButtonDisabled]}
+                    onPress={() => handleBuy(PRODUCTS.plus_yearly.id)}
+                    disabled={buying}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel="Buy Astropanth Plus yearly"
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      {buying ? 'Opening…' : `Get Plus — ${PRODUCTS.plus_yearly.price}`}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={() => handleBuy(PRODUCTS.plus_monthly.id)}
+                    disabled={buying}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel="Buy Astropanth Plus monthly"
+                  >
+                    <Text style={styles.secondaryButtonText}>Or {PRODUCTS.plus_monthly.price}</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <Text style={styles.placeholderNote}>
+                  Subscribe to Astropanth Plus on the web at astropanth.com. In-app purchases on Android are coming soon.
+                </Text>
+              )
+            ) : (
+              <>
+                <Text style={styles.comingSoonHeadline}>Astropanth Plus is coming soon</Text>
+                <Text style={styles.placeholderNote}>
+                  We're putting the finishing touches on Plus. Pricing will be announced at launch.
+                </Text>
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={handleNotify}
+                  activeOpacity={0.85}
+                  accessibilityRole="button"
+                  accessibilityLabel="Notify me when Astropanth Plus launches"
+                >
+                  <Text style={styles.primaryButtonText}>Notify me at launch</Text>
+                </TouchableOpacity>
+              </>
+            )}
 
             {/* Promo code — unlock Plus with a code (for early testers/friends). */}
             <View style={styles.codeCard}>
@@ -359,6 +412,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#0B0B1A',
+  },
+  secondaryButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    marginTop: 8,
+  },
+  secondaryButtonText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#E8C87E',
   },
   codeCard: {
     marginTop: 18,
