@@ -45,6 +45,7 @@ function b64encode(str) {
 }
 
 routerAdd("POST", "/create-order", (e) => {
+ try {
   const KEY_ID = $os.getenv("RAZORPAY_KEY_ID");
   const KEY_SECRET = $os.getenv("RAZORPAY_KEY_SECRET");
   if (!KEY_ID || !KEY_SECRET) {
@@ -86,9 +87,13 @@ routerAdd("POST", "/create-order", (e) => {
     keyId: KEY_ID,
     name: p.name,
   });
+ } catch (err) {
+    return e.json(500, { ok: false, message: "create-order error: " + String(err) });
+ }
 });
 
 routerAdd("POST", "/verify-payment", (e) => {
+ try {
   const KEY_SECRET = $os.getenv("RAZORPAY_KEY_SECRET");
   if (!KEY_SECRET) {
     return e.json(500, { ok: false, message: "Payments are not configured yet." });
@@ -115,4 +120,7 @@ routerAdd("POST", "/verify-payment", (e) => {
 
   // (Optional) record the payment against the user here in a `payments` collection.
   return e.json(200, { ok: true, plan: p.plan, durationDays: p.days });
+ } catch (err) {
+    return e.json(500, { ok: false, message: "verify-payment error: " + String(err) });
+ }
 });
