@@ -195,7 +195,7 @@ export default function Numerology() {
                       </Text>
 
                       {isKuaPosition && (
-                        <Text style={styles.kuaIndicator}>Kua</Text>
+                        <Text style={styles.kuaIndicator}>{t('numero.kua')}</Text>
                       )}
                     </LinearGradient>
                   </View>
@@ -277,7 +277,7 @@ export default function Numerology() {
               accessibilityLabel="Birth number — tap for full meaning"
             >
               <Hash size={16} color="#69C779" />
-              <Text style={styles.compactNumberLabel}>Birth</Text>
+              <Text style={styles.compactNumberLabel}>{t('numero.birth')}</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.birthNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.birthNumberMeaning}
@@ -301,7 +301,7 @@ export default function Numerology() {
               accessibilityLabel="Destiny number — tap for full meaning"
             >
               <Target size={16} color="#E8C87E" />
-              <Text style={styles.compactNumberLabel}>Destiny</Text>
+              <Text style={styles.compactNumberLabel}>{t('numero.destiny')}</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.destinyNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
                 {numerologyReading.destinyNumberMeaning}
@@ -325,7 +325,7 @@ export default function Numerology() {
               accessibilityLabel="Kua number — tap for full meaning"
             >
               <Compass size={16} color="#B49BE6" />
-              <Text style={styles.compactNumberLabel}>Kua</Text>
+              <Text style={styles.compactNumberLabel}>{t('numero.kua')}</Text>
               <View style={styles.compactKuaContainer}>
                 <Text style={styles.compactNumberValue}>{numerologyReading.kuaNumber}</Text>
               </View>

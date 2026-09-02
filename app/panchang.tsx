@@ -156,35 +156,35 @@ export default function PanchangScreen() {
 
         {/* Five angas */}
         <View style={styles.card}>
-          <Text style={styles.cardEyebrow}>THE FIVE ANGAS</Text>
+          <Text style={styles.cardEyebrow}>{t('panchang.fiveAngas')}</Text>
           <AngaRow
-            label="Tithi"
+            label={t('panchang.tithi')}
             value={`${p.tithi.name}`}
             sub={`${p.paksha} · ${endsLabel(now, p.tithi.endsAt)}`.replace(/ · $/, '')}
           />
           <View style={styles.divider} />
-          <AngaRow label="Nakshatra" value={p.nakshatra.name} sub={endsLabel(now, p.nakshatra.endsAt)} />
+          <AngaRow label={t('panchang.nakshatra')} value={p.nakshatra.name} sub={endsLabel(now, p.nakshatra.endsAt)} />
           <View style={styles.divider} />
-          <AngaRow label="Yoga" value={p.yoga.name} />
+          <AngaRow label={t('panchang.yoga')} value={p.yoga.name} />
           <View style={styles.divider} />
-          <AngaRow label="Karana" value={p.karana.name} />
+          <AngaRow label={t('panchang.karana')} value={p.karana.name} />
           <View style={styles.divider} />
-          <AngaRow label="Vara" value={`${p.vara.name} (${p.vara.english})`} sub={`Lord · ${p.vara.lord}`} />
+          <AngaRow label={t('panchang.vara')} value={`${p.vara.name} (${p.vara.english})`} sub={`Lord · ${p.vara.lord}`} />
         </View>
 
         {/* Sun timings */}
         <View style={styles.card}>
-          <Text style={styles.cardEyebrow}>SUN</Text>
+          <Text style={styles.cardEyebrow}>{t('panchang.sunHeader')}</Text>
           <View style={styles.sunRow}>
             <View style={styles.sunItem}>
               <Sunrise size={20} color="#E8C87E" />
-              <Text style={styles.sunLabel}>Sunrise</Text>
+              <Text style={styles.sunLabel}>{t('label.sunrise')}</Text>
               <Text style={styles.sunValue}>{fmt(p.sunrise)}</Text>
             </View>
             <View style={styles.sunDivider} />
             <View style={styles.sunItem}>
               <Sunset size={20} color="#E8C87E" />
-              <Text style={styles.sunLabel}>Sunset</Text>
+              <Text style={styles.sunLabel}>{t('label.sunset')}</Text>
               <Text style={styles.sunValue}>{fmt(p.sunset)}</Text>
             </View>
           </View>
@@ -194,7 +194,7 @@ export default function PanchangScreen() {
         <View style={styles.card}>
           <View style={styles.kalamHead}>
             <AlertTriangle size={16} color="#D9A441" />
-            <Text style={styles.cardEyebrowInline}>INAUSPICIOUS PERIODS</Text>
+            <Text style={styles.cardEyebrowInline}>{t('panchang.inauspicious')}</Text>
           </View>
           <Text style={styles.kalamNote}>
             Traditionally avoided for starting important activities.

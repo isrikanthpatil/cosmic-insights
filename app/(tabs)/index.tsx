@@ -287,7 +287,7 @@ export default function Home() {
               accessibilityLabel="Sign in"
             >
               <LogIn size={16} color="#E8C87E" />
-              <Text style={styles.signInChipText}>Sign in</Text>
+              <Text style={styles.signInChipText}>{t('common.signIn')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -300,13 +300,13 @@ export default function Home() {
           <View style={styles.nudgeCard}>
             <Bell size={18} color="#E8C87E" />
             <View style={styles.nudgeTextWrap}>
-              <Text style={styles.nudgeText}>Never miss your daily reading — turn on horoscope reminders.</Text>
+              <Text style={styles.nudgeText}>{t('home.reminderNudge')}</Text>
               <View style={styles.nudgeActions}>
                 <TouchableOpacity onPress={enableRemindersFromNudge} accessibilityRole="button" accessibilityLabel="Enable daily reminders">
-                  <Text style={styles.nudgeEnable}>Enable</Text>
+                  <Text style={styles.nudgeEnable}>{t('home.enable')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={dismissNudge} accessibilityRole="button" accessibilityLabel="Not now">
-                  <Text style={styles.nudgeDismiss}>Not now</Text>
+                  <Text style={styles.nudgeDismiss}>{t('home.notNow')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -323,7 +323,7 @@ export default function Home() {
           />
         ) : (
           <>
-            <Text style={styles.snapshotTitle}>Your chart</Text>
+            <Text style={styles.snapshotTitle}>{t('home.yourChart')}</Text>
             <View style={styles.chartRow}>
               <View style={styles.chartCard}>
                 <Sun size={20} color="#E8C87E" />
@@ -339,7 +339,7 @@ export default function Home() {
               </View>
               <View style={styles.chartCard}>
                 <Moon size={20} color="#C0C0C0" />
-                <Text style={styles.chartLabel}>Moon</Text>
+                <Text style={styles.chartLabel}>{t('label.moon')}</Text>
                 <View style={styles.chartValueRow}>
                   <Text style={styles.chartValue}>{chart?.moonSign}</Text>
                   {chart?.moonSign ? (
@@ -349,7 +349,7 @@ export default function Home() {
               </View>
               <View style={styles.chartCard}>
                 <Star size={20} color="#B49BE6" />
-                <Text style={styles.chartLabel}>Rising</Text>
+                <Text style={styles.chartLabel}>{t('label.rising')}</Text>
                 <View style={styles.chartValueRow}>
                   {chart?.ascendant ? (
                     <>
@@ -357,7 +357,7 @@ export default function Home() {
                       <Text style={styles.chartGlyph}>{getZodiacGlyph(chart.ascendant)}</Text>
                     </>
                   ) : (
-                    <Text style={styles.chartHint}>Add birth time</Text>
+                    <Text style={styles.chartHint}>{t('home.addBirthTime')}</Text>
                   )}
                 </View>
               </View>
@@ -371,14 +371,14 @@ export default function Home() {
 
             {numbers && (
               <>
-                <Text style={styles.snapshotTitle}>Your numbers</Text>
+                <Text style={styles.snapshotTitle}>{t('home.yourNumbers')}</Text>
                 <View style={styles.numbersRow}>
                   <View style={styles.numberChip}>
-                    <Text style={styles.numberLabel}>Birth</Text>
+                    <Text style={styles.numberLabel}>{t('numero.birth')}</Text>
                     <Text style={styles.numberValue}>{numbers.birthNumber}</Text>
                   </View>
                   <View style={styles.numberChip}>
-                    <Text style={styles.numberLabel}>Destiny</Text>
+                    <Text style={styles.numberLabel}>{t('numero.destiny')}</Text>
                     <Text style={styles.numberValue}>{numbers.destinyNumber}</Text>
                   </View>
                   <View style={styles.numberChip}>
@@ -412,7 +412,7 @@ export default function Home() {
                         horoscopeMode === 'daily' && styles.segmentTextActive,
                       ]}
                     >
-                      Daily
+                      {t('home.daily')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -435,7 +435,7 @@ export default function Home() {
                         horoscopeMode === 'weekly' && styles.segmentTextActive,
                       ]}
                     >
-                      Weekly
+                      {t('home.weekly')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -445,7 +445,7 @@ export default function Home() {
                     <View style={styles.cardHeader}>
                       <View style={styles.cardHeaderLeft}>
                         <Sparkles size={18} color="#E8C87E" />
-                        <Text style={styles.cardTitle}>Today's Horoscope</Text>
+                        <Text style={styles.cardTitle}>{t('home.todaysHoroscope')}</Text>
                       </View>
                       <TouchableOpacity
                         onPress={shareReading}
@@ -459,13 +459,13 @@ export default function Home() {
 
                     <View style={styles.metaRow}>
                       <View style={styles.metaItem}>
-                        <Text style={styles.metaLabel}>Lucky Numbers</Text>
+                        <Text style={styles.metaLabel}>{t('home.luckyNumbers')}</Text>
                         <Text style={styles.metaValue}>
                           {horoscope.luckyNumbers.join(', ')}
                         </Text>
                       </View>
                       <View style={styles.metaItem}>
-                        <Text style={styles.metaLabel}>Lucky Color</Text>
+                        <Text style={styles.metaLabel}>{t('home.luckyColor')}</Text>
                         <View style={styles.colorValueRow}>
                           <View
                             style={[
@@ -479,7 +479,7 @@ export default function Home() {
                     </View>
 
                     <View style={styles.adviceBox}>
-                      <Text style={styles.adviceLabel}>Advice</Text>
+                      <Text style={styles.adviceLabel}>{t('home.advice')}</Text>
                       <Text style={styles.adviceText}>{horoscope.advice}</Text>
                     </View>
                   </View>
@@ -490,7 +490,7 @@ export default function Home() {
                     <View style={styles.cardHeader}>
                       <View style={styles.cardHeaderLeft}>
                         <Sparkles size={18} color="#E8C87E" />
-                        <Text style={styles.cardTitle}>This Week</Text>
+                        <Text style={styles.cardTitle}>{t('home.thisWeek')}</Text>
                       </View>
                       <TouchableOpacity
                         onPress={shareReading}
@@ -507,7 +507,7 @@ export default function Home() {
 
                     {weeklyHoroscope.highlights.length > 0 && (
                       <View style={styles.weeklySection}>
-                        <Text style={styles.metaLabel}>Highlights</Text>
+                        <Text style={styles.metaLabel}>{t('home.highlights')}</Text>
                         {weeklyHoroscope.highlights.map((item, index) => (
                           <View key={index} style={styles.weeklyRow}>
                             <View style={styles.weeklyDot} />
@@ -519,7 +519,7 @@ export default function Home() {
 
                     {weeklyHoroscope.focusAreas.length > 0 && (
                       <View style={styles.weeklySection}>
-                        <Text style={styles.metaLabel}>Focus Areas</Text>
+                        <Text style={styles.metaLabel}>{t('home.focusAreas')}</Text>
                         {weeklyHoroscope.focusAreas.map((item, index) => (
                           <View key={index} style={styles.weeklyRow}>
                             <View style={styles.weeklyDot} />
