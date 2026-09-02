@@ -33,14 +33,22 @@ routerAdd("POST", "/redeem-code", (e) => {
     return e.json(400, { ok: false, message: "Enter a valid code." });
   }
 
-  let rec;
+  // Look the code up (exact match on the uppercased code). We check `active` in
+  // JS rather than in the SQL filter so a bool/field issue can't silently hide a
+  // real record. findRecordsByFilter returns [] when nothing matches (no throw).
+  let recs = [];
   try {
-    rec = $app.findFirstRecordByFilter("codes", "code = {:code} && active = true", { code });
-  } catch (_) {
+    recs = $app.findRecordsByFilter("codes", "code = {:code}", "-created", 1, 0, { code });
+  } catch (err) {
+    // Almost always a collection/field-name mismatch — surface it so we can fix it.
+    return e.json(500, { ok: false, message: "Code lookup failed: " + String(err) });
+  }
+  if (!recs || recs.length === 0) {
     return e.json(404, { ok: false, message: "That code isn't valid." });
   }
-  if (!rec) {
-    return e.json(404, { ok: false, message: "That code isn't valid." });
+  const rec = recs[0];
+  if (!rec.getBool("active")) {
+    return e.json(403, { ok: false, message: "This code is not active." });
   }
 
   // Expiry (date field is empty string when unset).
