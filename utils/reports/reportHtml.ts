@@ -101,7 +101,7 @@ function shell(reportTitle: string, subject: Profile, bodyHtml: string): string 
   .footer { margin-top: 30px; border-top: 1px solid #E7DFCB; padding-top: 12px; color: #9A8F6B; font-size: 10.5px; text-align: center; }
 </style></head>
 <body><div class="page">
-  <div class="brandbar"><div class="brandlock"><div class="mark">✦</div><div class="brand">Astro<span>panth</span></div></div><div class="kicker">${esc(reportTitle)}</div></div>
+  <div class="brandbar"><div class="brandlock"><div class="mark"><svg width="19" height="19" viewBox="0 0 120 120"><path fill="#B8892F" d="M54,37 C56.4,54.8 63.2,61.6 81,64 C63.2,66.4 56.4,73.2 54,91 C51.6,73.2 44.8,66.4 27,64 C44.8,61.6 51.6,54.8 54,37 Z"/><path fill="#B8892F" d="M84,28 C85.1,35.9 88.1,38.9 96,40 C88.1,41.1 85.1,44.1 84,52 C82.9,44.1 79.9,41.1 72,40 C79.9,38.9 82.9,35.9 84,28 Z"/></svg></div><div class="brand">Astro<span>panth</span></div></div><div class="kicker">${esc(reportTitle)}</div></div>
   <div class="title">${esc(fullName)}</div>
   <div class="subject">${born || 'Birth details not provided'}</div>
   ${bodyHtml}

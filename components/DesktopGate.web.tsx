@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, Pressable, Linking } from 'react-native';
+import BrandLogo from '@/components/BrandLogo';
 
 const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.astropanth.cosmicinsights';
 const SITE_URL = 'https://astropanth.com';
@@ -29,9 +30,7 @@ export default function DesktopGate({ children }: { children: React.ReactNode })
     <View style={styles.page}>
       <View style={styles.pitch}>
         <View style={styles.brandRow}>
-          <View style={styles.spark}>
-            <Text style={styles.sparkGlyph}>✦</Text>
-          </View>
+          <BrandLogo size={34} showWordmark={false} />
           <Text style={styles.brand}>
             Astro<Text style={styles.brandGold}>panth</Text>
           </Text>

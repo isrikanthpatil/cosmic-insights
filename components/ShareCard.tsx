@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import BrandLogo from '@/components/BrandLogo';
 
 export interface ShareCardData {
   eyebrow?: string;                 // e.g. "Today · 1 Sep" or "Life Path"
@@ -29,9 +30,7 @@ const ShareCard = forwardRef<View, { data: ShareCardData }>(({ data }, ref) => {
 
       {/* Brand */}
       <View style={styles.brandRow}>
-        <View style={styles.spark}>
-          <Text style={styles.sparkGlyph}>✦</Text>
-        </View>
+        <BrandLogo size={30} showWordmark={false} />
         <Text style={styles.brand}>
           Astro<Text style={styles.gold}>panth</Text>
         </Text>
