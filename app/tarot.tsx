@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, Sparkles, Shuffle } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
@@ -17,6 +18,7 @@ const SPREAD_POSITIONS = ['Past', 'Present', 'Future'];
 export default function TarotScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
 
   const daily = useMemo(() => getDailyCard(todayKey()), []);
   const [spread, setSpread] = useState<{ card: TarotCard; reversed: boolean }[] | null>(null);
@@ -55,14 +57,14 @@ export default function TarotScreen() {
         <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Tarot</Text>
+        <Text style={styles.topTitle}>{t('tarot.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Sparkles size={18} color="#E8C87E" />
-          <Text style={styles.headerTitle}>Card of the Day</Text>
+          <Text style={styles.headerTitle}>{t('tarot.cardOfDay')}</Text>
         </View>
         <Text style={styles.headerSub}>A single card to reflect on today — the same for you all day.</Text>
         <CardBlock card={daily} reversed={false} />

@@ -88,6 +88,19 @@ const en: Dict = {
   'premium.enterCode': 'Enter code',
   'premium.redeem': 'Redeem',
   'premium.disclaimer': "Free features remain free. Astropanth Plus adds extras — your current experience won't change.",
+  'common.signIn': 'Sign in',
+  'common.monthly': 'Monthly',
+  'common.yearly': 'Yearly',
+  'common.addBirthTitle': 'Add your birth details',
+  'report.addBirthBody': 'This report is built from your birth chart. Add your date and place of birth to generate it.',
+  'nudge.signInSave': 'Sign in to save your chart & unlock AskAstro',
+  'tarot.title': 'Tarot',
+  'tarot.cardOfDay': 'Card of the Day',
+  'charts.title': 'Saved Charts',
+  'charts.add': 'Add a chart',
+  'charts.yours': 'YOUR CHART',
+  'charts.saved': 'SAVED',
+  'charts.savedNote': 'Saved on this device.',
 };
 
 const hi: Dict = {
@@ -154,6 +167,19 @@ const hi: Dict = {
   'premium.enterCode': 'कोड डालें',
   'premium.redeem': 'रिडीम करें',
   'premium.disclaimer': 'मुफ़्त सुविधाएँ मुफ़्त रहेंगी। Astropanth Plus अतिरिक्त जोड़ता है — आपका मौजूदा अनुभव नहीं बदलेगा।',
+  'common.signIn': 'साइन इन',
+  'common.monthly': 'मासिक',
+  'common.yearly': 'वार्षिक',
+  'common.addBirthTitle': 'अपनी जन्म जानकारी जोड़ें',
+  'report.addBirthBody': 'यह रिपोर्ट आपकी जन्म कुंडली से बनती है। इसे बनाने के लिए अपनी जन्म तिथि और स्थान जोड़ें।',
+  'nudge.signInSave': 'अपनी कुंडली सहेजने और AskAstro अनलॉक करने के लिए साइन इन करें',
+  'tarot.title': 'टैरो',
+  'tarot.cardOfDay': 'आज का कार्ड',
+  'charts.title': 'सहेजी गई कुंडलियाँ',
+  'charts.add': 'कुंडली जोड़ें',
+  'charts.yours': 'आपकी कुंडली',
+  'charts.saved': 'सहेजी गई',
+  'charts.savedNote': 'इस डिवाइस पर सहेजी गई।',
 };
 
 const mr: Dict = {
@@ -220,6 +246,19 @@ const mr: Dict = {
   'premium.enterCode': 'कोड टाका',
   'premium.redeem': 'रिडीम करा',
   'premium.disclaimer': 'मोफत वैशिष्ट्ये मोफतच राहतील. Astropanth Plus अतिरिक्त गोष्टी जोडते — तुमचा सध्याचा अनुभव बदलणार नाही.',
+  'common.signIn': 'साइन इन',
+  'common.monthly': 'मासिक',
+  'common.yearly': 'वार्षिक',
+  'common.addBirthTitle': 'तुमची जन्म माहिती जोडा',
+  'report.addBirthBody': 'हा अहवाल तुमच्या जन्म कुंडलीवरून तयार होतो. तो तयार करण्यासाठी तुमची जन्मतारीख व ठिकाण जोडा.',
+  'nudge.signInSave': 'तुमची कुंडली जतन करण्यासाठी व AskAstro अनलॉक करण्यासाठी साइन इन करा',
+  'tarot.title': 'टॅरो',
+  'tarot.cardOfDay': 'आजचे कार्ड',
+  'charts.title': 'जतन केलेल्या कुंडली',
+  'charts.add': 'कुंडली जोडा',
+  'charts.yours': 'तुमची कुंडली',
+  'charts.saved': 'जतन केलेली',
+  'charts.savedNote': 'या डिव्हाइसवर जतन केली.',
 };
 
 export const DICTS: Record<Lang, Dict> = { en, hi, mr };

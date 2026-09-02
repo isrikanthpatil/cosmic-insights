@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, Plus, Trash2, User, X, ChevronRight } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
@@ -14,6 +15,7 @@ import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 export default function ChartsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const kb = useKeyboardHeight();
   const { savedCharts, saveChart, deleteChart, setExplore, clearExplore, guestProfile } = useChart();
   const { profile: authProfile } = useAuth();
@@ -52,7 +54,7 @@ export default function ChartsScreen() {
         <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Saved Charts</Text>
+        <Text style={styles.topTitle}>{t('charts.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -63,12 +65,12 @@ export default function ChartsScreen() {
 
         <TouchableOpacity style={styles.addButton} onPress={() => { tap(); setModalVisible(true); }} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Add a chart">
           <Plus size={18} color="#0B0B1A" />
-          <Text style={styles.addButtonText}>Add a chart</Text>
+          <Text style={styles.addButtonText}>{t('charts.add')}</Text>
         </TouchableOpacity>
 
         {ownProfile && (
           <>
-            <Text style={styles.sectionLabel}>YOUR CHART</Text>
+            <Text style={styles.sectionLabel}>{t('charts.yours')}</Text>
             <TouchableOpacity style={styles.card} onPress={viewOwn} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="View your chart">
               <View style={styles.avatar}><User size={18} color="#E8C87E" /></View>
               <View style={styles.cardText}>
@@ -80,7 +82,7 @@ export default function ChartsScreen() {
           </>
         )}
 
-        <Text style={styles.sectionLabel}>SAVED</Text>
+        <Text style={styles.sectionLabel}>{t('charts.saved')}</Text>
         {savedCharts.length === 0 ? (
           <Text style={styles.empty}>No saved charts yet. Add one above, or save a chart from the "Explore another chart" bar on the reading screens.</Text>
         ) : (
@@ -105,7 +107,7 @@ export default function ChartsScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, kb > 0 && { marginBottom: kb }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add a chart</Text>
+              <Text style={styles.modalTitle}>{t('charts.add')}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)} accessibilityLabel="Close">
                 <X size={24} color="#C7C4D6" />
               </TouchableOpacity>

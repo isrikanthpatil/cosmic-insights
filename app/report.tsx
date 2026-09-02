@@ -112,7 +112,7 @@ export default function ReportScreen() {
               accessibilityState={{ selected: period === per }}
             >
               <Text style={[styles.segText, period === per && styles.segTextActive]}>
-                {per === 'monthly' ? 'Monthly' : 'Yearly'}
+                {per === 'monthly' ? t('common.monthly') : t('common.yearly')}
               </Text>
             </TouchableOpacity>
           ))}
@@ -154,10 +154,8 @@ export default function ReportScreen() {
       ) : !html ? (
         <View style={styles.center}>
           <FileText size={40} color="#E8C87E" />
-          <Text style={styles.emptyTitle}>Add your birth details</Text>
-          <Text style={styles.muted}>
-            This report is built from your birth chart. Add your date and place of birth to generate it.
-          </Text>
+          <Text style={styles.emptyTitle}>{t('common.addBirthTitle')}</Text>
+          <Text style={styles.muted}>{t('report.addBirthBody')}</Text>
         </View>
       ) : !ready ? (
         <View style={styles.center}>
