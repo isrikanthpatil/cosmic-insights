@@ -62,4 +62,4 @@ export const plusTagline = 'Unlock the full cosmos';
 // (or `plus`) entitlement — obtained via a promo code today, and via Razorpay/
 // Play once billing is wired. Set to false to make reports free for all
 // signed-in users (e.g. during a growth push). Everything else stays free.
-export const REPORTS_REQUIRE_ENTITLEMENT = true;
+export const REPORTS_REQUIRE_ENTITLEMENT = false;
