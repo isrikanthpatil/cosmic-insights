@@ -9,100 +9,93 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // PROVIDER-AGNOSTIC entitlement layer.
 //
-// This context is the single source of truth for whether the user has the
-// "Astropanth Plus" entitlement. Call sites only ever read `isPremium` via
-// `usePremium()` — they never know *where* the entitlement comes from.
+// Single source of truth for the user's entitlements. Two scopes:
+//   • plus    — the full "Astropanth Plus" (ad-free + all reports + unlimited)
+//   • reports — access to the detailed reports ONLY (ads stay on)
+// `plus` implies `reports`. Call sites read `isPremium` (ad-free / full) or
+// `hasReports` (report access) — they never know where the entitlement came from.
 //
-// Today the entitlement is sourced from a local AsyncStorage flag
-// (`premium_entitlement`). When a real billing provider is chosen
-// (Google Play Billing / RevenueCat / Razorpay / server check), only
-// `readEntitlement()` below needs to change — every screen that calls
-// `usePremium()` keeps working unchanged.
-export const PREMIUM_ENTITLEMENT_KEY = 'premium_entitlement';
+// Today entitlements are local AsyncStorage flags, granted by promo codes and
+// (soon) by verified Razorpay / Play purchases. When real billing lands, only
+// `readFlag()` / `grant()` change — every consumer keeps working.
+export const PREMIUM_ENTITLEMENT_KEY = 'premium_entitlement'; // plus
+export const REPORTS_ENTITLEMENT_KEY = 'reports_entitlement'; // reports-only
+
+export type EntitlementScope = 'plus' | 'reports';
 
 interface PremiumContextValue {
-  /** True when the user has the Astropanth Plus entitlement. */
+  /** Full Plus — ad-free + everything. */
   isPremium: boolean;
-  /** True while the entitlement is being (re)loaded. */
+  /** Report access (true if a reports code/purchase OR full Plus). */
+  hasReports: boolean;
   isLoading: boolean;
-  /** Re-read the entitlement from its source. */
   refresh: () => Promise<void>;
-  /** Grant the entitlement locally. Permanent by default, or until `untilMs`
-   *  (epoch ms) for time-limited grants such as a promo-code trial. Real
-   *  billing (Razorpay / Play) will call this on a verified purchase. */
-  grant: (untilMs?: number) => Promise<void>;
+  /** Grant an entitlement locally. Permanent by default, or until `untilMs`
+   *  (epoch ms) for time-limited grants such as a promo trial. */
+  grant: (scope: EntitlementScope, untilMs?: number) => Promise<void>;
 }
 
 const PremiumContext = createContext<PremiumContextValue | undefined>(undefined);
 
-// The ONLY place that knows how an entitlement is sourced. Swap the body of
-// this function later for a RevenueCat / server / store check — the return
-// type (a boolean) and every consumer stays the same.
 // Stored value is either 'true' (permanent) or JSON {"until": <epoch ms>}.
-async function readEntitlement(): Promise<boolean> {
+async function readFlag(key: string): Promise<boolean> {
   try {
-    const raw = await AsyncStorage.getItem(PREMIUM_ENTITLEMENT_KEY);
+    const raw = await AsyncStorage.getItem(key);
     if (!raw) return false;
     if (raw === 'true') return true;
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed.until === 'number') return Date.now() < parsed.until;
     return false;
   } catch {
-    // On any read error, fail closed (treat as free).
-    return false;
+    return false; // fail closed
   }
 }
 
-async function writeEntitlement(untilMs?: number): Promise<void> {
-  const value = untilMs ? JSON.stringify({ until: untilMs }) : 'true';
-  await AsyncStorage.setItem(PREMIUM_ENTITLEMENT_KEY, value);
+async function writeFlag(key: string, untilMs?: number): Promise<void> {
+  await AsyncStorage.setItem(key, untilMs ? JSON.stringify({ until: untilMs }) : 'true');
 }
 
 export function PremiumProvider({ children }: { children: React.ReactNode }) {
   const [isPremium, setIsPremium] = useState(false);
+  const [hasReports, setHasReports] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    const [plus, reports] = await Promise.all([
+      readFlag(PREMIUM_ENTITLEMENT_KEY),
+      readFlag(REPORTS_ENTITLEMENT_KEY),
+    ]);
+    setIsPremium(plus);
+    setHasReports(plus || reports); // plus implies reports
+  }, []);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
-    const entitled = await readEntitlement();
-    setIsPremium(entitled);
+    await load();
     setIsLoading(false);
-  }, []);
+  }, [load]);
 
-  const grant = useCallback(async (untilMs?: number) => {
+  const grant = useCallback(async (scope: EntitlementScope, untilMs?: number) => {
     try {
-      await writeEntitlement(untilMs);
-      setIsPremium(true);
+      await writeFlag(scope === 'plus' ? PREMIUM_ENTITLEMENT_KEY : REPORTS_ENTITLEMENT_KEY, untilMs);
+      await load();
     } catch {
-      // ignore write failure; user can retry
+      // ignore; user can retry
     }
-  }, []);
+  }, [load]);
 
-  // Load the entitlement once on mount.
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const entitled = await readEntitlement();
-      if (mounted) {
-        setIsPremium(entitled);
-        setIsLoading(false);
-      }
+      await load();
+      if (mounted) setIsLoading(false);
     })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    return () => { mounted = false; };
+  }, [load]);
 
-  const value: PremiumContextValue = {
-    isPremium,
-    isLoading,
-    refresh,
-    grant,
-  };
+  const value: PremiumContextValue = { isPremium, hasReports, isLoading, refresh, grant };
 
-  return (
-    <PremiumContext.Provider value={value}>{children}</PremiumContext.Provider>
-  );
+  return <PremiumContext.Provider value={value}>{children}</PremiumContext.Provider>;
 }
 
 export function usePremium(): PremiumContextValue {

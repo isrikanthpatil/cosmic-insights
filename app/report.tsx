@@ -7,6 +7,8 @@ import ScreenBackground from '@/components/ScreenBackground';
 import ReportViewer from '@/components/ReportViewer';
 import { useChart } from '@/contexts/ChartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePremium } from '@/contexts/PremiumContext';
+import { REPORTS_REQUIRE_ENTITLEMENT } from '@/constants/plans';
 import { buildReportHtml, buildForecastReportHtml, REPORT_META, ReportType } from '@/utils/reports/reportHtml';
 import type { Period } from '@/utils/jyotish/forecast';
 import { tap } from '@/utils/haptics';
@@ -21,6 +23,8 @@ export default function ReportScreen() {
   const insets = useSafeAreaInsets();
   const { activeProfile: profile } = useChart();
   const { user } = useAuth();
+  const { hasReports } = usePremium();
+  const locked = REPORTS_REQUIRE_ENTITLEMENT && !hasReports;
   const params = useLocalSearchParams<{ type?: string; period?: string }>();
 
   const rawType = String(params.type ?? 'astrology');
@@ -54,7 +58,7 @@ export default function ReportScreen() {
   const [ready, setReady] = useState(false);
   const [readyAt, setReadyAt] = useState<number | null>(null);
   useEffect(() => {
-    if (!user || !html) return; // nothing to deliver yet
+    if (!user || !html || locked) return; // nothing to deliver until entitled
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
     (async () => {
@@ -72,7 +76,7 @@ export default function ReportScreen() {
     })();
     return () => { cancelled = true; if (timer) clearTimeout(timer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deliveryKey, html === null, user?.id]);
+  }, [deliveryKey, html === null, user?.id, locked]);
 
   // Opening a ready report is a high-satisfaction moment — quietly (at most once)
   // ask for a Play rating.
@@ -127,6 +131,22 @@ export default function ReportScreen() {
             accessibilityLabel="Sign in"
           >
             <Text style={styles.signInBtnText}>Sign in / Sign up</Text>
+          </TouchableOpacity>
+        </View>
+      ) : locked ? (
+        <View style={styles.center}>
+          <FileText size={40} color="#E8C87E" />
+          <Text style={styles.emptyTitle}>Unlock detailed reports</Text>
+          <Text style={styles.muted}>
+            Reports are a premium feature — a beautifully formatted, multi-page reading from your chart. Unlock with a code, or with Astropanth Plus.
+          </Text>
+          <TouchableOpacity
+            style={styles.signInBtn}
+            onPress={() => { tap(); router.push('/premium'); }}
+            accessibilityRole="button"
+            accessibilityLabel="Unlock reports"
+          >
+            <Text style={styles.signInBtnText}>Unlock reports</Text>
           </TouchableOpacity>
         </View>
       ) : !html ? (

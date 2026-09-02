@@ -57,3 +57,9 @@ export const plusPrices: PlanPrice[] = [
 // Marketing copy for the paywall hero, kept here so it stays consistent.
 export const plusPlanName = 'Astropanth Plus';
 export const plusTagline = 'Unlock the full cosmos';
+
+// Feature gating toggle. When true, the detailed Reports require a `reports`
+// (or `plus`) entitlement — obtained via a promo code today, and via Razorpay/
+// Play once billing is wired. Set to false to make reports free for all
+// signed-in users (e.g. during a growth push). Everything else stays free.
+export const REPORTS_REQUIRE_ENTITLEMENT = true;

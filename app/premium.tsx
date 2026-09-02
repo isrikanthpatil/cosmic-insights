@@ -45,7 +45,7 @@ export default function PremiumScreen() {
     const res = await redeemCode(code, user?.id);
     setRedeeming(false);
     if (res.ok) {
-      await grant(res.untilMs);
+      await grant(res.plan === 'plus' ? 'plus' : 'reports', res.untilMs);
       setCode('');
       showToast(res.message, 'success');
     } else {

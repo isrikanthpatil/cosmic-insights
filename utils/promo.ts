@@ -26,13 +26,15 @@ export async function redeemCode(code: string, userId?: string): Promise<RedeemR
     const untilMs = data.durationDays
       ? Date.now() + Number(data.durationDays) * 86_400_000
       : undefined;
+    const plan = data.plan === 'plus' ? 'plus' : 'reports';
+    const what = plan === 'plus' ? 'Astropanth Plus' : 'Reports';
     return {
       ok: true,
-      plan: data.plan || 'plus',
+      plan,
       untilMs,
       message: untilMs
-        ? `Astropanth Plus unlocked for ${data.durationDays} days ✨`
-        : 'Astropanth Plus unlocked ✨',
+        ? `${what} unlocked for ${data.durationDays} days ✨`
+        : `${what} unlocked ✨`,
     };
   } catch {
     return { ok: false, message: 'Couldn’t reach the server. Check your connection and try again.' };

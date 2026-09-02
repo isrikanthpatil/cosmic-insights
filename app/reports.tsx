@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Sparkles, Hash, Gem, TrendingUp, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePremium } from '@/contexts/PremiumContext';
+import { REPORTS_REQUIRE_ENTITLEMENT } from '@/constants/plans';
 import { tap } from '@/utils/haptics';
 
 const REPORTS: { key: string; href: string; title: string; subtitle: string; icon: LucideIcon }[] = [
@@ -18,6 +20,8 @@ export default function ReportsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { hasReports } = usePremium();
+  const locked = REPORTS_REQUIRE_ENTITLEMENT && !hasReports;
 
   const goBack = () => {
     if (router.canGoBack()) router.back();
@@ -48,6 +52,22 @@ export default function ReportsScreen() {
             accessibilityLabel="Sign in"
           >
             <Text style={styles.gateBtnText}>Sign in / Sign up</Text>
+          </TouchableOpacity>
+        </View>
+      ) : locked ? (
+        <View style={styles.gate}>
+          <Sparkles size={40} color="#E8C87E" />
+          <Text style={styles.gateTitle}>Unlock detailed reports</Text>
+          <Text style={styles.gateText}>
+            Reports are a premium feature — beautifully formatted, multi-page readings from your birth chart. Unlock them with a code, or with Astropanth Plus.
+          </Text>
+          <TouchableOpacity
+            style={styles.gateBtn}
+            onPress={() => { tap(); router.push('/premium'); }}
+            accessibilityRole="button"
+            accessibilityLabel="Unlock reports"
+          >
+            <Text style={styles.gateBtnText}>Unlock reports</Text>
           </TouchableOpacity>
         </View>
       ) : (
