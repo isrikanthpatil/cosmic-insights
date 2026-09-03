@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedMap } from '@/utils/i18nContent';
 import { ArrowLeft, Sparkles, Shuffle } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
@@ -16,12 +17,20 @@ const todayKey = () => {
 export default function TarotScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const spreadPositions = [t('tarot.past'), t('tarot.present'), t('tarot.future')];
 
   const daily = useMemo(() => getDailyCard(todayKey()), []);
   const [spread, setSpread] = useState<{ card: TarotCard; reversed: boolean }[] | null>(null);
+
+  // Localize the generated card text (name, suit, keywords, meanings).
+  const genStrings = [daily, ...(spread?.map((s) => s.card) ?? [])].flatMap((c) => [
+    c.name,
+    c.suit ? c.suit[0].toUpperCase() + c.suit.slice(1) : '',
+    ...c.keywords.slice(0, 4), c.upright, c.reversed,
+  ]).filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+  const tx = useTranslatedMap(genStrings, lang);
 
   const goBack = () => {
     if (router.canGoBack()) router.back();
@@ -37,17 +46,17 @@ export default function TarotScreen() {
     <View style={styles.card}>
       {position && <Text style={styles.position}>{position}</Text>}
       <Text style={styles.cardName}>
-        {card.name}{reversed ? t('tarot.reversedSuffix') : ''}
+        {tx(card.name)}{reversed ? t('tarot.reversedSuffix') : ''}
       </Text>
       <Text style={styles.cardMeta}>
-        {card.arcana === 'major' ? t('tarot.majorArcana') : t('tarot.minorArcana', { suit: card.suit ? card.suit[0].toUpperCase() + card.suit.slice(1) : '' })}
+        {card.arcana === 'major' ? t('tarot.majorArcana') : t('tarot.minorArcana', { suit: card.suit ? tx(card.suit[0].toUpperCase() + card.suit.slice(1)) : '' })}
       </Text>
       <View style={styles.keywords}>
         {card.keywords.slice(0, 4).map((k) => (
-          <View key={k} style={styles.kw}><Text style={styles.kwText}>{k}</Text></View>
+          <View key={k} style={styles.kw}><Text style={styles.kwText}>{tx(k)}</Text></View>
         ))}
       </View>
-      <Text style={styles.meaning}>{reversed ? card.reversed : card.upright}</Text>
+      <Text style={styles.meaning}>{tx(reversed ? card.reversed : card.upright)}</Text>
     </View>
   );
 

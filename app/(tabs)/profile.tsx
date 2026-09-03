@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch } from 'react-native';
-import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight, Share2, Star } from 'lucide-react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Switch, Modal, Pressable } from 'react-native';
+import { User, CreditCard as Edit3, Save, X, Calendar, Clock, MapPin, Users, LogOut, Settings, Info, Bell, KeyRound, Trash2, UserPlus, Sparkles, ChevronRight, Share2, Star, Globe, Check } from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { shareApp, rateApp } from '@/utils/appShare';
 import BrandLogo from '@/components/BrandLogo';
@@ -85,6 +85,7 @@ export default function Profile() {
   const [placeSuggestions, setPlaceSuggestions] = useState<string[]>([]);
   const [showPlaceSuggestions, setShowPlaceSuggestions] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [langModal, setLangModal] = useState(false);
 
   useEffect(() => {
     // Load the persisted daily-horoscope reminder preference on mount.
@@ -728,28 +729,22 @@ export default function Profile() {
                 </View>
 
                 {LOCALIZATION_ENABLED && availableLangs.length > 1 && (
-                  <View style={styles.settingRow}>
+                  <TouchableOpacity
+                    style={styles.settingRow}
+                    onPress={() => { tap(); setLangModal(true); }}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('profile.language')}
+                  >
                     <View style={styles.settingIcon}>
-                      <Settings size={18} color="#E8C87E" />
+                      <Globe size={18} color="#E8C87E" />
                     </View>
                     <Text style={styles.settingLabel}>{t('profile.language')}</Text>
-                    <View style={styles.langRow}>
-                      {availableLangs.map((l) => (
-                        <TouchableOpacity
-                          key={l.code}
-                          style={[styles.langChip, lang === l.code && styles.langChipActive]}
-                          onPress={() => { tap(); setLang(l.code); }}
-                          accessibilityRole="button"
-                          accessibilityState={{ selected: lang === l.code }}
-                          accessibilityLabel={l.label}
-                        >
-                          <Text style={[styles.langChipText, lang === l.code && styles.langChipTextActive]}>
-                            {l.native}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  </View>
+                    <Text style={styles.langCurrent}>
+                      {availableLangs.find((l) => l.code === lang)?.native ?? 'English'}
+                    </Text>
+                    <ChevronRight size={18} color="#8B88A0" />
+                  </TouchableOpacity>
                 )}
 
                 <TouchableOpacity
@@ -845,6 +840,37 @@ export default function Profile() {
           ) : null}
         </View>
       </ScrollView>
+
+      <Modal
+        visible={langModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLangModal(false)}
+      >
+        <Pressable style={styles.langBackdrop} onPress={() => setLangModal(false)}>
+          <Pressable style={styles.langSheet} onPress={(e) => e.stopPropagation()}>
+            <Text style={styles.langSheetTitle}>{t('profile.language')}</Text>
+            {availableLangs.map((l) => {
+              const active = lang === l.code;
+              return (
+                <TouchableOpacity
+                  key={l.code}
+                  style={styles.langOption}
+                  onPress={() => { tap(); setLang(l.code); setLangModal(false); }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                >
+                  <View>
+                    <Text style={[styles.langOptionNative, active && styles.langOptionActive]}>{l.native}</Text>
+                    <Text style={styles.langOptionLabel}>{l.label}</Text>
+                  </View>
+                  {active ? <Check size={20} color="#E8C87E" /> : null}
+                </TouchableOpacity>
+              );
+            })}
+          </Pressable>
+        </Pressable>
+      </Modal>
     </ScreenBackground>
   );
 }
@@ -1184,17 +1210,41 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: '#F4F1E8',
   },
-  langRow: { flexDirection: 'row', gap: 6 },
-  langChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(232,200,126,0.30)',
+  langCurrent: { fontSize: 15, fontFamily: 'Inter-Medium', color: '#F4F1E8', marginRight: 4 },
+  langBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'flex-end',
   },
-  langChipActive: { backgroundColor: '#E8C87E', borderColor: '#E8C87E' },
-  langChipText: { fontSize: 13, fontFamily: 'Inter-Medium', color: '#C7C4D6' },
-  langChipTextActive: { color: '#161225', fontFamily: 'Inter-SemiBold' },
+  langSheet: {
+    backgroundColor: '#141024',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 18,
+    paddingBottom: 34,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderColor: 'rgba(232,200,126,0.20)',
+  },
+  langSheetTitle: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#E8C87E',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  langOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+  },
+  langOptionNative: { fontSize: 17, fontFamily: 'Inter-Medium', color: '#F4F1E8' },
+  langOptionActive: { color: '#E8C87E', fontFamily: 'Inter-SemiBold' },
+  langOptionLabel: { fontSize: 12, fontFamily: 'Inter-Regular', color: '#8B88A0', marginTop: 2 },
   settingLabelDanger: {
     color: '#FF6B6B',
   },

@@ -550,7 +550,8 @@ const en: Dict = {
   "panchang.lordValue": "Lord · {lord}",
   "panchang.computeError": "Could not compute today's Panchang. Please try again.",
   "panchang.kalamNote": "Traditionally avoided for starting important activities.",
-  "panchang.disclaimer": "Computed with the sidereal (Lahiri) system. Sun timings and periods use a central-India reference (times shown in IST) and may vary by a few minutes from your exact city. Offered for guidance and reflection."
+  "panchang.disclaimer": "Computed with the sidereal (Lahiri) system. Sun timings and periods use a central-India reference (times shown in IST) and may vary by a few minutes from your exact city. Offered for guidance and reflection.",
+  "common.translating": "Translating…"
 };
 
 const hi: Dict = {
@@ -1086,7 +1087,8 @@ const hi: Dict = {
   "panchang.lordValue": "स्वामी · {lord}",
   "panchang.computeError": "आज का पंचांग गणना नहीं हो सकी। कृपया पुनः प्रयास करें।",
   "panchang.kalamNote": "परंपरागत रूप से महत्वपूर्ण कार्य आरंभ करने के लिए वर्जित।",
-  "panchang.disclaimer": "सायडेरियल (लाहिरी) पद्धति से गणना। सूर्य समय व काल मध्य-भारत के संदर्भ पर आधारित हैं (समय IST में) और आपके सटीक शहर से कुछ मिनट भिन्न हो सकते हैं। मार्गदर्शन व चिंतन हेतु।"
+  "panchang.disclaimer": "सायडेरियल (लाहिरी) पद्धति से गणना। सूर्य समय व काल मध्य-भारत के संदर्भ पर आधारित हैं (समय IST में) और आपके सटीक शहर से कुछ मिनट भिन्न हो सकते हैं। मार्गदर्शन व चिंतन हेतु।",
+  "common.translating": "अनुवाद हो रहा है…"
 };
 
 const mr: Dict = {
@@ -1622,7 +1624,8 @@ const mr: Dict = {
   "panchang.lordValue": "स्वामी · {lord}",
   "panchang.computeError": "आजचे पंचांग काढता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "panchang.kalamNote": "महत्त्वाची कामे सुरू करण्यासाठी परंपरेने टाळले जाते.",
-  "panchang.disclaimer": "सायडेरियल (लाहिरी) पद्धतीने गणना. सूर्य वेळा व काल मध्य-भारताच्या संदर्भावर आधारित आहेत (वेळा IST मध्ये) आणि तुमच्या नेमक्या शहरापेक्षा काही मिनिटे बदलू शकतात. मार्गदर्शन व चिंतनासाठी."
+  "panchang.disclaimer": "सायडेरियल (लाहिरी) पद्धतीने गणना. सूर्य वेळा व काल मध्य-भारताच्या संदर्भावर आधारित आहेत (वेळा IST मध्ये) आणि तुमच्या नेमक्या शहरापेक्षा काही मिनिटे बदलू शकतात. मार्गदर्शन व चिंतनासाठी.",
+  "common.translating": "भाषांतर होत आहे…"
 };
 
 const kn: Dict = {
@@ -2158,7 +2161,8 @@ const kn: Dict = {
   "panchang.lordValue": "ಅಧಿಪತಿ · {lord}",
   "panchang.computeError": "ಇಂದಿನ ಪಂಚಾಂಗವನ್ನು ಲೆಕ್ಕಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
   "panchang.kalamNote": "ಮುಖ್ಯ ಕಾರ್ಯಗಳನ್ನು ಆರಂಭಿಸಲು ಸಂಪ್ರದಾಯದಂತೆ ವರ್ಜಿಸಲಾಗಿದೆ.",
-  "panchang.disclaimer": "ಸೈಡಿರಿಯಲ್ (ಲಾಹಿರಿ) ಪದ್ಧತಿಯಲ್ಲಿ ಲೆಕ್ಕಹಾಕಲಾಗಿದೆ. ಸೂರ್ಯ ಸಮಯ ಮತ್ತು ಕಾಲಗಳು ಮಧ್ಯ-ಭಾರತದ ಉಲ್ಲೇಖವನ್ನು ಆಧರಿಸಿವೆ (ಸಮಯ IST ನಲ್ಲಿ) ಮತ್ತು ನಿಮ್ಮ ನಿಖರ ನಗರದಿಂದ ಕೆಲವು ನಿಮಿಷಗಳಷ್ಟು ಬದಲಾಗಬಹುದು. ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಚಿಂತನೆಗಾಗಿ."
+  "panchang.disclaimer": "ಸೈಡಿರಿಯಲ್ (ಲಾಹಿರಿ) ಪದ್ಧತಿಯಲ್ಲಿ ಲೆಕ್ಕಹಾಕಲಾಗಿದೆ. ಸೂರ್ಯ ಸಮಯ ಮತ್ತು ಕಾಲಗಳು ಮಧ್ಯ-ಭಾರತದ ಉಲ್ಲೇಖವನ್ನು ಆಧರಿಸಿವೆ (ಸಮಯ IST ನಲ್ಲಿ) ಮತ್ತು ನಿಮ್ಮ ನಿಖರ ನಗರದಿಂದ ಕೆಲವು ನಿಮಿಷಗಳಷ್ಟು ಬದಲಾಗಬಹುದು. ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಚಿಂತನೆಗಾಗಿ.",
+  "common.translating": "ಅನುವಾದವಾಗುತ್ತಿದೆ…"
 };
 
 const ta: Dict = {
@@ -2694,7 +2698,8 @@ const ta: Dict = {
   "panchang.lordValue": "அதிபதி · {lord}",
   "panchang.computeError": "இன்றைய பஞ்சாங்கத்தைக் கணக்கிட முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
   "panchang.kalamNote": "முக்கியமான செயல்களைத் தொடங்க பாரம்பரியமாக தவிர்க்கப்படுகிறது.",
-  "panchang.disclaimer": "சைடீரியல் (லாஹிரி) முறையில் கணக்கிடப்பட்டது. சூரிய நேரங்களும் காலங்களும் மத்திய இந்தியாவை அடிப்படையாகக் கொண்டவை (நேரம் IST இல்) மற்றும் உங்கள் சரியான நகரத்திலிருந்து சில நிமிடங்கள் மாறுபடலாம். வழிகாட்டுதலுக்கும் சிந்தனைக்கும் மட்டுமே."
+  "panchang.disclaimer": "சைடீரியல் (லாஹிரி) முறையில் கணக்கிடப்பட்டது. சூரிய நேரங்களும் காலங்களும் மத்திய இந்தியாவை அடிப்படையாகக் கொண்டவை (நேரம் IST இல்) மற்றும் உங்கள் சரியான நகரத்திலிருந்து சில நிமிடங்கள் மாறுபடலாம். வழிகாட்டுதலுக்கும் சிந்தனைக்கும் மட்டுமே.",
+  "common.translating": "மொழிபெயர்க்கிறது…"
 };
 
 const te: Dict = {
@@ -3230,7 +3235,8 @@ const te: Dict = {
   "panchang.lordValue": "అధిపతి · {lord}",
   "panchang.computeError": "నేటి పంచాంగాన్ని లెక్కించలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.",
   "panchang.kalamNote": "ముఖ్యమైన పనులు ప్రారంభించడానికి సంప్రదాయంగా నివారించబడుతుంది.",
-  "panchang.disclaimer": "సైడీరియల్ (లాహిరి) పద్ధతిలో లెక్కించబడింది. సూర్య సమయాలు మరియు కాలాలు మధ్య-భారత ప్రామాణికం ఆధారంగా ఉన్నాయి (సమయం IST లో) మరియు మీ ఖచ్చితమైన నగరం నుండి కొన్ని నిమిషాలు మారవచ్చు. మార్గదర్శనం మరియు ఆలోచన కోసం."
+  "panchang.disclaimer": "సైడీరియల్ (లాహిరి) పద్ధతిలో లెక్కించబడింది. సూర్య సమయాలు మరియు కాలాలు మధ్య-భారత ప్రామాణికం ఆధారంగా ఉన్నాయి (సమయం IST లో) మరియు మీ ఖచ్చితమైన నగరం నుండి కొన్ని నిమిషాలు మారవచ్చు. మార్గదర్శనం మరియు ఆలోచన కోసం.",
+  "common.translating": "అనువదిస్తోంది…"
 };
 
 export const DICTS: Record<Lang, Dict> = { en, hi, mr, kn, ta, te };
