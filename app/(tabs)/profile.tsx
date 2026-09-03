@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 import { shareApp, rateApp } from '@/utils/appShare';
 import BrandLogo from '@/components/BrandLogo';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { LOCALIZATION_ENABLED } from '@/constants/plans';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -60,7 +61,7 @@ export default function Profile() {
     try {
       const sun = calculateSunSign(userProfile.dateOfBirth, userProfile.timeOfBirth);
       const moon = calculateMoonSign(userProfile.dateOfBirth, userProfile.placeOfBirth);
-      return `Sun in ${sun} · Moon in ${moon}`;
+      return t('profile.signSummary', { sun, moon });
     } catch {
       return '';
     }
@@ -114,7 +115,7 @@ export default function Profile() {
           // Non-critical.
         }
         showToast(
-          'Enable notifications permission to get daily horoscope reminders.',
+          t('profile.notifPermission'),
           'info'
         );
         return;
@@ -134,28 +135,28 @@ export default function Profile() {
     tap();
     const email = user?.email;
     if (!email) {
-      notify('Change Password', 'No email address is associated with your account.');
+      notify(t('profile.changePassword'), t('profile.noEmail'));
       return;
     }
     try {
       await requestPasswordReset(email);
-      showToast(`Password reset link sent to ${email}`, 'info');
+      showToast(t('profile.resetLinkSent', { email }), 'info');
     } catch (error: any) {
       const message =
         error?.response?.message ||
         SecurityUtils.handleSecureError(error, 'auth');
-      notify('Error', message);
+      notify(t('common.error'), message);
     }
   };
 
   const handleDeleteAccount = () => {
     if (!user?.id) {
-      notify('Error', 'No active account to delete.');
+      notify(t('common.error'), t('profile.noAccountDelete'));
       return;
     }
     confirmAction(
-      'Delete Account',
-      'This will permanently delete your account and all associated data. This action cannot be undone.',
+      t('profile.deleteAccount'),
+      t('profile.deleteConfirm'),
       async () => {
         try {
           await pb.collection('users').delete(user.id);
@@ -164,10 +165,10 @@ export default function Profile() {
           const message =
             error?.response?.message ||
             SecurityUtils.handleSecureError(error, 'profile');
-          notify('Error', message);
+          notify(t('common.error'), message);
         }
       },
-      'Delete'
+      t('common.delete')
     );
   };
 
@@ -193,7 +194,7 @@ export default function Profile() {
       // Validate required fields
       if (!editForm.firstName.trim() || !editForm.lastName.trim() ||
           !editForm.dateOfBirth.trim() || !editForm.placeOfBirth.trim()) {
-        notify('Error', 'Please fill in all required fields');
+        notify(t('common.error'), t('profile.fillRequired'));
         return;
       }
 
@@ -209,30 +210,30 @@ export default function Profile() {
 
       // Validate inputs
       if (!SecurityUtils.validateName(sanitizedProfile.firstName)) {
-        notify('Error', 'Please enter a valid first name');
+        notify(t('common.error'), t('profile.invalidFirstName'));
         return;
       }
 
       if (!SecurityUtils.validateName(sanitizedProfile.lastName)) {
-        notify('Error', 'Please enter a valid last name');
+        notify(t('common.error'), t('profile.invalidLastName'));
         return;
       }
 
       if (!SecurityUtils.validatePlace(sanitizedProfile.placeOfBirth)) {
-        notify('Error', 'Please enter a valid place of birth');
+        notify(t('common.error'), t('profile.invalidPlace'));
         return;
       }
 
       // Validate date format (DD/MM/YYYY)
       const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       if (!dateRegex.test(sanitizedProfile.dateOfBirth)) {
-        notify('Error', 'Please enter date in DD/MM/YYYY format');
+        notify(t('common.error'), t('profile.invalidDate'));
         return;
       }
 
       // Validate time format if provided (HH:MM AM/PM)
       if (sanitizedProfile.timeOfBirth && !SecurityUtils.validateTime(sanitizedProfile.timeOfBirth)) {
-        notify('Error', 'Please enter time in HH:MM (24-hour) format');
+        notify(t('common.error'), t('profile.invalidTime'));
         return;
       }
 
@@ -242,7 +243,7 @@ export default function Profile() {
         setGuestProfile(sanitizedProfile);
         setIsEditing(false);
         success();
-        showToast('Profile saved successfully!', 'success');
+        showToast(t('profile.savedSuccess'), 'success');
         return;
       }
 
@@ -266,18 +267,18 @@ export default function Profile() {
 
       setIsEditing(false);
       success();
-      showToast('Profile saved successfully!', 'success');
+      showToast(t('profile.savedSuccess'), 'success');
 
     } catch (error: any) {
       console.error('Error saving profile:', error);
       if (error?.message === 'SESSION_EXPIRED') {
-        notify('Error', 'Your session expired — please sign in again.');
+        notify(t('common.error'), t('profile.sessionExpired'));
         return;
       }
       const message =
         error?.response?.message ||
         SecurityUtils.handleSecureError(error, 'profile');
-      notify('Error', message);
+      notify(t('common.error'), message);
     } finally {
       setSaving(false);
     }
@@ -286,10 +287,10 @@ export default function Profile() {
   const handleSignOut = () => {
     tap();
     confirmAction(
-      'Sign Out',
-      'Are you sure you want to sign out?',
+      t('profile.signOut'),
+      t('profile.signOutConfirm'),
       () => signOut(),
-      'Sign Out'
+      t('profile.signOut')
     );
   };
 
@@ -356,7 +357,7 @@ export default function Profile() {
       <ScreenBackground style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#E8C87E" />
-          <Text style={styles.loadingText}>Loading profile...</Text>
+          <Text style={styles.loadingText}>{t('profile.loading')}</Text>
         </View>
       </ScreenBackground>
     );
@@ -365,7 +366,7 @@ export default function Profile() {
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>{t('tab.profile')}</Text>
         <View style={styles.headerActions}>
           {!isGuest && profileComplete && !isEditing && (
             <TouchableOpacity
@@ -373,7 +374,7 @@ export default function Profile() {
               hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               onPress={() => setIsEditing(true)}
               accessibilityRole="button"
-              accessibilityLabel="Edit profile"
+              accessibilityLabel={t('profile.editProfileA11y')}
             >
               <Edit3 size={20} color="#E8C87E" />
             </TouchableOpacity>
@@ -384,7 +385,7 @@ export default function Profile() {
               hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               onPress={handleSignOut}
               accessibilityRole="button"
-              accessibilityLabel="Sign out"
+              accessibilityLabel={t('profile.signOutA11y')}
             >
               <LogOut size={20} color="#FF6B6B" />
             </TouchableOpacity>
@@ -405,11 +406,11 @@ export default function Profile() {
               <View style={styles.avatarContainer}>
                 <User size={48} color="#E8C87E" />
               </View>
-              <Text style={styles.noProfileTitle}>Create an account to save your details</Text>
+              <Text style={styles.noProfileTitle}>{t('profile.guestTitle')}</Text>
               <Text style={styles.noProfileText}>
                 {guestProfile
-                  ? 'Your birth details are saved on this device. Sign in or create an account to save them to the cloud and unlock unlimited AskAstro.'
-                  : 'Sign in or create a free account to save your birth details across devices and unlock unlimited AskAstro.'}
+                  ? t('profile.guestSavedBody')
+                  : t('profile.guestBody')}
               </Text>
 
               {guestProfile && (
@@ -417,7 +418,7 @@ export default function Profile() {
                   <View style={styles.detailItem}>
                     <User size={20} color="#E8C87E" />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>Name</Text>
+                      <Text style={styles.detailLabel}>{t('profile.name')}</Text>
                       <Text style={styles.detailValue}>
                         {guestProfile.firstName} {guestProfile.lastName}
                       </Text>
@@ -426,7 +427,7 @@ export default function Profile() {
                   <View style={styles.detailItem}>
                     <Calendar size={20} color="#E8C87E" />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>Date of Birth</Text>
+                      <Text style={styles.detailLabel}>{t('profile.dob')}</Text>
                       <Text style={styles.detailValue}>{guestProfile.dateOfBirth}</Text>
                     </View>
                   </View>
@@ -434,7 +435,7 @@ export default function Profile() {
                     <View style={styles.detailItem}>
                       <Clock size={20} color="#E8C87E" />
                       <View style={styles.detailContent}>
-                        <Text style={styles.detailLabel}>Time of Birth</Text>
+                        <Text style={styles.detailLabel}>{t('profile.tob')}</Text>
                         <Text style={styles.detailValue}>{guestProfile.timeOfBirth}</Text>
                       </View>
                     </View>
@@ -442,7 +443,7 @@ export default function Profile() {
                   <View style={styles.detailItem}>
                     <MapPin size={20} color="#E8C87E" />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>Place of Birth</Text>
+                      <Text style={styles.detailLabel}>{t('profile.pob')}</Text>
                       <Text style={styles.detailValue}>{guestProfile.placeOfBirth}</Text>
                     </View>
                   </View>
@@ -458,55 +459,55 @@ export default function Profile() {
                 activeOpacity={0.85}
               >
                 <UserPlus size={20} color="#0B0B1A" />
-                <Text style={styles.createProfileButtonText}>Sign in / Sign up</Text>
+                <Text style={styles.createProfileButtonText}>{t('common.signInUp')}</Text>
               </TouchableOpacity>
 
               {/* About */}
               <View style={styles.guestAboutCard}>
                 <View style={styles.cardTitleRow}>
                   <Info size={18} color="#E8C87E" />
-                  <Text style={styles.cardTitle}>About</Text>
+                  <Text style={styles.cardTitle}>{t('profile.about')}</Text>
                 </View>
                 <BrandLogo size={30} style={styles.aboutBrand} />
                 <Text style={styles.aboutVersion}>{t('profile.version', { v: appVersion })}</Text>
                 <Text style={styles.aboutDescription}>
-                  Personalized astrology & numerology guidance.
+                  {t('profile.aboutDescription')}
                 </Text>
                 <Text style={styles.aboutDisclaimer}>
-                  Readings are for guidance and self-reflection, and not a substitute for professional advice.
+                  {t('profile.aboutDisclaimer')}
                 </Text>
               </View>
             </View>
           ) : !profileComplete && !isEditing ? (
             <View style={styles.noProfileContainer}>
               <User size={64} color="#E8C87E" />
-              <Text style={styles.noProfileTitle}>No Profile Found</Text>
+              <Text style={styles.noProfileTitle}>{t('profile.noProfileTitle')}</Text>
               <Text style={styles.noProfileText}>
-                Create your profile to get personalized astrology and numerology readings.
+                {t('profile.noProfileText')}
               </Text>
               <TouchableOpacity
                 style={styles.createProfileButton}
                 onPress={() => setIsEditing(true)}
               >
-                <Text style={styles.createProfileButtonText}>Create Profile</Text>
+                <Text style={styles.createProfileButtonText}>{t('profile.createProfile')}</Text>
               </TouchableOpacity>
             </View>
           ) : isEditing ? (
             <View style={styles.editContainer}>
               <Text style={styles.sectionTitle}>
-                {profileComplete ? 'Edit Profile' : 'Create Profile'}
+                {profileComplete ? t('profile.editProfile') : t('profile.createProfile')}
               </Text>
 
               <View
                 style={styles.inputGroup}
                 onLayout={(e) => { fieldY.current.firstName = e.nativeEvent.layout.y; }}
               >
-                <Text style={styles.inputLabel}>First Name *</Text>
+                <Text style={styles.inputLabel}>{t('profile.firstNameLabel')}</Text>
                 <TextInput
                   style={styles.input}
                   value={editForm.firstName}
                   onChangeText={(text) => setEditForm({ ...editForm, firstName: text })}
-                  placeholder="Enter your first name"
+                  placeholder={t('profile.firstNamePlaceholder')}
                   placeholderTextColor="#8B88A0"
                   maxLength={50}
                   onFocus={() => scrollToField('firstName')}
@@ -517,12 +518,12 @@ export default function Profile() {
                 style={styles.inputGroup}
                 onLayout={(e) => { fieldY.current.lastName = e.nativeEvent.layout.y; }}
               >
-                <Text style={styles.inputLabel}>Last Name *</Text>
+                <Text style={styles.inputLabel}>{t('profile.lastNameLabel')}</Text>
                 <TextInput
                   style={styles.input}
                   value={editForm.lastName}
                   onChangeText={(text) => setEditForm({ ...editForm, lastName: text })}
-                  placeholder="Enter your last name"
+                  placeholder={t('profile.lastNamePlaceholder')}
                   placeholderTextColor="#8B88A0"
                   maxLength={50}
                   onFocus={() => scrollToField('lastName')}
@@ -530,7 +531,7 @@ export default function Profile() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Date of Birth * (DD/MM/YYYY)</Text>
+                <Text style={styles.inputLabel}>{t('profile.dobLabel')}</Text>
                 <DateField
                   value={editForm.dateOfBirth}
                   onChangeText={(text) => setEditForm({ ...editForm, dateOfBirth: text })}
@@ -538,7 +539,7 @@ export default function Profile() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Time of Birth (HH:MM, 24-hour)</Text>
+                <Text style={styles.inputLabel}>{t('profile.tobLabel')}</Text>
                 <TimeField
                   value={editForm.timeOfBirth ?? ''}
                   onChangeText={(text) => setEditForm({ ...editForm, timeOfBirth: text })}
@@ -549,12 +550,12 @@ export default function Profile() {
                 style={styles.inputGroup}
                 onLayout={(e) => { fieldY.current.place = e.nativeEvent.layout.y; }}
               >
-                <Text style={styles.inputLabel}>Place of Birth *</Text>
+                <Text style={styles.inputLabel}>{t('profile.pobLabel')}</Text>
                 <TextInput
                   style={styles.input}
                   value={editForm.placeOfBirth}
                   onChangeText={handlePlaceSearch}
-                  placeholder="Mumbai, Maharashtra"
+                  placeholder={t('profile.pobPlaceholder')}
                   placeholderTextColor="#8B88A0"
                   maxLength={200}
                   onFocus={() => scrollToField('place')}
@@ -575,7 +576,7 @@ export default function Profile() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Gender *</Text>
+                <Text style={styles.inputLabel}>{t('profile.genderLabel')}</Text>
                 <View style={styles.genderContainer}>
                   <TouchableOpacity
                     style={[
@@ -584,13 +585,13 @@ export default function Profile() {
                     ]}
                     onPress={() => setEditForm({ ...editForm, gender: 'male' })}
                     accessibilityRole="button"
-                    accessibilityLabel="Select male"
+                    accessibilityLabel={t('profile.selectMaleA11y')}
                     accessibilityState={{ selected: editForm.gender === 'male' }}
                   >
                     <Text style={[
                       styles.genderButtonText,
                       editForm.gender === 'male' && styles.genderButtonTextActive
-                    ]}>Male</Text>
+                    ]}>{t('profile.male')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
@@ -599,13 +600,13 @@ export default function Profile() {
                     ]}
                     onPress={() => setEditForm({ ...editForm, gender: 'female' })}
                     accessibilityRole="button"
-                    accessibilityLabel="Select female"
+                    accessibilityLabel={t('profile.selectFemaleA11y')}
                     accessibilityState={{ selected: editForm.gender === 'female' }}
                   >
                     <Text style={[
                       styles.genderButtonText,
                       editForm.gender === 'female' && styles.genderButtonTextActive
-                    ]}>Female</Text>
+                    ]}>{t('profile.female')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -621,7 +622,7 @@ export default function Profile() {
                   ) : (
                     <>
                       <Save size={20} color="#0B0B1A" />
-                      <Text style={styles.saveButtonText}>Save Profile</Text>
+                      <Text style={styles.saveButtonText}>{t('profile.saveProfile')}</Text>
                     </>
                   )}
                 </TouchableOpacity>
@@ -632,7 +633,7 @@ export default function Profile() {
                     onPress={cancelEdit}
                   >
                     <X size={20} color="#C7C4D6" />
-                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                    <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -661,7 +662,7 @@ export default function Profile() {
                 <View style={styles.detailItem}>
                   <Calendar size={20} color="#E8C87E" />
                   <View style={styles.detailContent}>
-                    <Text style={styles.detailLabel}>Date of Birth</Text>
+                    <Text style={styles.detailLabel}>{t('profile.dob')}</Text>
                     <Text style={styles.detailValue}>{userProfile.dateOfBirth}</Text>
                   </View>
                 </View>
@@ -670,7 +671,7 @@ export default function Profile() {
                   <View style={styles.detailItem}>
                     <Clock size={20} color="#E8C87E" />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>Time of Birth</Text>
+                      <Text style={styles.detailLabel}>{t('profile.tob')}</Text>
                       <Text style={styles.detailValue}>{userProfile.timeOfBirth}</Text>
                     </View>
                   </View>
@@ -679,7 +680,7 @@ export default function Profile() {
                 <View style={styles.detailItem}>
                   <MapPin size={20} color="#E8C87E" />
                   <View style={styles.detailContent}>
-                    <Text style={styles.detailLabel}>Place of Birth</Text>
+                    <Text style={styles.detailLabel}>{t('profile.pob')}</Text>
                     <Text style={styles.detailValue}>{userProfile.placeOfBirth}</Text>
                   </View>
                 </View>
@@ -687,9 +688,9 @@ export default function Profile() {
                 <View style={styles.detailItem}>
                   <Users size={20} color="#E8C87E" />
                   <View style={styles.detailContent}>
-                    <Text style={styles.detailLabel}>Gender</Text>
+                    <Text style={styles.detailLabel}>{t('profile.gender')}</Text>
                     <Text style={styles.detailValue}>
-                      {userProfile.gender === 'male' ? 'Male' : 'Female'}
+                      {userProfile.gender === 'male' ? t('profile.male') : t('profile.female')}
                     </Text>
                   </View>
                 </View>
@@ -699,7 +700,7 @@ export default function Profile() {
               <View style={styles.card}>
                 <View style={styles.cardTitleRow}>
                   <Settings size={18} color="#E8C87E" />
-                  <Text style={styles.cardTitle}>Settings</Text>
+                  <Text style={styles.cardTitle}>{t('profile.settings')}</Text>
                 </View>
 
                 <TouchableOpacity
@@ -726,28 +727,30 @@ export default function Profile() {
                   />
                 </View>
 
-                <View style={styles.settingRow}>
-                  <View style={styles.settingIcon}>
-                    <Settings size={18} color="#E8C87E" />
+                {LOCALIZATION_ENABLED && availableLangs.length > 1 && (
+                  <View style={styles.settingRow}>
+                    <View style={styles.settingIcon}>
+                      <Settings size={18} color="#E8C87E" />
+                    </View>
+                    <Text style={styles.settingLabel}>{t('profile.language')}</Text>
+                    <View style={styles.langRow}>
+                      {availableLangs.map((l) => (
+                        <TouchableOpacity
+                          key={l.code}
+                          style={[styles.langChip, lang === l.code && styles.langChipActive]}
+                          onPress={() => { tap(); setLang(l.code); }}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: lang === l.code }}
+                          accessibilityLabel={l.label}
+                        >
+                          <Text style={[styles.langChipText, lang === l.code && styles.langChipTextActive]}>
+                            {l.native}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
                   </View>
-                  <Text style={styles.settingLabel}>{t('profile.language')}</Text>
-                  <View style={styles.langRow}>
-                    {availableLangs.map((l) => (
-                      <TouchableOpacity
-                        key={l.code}
-                        style={[styles.langChip, lang === l.code && styles.langChipActive]}
-                        onPress={() => { tap(); setLang(l.code); }}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: lang === l.code }}
-                        accessibilityLabel={l.label}
-                      >
-                        <Text style={[styles.langChipText, lang === l.code && styles.langChipTextActive]}>
-                          {l.native}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
+                )}
 
                 <TouchableOpacity
                   style={styles.settingRow}
@@ -811,12 +814,12 @@ export default function Profile() {
                   <Sparkles size={20} color="#E8C87E" />
                 </View>
                 <View style={styles.plusTextWrap}>
-                  <Text style={styles.plusTitle}>Astropanth Plus</Text>
+                  <Text style={styles.plusTitle}>{t('profile.plusTitle')}</Text>
                   {isPremium ? (
-                    <Text style={styles.plusBadgeText}>Plus member ✦</Text>
+                    <Text style={styles.plusBadgeText}>{t('profile.plusMember')}</Text>
                   ) : (
                     <Text style={styles.plusSubtitle}>
-                      Unlock unlimited AskAstro & detailed reports
+                      {t('profile.plusSubtitle')}
                     </Text>
                   )}
                 </View>
@@ -827,15 +830,15 @@ export default function Profile() {
               <View style={styles.card}>
                 <View style={styles.cardTitleRow}>
                   <Info size={18} color="#E8C87E" />
-                  <Text style={styles.cardTitle}>About</Text>
+                  <Text style={styles.cardTitle}>{t('profile.about')}</Text>
                 </View>
                 <BrandLogo size={30} style={styles.aboutBrand} />
                 <Text style={styles.aboutVersion}>{t('profile.version', { v: appVersion })}</Text>
                 <Text style={styles.aboutDescription}>
-                  Personalized astrology & numerology guidance.
+                  {t('profile.aboutDescription')}
                 </Text>
                 <Text style={styles.aboutDisclaimer}>
-                  Readings are for guidance and self-reflection, and not a substitute for professional advice.
+                  {t('profile.aboutDisclaimer')}
                 </Text>
               </View>
             </View>
@@ -1233,12 +1236,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-SemiBold',
     color: '#E8C87E',
-  },
-  aboutAppName: {
-    fontSize: 17,
-    fontFamily: 'PlayfairDisplay-Bold',
-    color: '#F4F1E8',
-    marginTop: 2,
   },
   aboutBrand: { marginTop: 2, marginBottom: 2 },
   aboutVersion: {

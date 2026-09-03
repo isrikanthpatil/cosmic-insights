@@ -34,6 +34,7 @@ import ShareCard, { ShareCardData } from '@/components/ShareCard';
 import BrandLogo from '@/components/BrandLogo';
 import { shareCardImage } from '@/utils/shareCard';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedMap } from '@/utils/i18nContent';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
 const NOTIF_KEY = 'settings_notifications';
@@ -116,12 +117,12 @@ export default function Home() {
     } catch {}
     setShowReminderNudge(false);
     showToast(
-      ok ? 'Daily horoscope reminders are on ✨' : 'Enable notification permission in settings to turn on reminders.',
+      ok ? t('home.remindersOn') : t('home.remindersPermission'),
       ok ? 'success' : 'info'
     );
   };
 
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const sunSign = useMemo(
     () => (profile ? calculateSunSign(profile.dateOfBirth, profile.timeOfBirth) : null),
@@ -145,6 +146,24 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [profile, refreshNonce]
   );
+
+  // Localize the generated horoscope prose (daily + weekly) for non-English
+  // languages. tx(englishString) returns the translation once ready, English
+  // meanwhile. Labels/numbers/colours stay as-is (handled elsewhere).
+  const horoscopeStrings = useMemo(() => {
+    const out: string[] = [];
+    if (horoscope) {
+      if (horoscope.mainPrediction) out.push(horoscope.mainPrediction);
+      if (horoscope.advice) out.push(horoscope.advice);
+    }
+    if (weeklyHoroscope) {
+      if (weeklyHoroscope.overview) out.push(weeklyHoroscope.overview);
+      out.push(...(weeklyHoroscope.highlights || []));
+      out.push(...(weeklyHoroscope.focusAreas || []));
+    }
+    return out;
+  }, [horoscope, weeklyHoroscope]);
+  const tx = useTranslatedMap(horoscopeStrings, lang);
 
   // Full chart (Sun/Moon/Ascendant) using the same util the Astrology screen uses.
   const chart = useMemo(
@@ -235,7 +254,7 @@ export default function Home() {
         if (nav?.share) {
           await nav.share({ text: message });
         } else {
-          showToast('Sharing is only available in the app.', 'info');
+          showToast(t('home.shareInAppOnly'), 'info');
         }
         return;
       }
@@ -284,7 +303,7 @@ export default function Home() {
               style={styles.signInChip}
               onPress={goToLogin}
               activeOpacity={0.8}
-              accessibilityLabel="Sign in"
+              accessibilityLabel={t('common.signIn')}
             >
               <LogIn size={16} color="#E8C87E" />
               <Text style={styles.signInChipText}>{t('common.signIn')}</Text>
@@ -302,15 +321,15 @@ export default function Home() {
             <View style={styles.nudgeTextWrap}>
               <Text style={styles.nudgeText}>{t('home.reminderNudge')}</Text>
               <View style={styles.nudgeActions}>
-                <TouchableOpacity onPress={enableRemindersFromNudge} accessibilityRole="button" accessibilityLabel="Enable daily reminders">
+                <TouchableOpacity onPress={enableRemindersFromNudge} accessibilityRole="button" accessibilityLabel={t('home.enableRemindersA11y')}>
                   <Text style={styles.nudgeEnable}>{t('home.enable')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={dismissNudge} accessibilityRole="button" accessibilityLabel="Not now">
+                <TouchableOpacity onPress={dismissNudge} accessibilityRole="button" accessibilityLabel={t('home.notNow')}>
                   <Text style={styles.nudgeDismiss}>{t('home.notNow')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
-            <TouchableOpacity onPress={dismissNudge} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel="Dismiss">
+            <TouchableOpacity onPress={dismissNudge} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t('home.dismissA11y')}>
               <X size={16} color="#8B88A0" />
             </TouchableOpacity>
           </View>
@@ -318,8 +337,8 @@ export default function Home() {
 
         {!profile ? (
           <GuestEntryPrompt
-            title="Get your free reading"
-            message="Enter your birth details to unlock personalized astrology, numerology, and your daily horoscope. No account needed."
+            title={t('home.guestTitle')}
+            message={t('home.guestMessage')}
           />
         ) : (
           <>
@@ -327,7 +346,7 @@ export default function Home() {
             <View style={styles.chartRow}>
               <View style={styles.chartCard}>
                 <Sun size={20} color="#E8C87E" />
-                <Text style={styles.chartLabel}>Sun</Text>
+                <Text style={styles.chartLabel}>{t('label.sun')}</Text>
                 <View style={styles.chartValueRow}>
                   <Text style={styles.chartValue}>{chart?.sunSign ?? sunSign}</Text>
                   {(chart?.sunSign ?? sunSign) ? (
@@ -365,7 +384,7 @@ export default function Home() {
             {profile && (() => {
               const w = getWesternSunSign(profile.dateOfBirth);
               return w.sign ? (
-                <Text style={styles.westernCaption}>Western Sun sign: {w.sign} (tropical)</Text>
+                <Text style={styles.westernCaption}>{t('home.westernSun', { sign: w.sign })}</Text>
               ) : null;
             })()}
 
@@ -382,7 +401,7 @@ export default function Home() {
                     <Text style={styles.numberValue}>{numbers.destinyNumber}</Text>
                   </View>
                   <View style={styles.numberChip}>
-                    <Text style={styles.numberLabel}>Kua</Text>
+                    <Text style={styles.numberLabel}>{t('numero.kua')}</Text>
                     <Text style={styles.numberValue}>{numbers.kuaNumber}</Text>
                   </View>
                 </View>
@@ -403,7 +422,7 @@ export default function Home() {
                     }}
                     activeOpacity={0.85}
                     accessibilityRole="button"
-                    accessibilityLabel="Show daily horoscope"
+                    accessibilityLabel={t('home.showDailyA11y')}
                     accessibilityState={{ selected: horoscopeMode === 'daily' }}
                   >
                     <Text
@@ -426,7 +445,7 @@ export default function Home() {
                     }}
                     activeOpacity={0.85}
                     accessibilityRole="button"
-                    accessibilityLabel="Show weekly horoscope"
+                    accessibilityLabel={t('home.showWeeklyA11y')}
                     accessibilityState={{ selected: horoscopeMode === 'weekly' }}
                   >
                     <Text
@@ -450,12 +469,12 @@ export default function Home() {
                       <TouchableOpacity
                         onPress={shareReading}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        accessibilityLabel="Share today's horoscope"
+                        accessibilityLabel={t('home.shareTodayA11y')}
                       >
                         <Share2 size={18} color="#E8C87E" />
                       </TouchableOpacity>
                     </View>
-                    <Text style={styles.horoscopeText}>{horoscope.mainPrediction}</Text>
+                    <Text style={styles.horoscopeText}>{tx(horoscope.mainPrediction)}</Text>
 
                     <View style={styles.metaRow}>
                       <View style={styles.metaItem}>
@@ -480,7 +499,7 @@ export default function Home() {
 
                     <View style={styles.adviceBox}>
                       <Text style={styles.adviceLabel}>{t('home.advice')}</Text>
-                      <Text style={styles.adviceText}>{horoscope.advice}</Text>
+                      <Text style={styles.adviceText}>{tx(horoscope.advice)}</Text>
                     </View>
                   </View>
                 )}
@@ -495,7 +514,7 @@ export default function Home() {
                       <TouchableOpacity
                         onPress={shareReading}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        accessibilityLabel="Share this week's horoscope"
+                        accessibilityLabel={t('home.shareWeekA11y')}
                       >
                         <Share2 size={18} color="#E8C87E" />
                       </TouchableOpacity>
@@ -503,7 +522,7 @@ export default function Home() {
                     <Text style={styles.weekRange}>
                       {weeklyHoroscope.weekStart} – {weeklyHoroscope.weekEnd}
                     </Text>
-                    <Text style={styles.horoscopeText}>{weeklyHoroscope.overview}</Text>
+                    <Text style={styles.horoscopeText}>{tx(weeklyHoroscope.overview)}</Text>
 
                     {weeklyHoroscope.highlights.length > 0 && (
                       <View style={styles.weeklySection}>
@@ -511,7 +530,7 @@ export default function Home() {
                         {weeklyHoroscope.highlights.map((item, index) => (
                           <View key={index} style={styles.weeklyRow}>
                             <View style={styles.weeklyDot} />
-                            <Text style={styles.weeklyItemText}>{item}</Text>
+                            <Text style={styles.weeklyItemText}>{tx(item)}</Text>
                           </View>
                         ))}
                       </View>
@@ -523,7 +542,7 @@ export default function Home() {
                         {weeklyHoroscope.focusAreas.map((item, index) => (
                           <View key={index} style={styles.weeklyRow}>
                             <View style={styles.weeklyDot} />
-                            <Text style={styles.weeklyItemText}>{item}</Text>
+                            <Text style={styles.weeklyItemText}>{tx(item)}</Text>
                           </View>
                         ))}
                       </View>
@@ -562,16 +581,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     marginBottom: 16,
-  },
-  brandIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(232, 200, 126, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(232, 200, 126, 0.25)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   headerText: {
     flex: 1,

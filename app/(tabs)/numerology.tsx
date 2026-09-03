@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,12 +14,13 @@ import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
 import ShareCardButton from '@/components/ShareCardButton';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedMap } from '@/utils/i18nContent';
 
 export default function Numerology() {
   const insets = useSafeAreaInsets();
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [numerologyReading, setNumerologyReading] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   // Which compact number card (if any) is expanded to show its full meaning.
@@ -58,6 +59,36 @@ export default function Numerology() {
     setNumerologyReading(reading);
   };
 
+  // Collect every generated prose string this screen renders so it can be
+  // batch-translated for the active language. Must run unconditionally (before
+  // any early return); the memo returns [] when there's no reading yet.
+  const genStrings = useMemo(() => {
+    const out: string[] = [];
+    const r = numerologyReading;
+    if (r) {
+      if (r.birthNumberMeaning) out.push(r.birthNumberMeaning);
+      if (r.destinyNumberMeaning) out.push(r.destinyNumberMeaning);
+      if (r.kuaNumberMeaning) out.push(r.kuaNumberMeaning);
+      if (r.birthNumberDetail) out.push(r.birthNumberDetail);
+      if (r.destinyNumberDetail) out.push(r.destinyNumberDetail);
+      out.push(...(r.loshuAnalysis || []));
+      out.push(...(r.remedies || []));
+      if (r.gridMeanings) {
+        Object.values(r.gridMeanings).forEach((m: any) => {
+          if (m && typeof m.element === 'string') out.push(m.element);
+        });
+      }
+      if (Array.isArray(r.missingNumbers)) {
+        r.missingNumbers.forEach((n: number) => {
+          const rem = MISSING_NUMBER_REMEDIES[n];
+          if (typeof rem === 'string') out.push(rem);
+        });
+      }
+    }
+    return out.filter((s) => typeof s === 'string' && s.trim().length > 0);
+  }, [numerologyReading]);
+  const tx = useTranslatedMap(genStrings, lang);
+
   if (!loading && !userProfile && !isExploring) {
     return (
       <ScreenBackground style={styles.container}>
@@ -68,8 +99,8 @@ export default function Numerology() {
           </View>
           <View style={styles.guestEntryWrap}>
             <GuestEntryPrompt
-              title="Enter your birth details for a free reading"
-              message="Add your birth details to unlock your personalized numerology analysis. No account needed."
+              title={t('numero.guestTitle')}
+              message={t('numero.guestMessage')}
             />
           </View>
         </ScrollView>
@@ -87,7 +118,7 @@ export default function Numerology() {
           <View style={styles.skeletonWrap}>
             <View style={styles.skeletonCaptionRow}>
               <Sparkles size={18} color="#E8C87E" />
-              <Text style={styles.skeletonCaption}>Calculating your numbers…</Text>
+              <Text style={styles.skeletonCaption}>{t('numero.calculating')}</Text>
             </View>
 
             {/* Three number cards */}
@@ -134,13 +165,17 @@ export default function Numerology() {
 
     return (
       <View style={styles.gridContainer}>
-        <Text style={styles.gridTitle}>Traditional Lo Shu Grid</Text>
-        <Text style={styles.gridSubtitle}>Based on FEAT Theory ABC + Kua Number</Text>
-        
+        <Text style={styles.gridTitle}>{t('numero.gridTitle')}</Text>
+        <Text style={styles.gridSubtitle}>{t('numero.gridSubtitle')}</Text>
+
         <View style={styles.kuaInfo}>
           <Info size={16} color="#B49BE6" />
           <Text style={styles.kuaInfoText}>
-            Your Birth Number {numerologyReading.birthNumber}, Destiny Number {numerologyReading.destinyNumber}, and Kua Number {kuaNumber} have been added to the grid for enhanced analysis
+            {t('numero.kuaInfo', {
+              birth: numerologyReading.birthNumber,
+              destiny: numerologyReading.destinyNumber,
+              kua: kuaNumber,
+            })}
           </Text>
         </View>
 
@@ -191,7 +226,7 @@ export default function Numerology() {
                         {number}
                       </Text>
                       <Text style={[styles.gridElement, { color: meaning.color }]}>
-                        {meaning.element}
+                        {tx(meaning.element)}
                       </Text>
 
                       {isKuaPosition && (
@@ -208,19 +243,19 @@ export default function Numerology() {
         <View style={styles.gridLegend}>
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: '#69C779' }]} />
-            <Text style={styles.legendText}>Present numbers</Text>
+            <Text style={styles.legendText}>{t('numero.legendPresent')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: '#E8C87E' }]} />
-            <Text style={styles.legendText}>Strong numbers (2+)</Text>
+            <Text style={styles.legendText}>{t('numero.legendStrong')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: '#B49BE6' }]} />
-            <Text style={styles.legendText}>Kua number</Text>
+            <Text style={styles.legendText}>{t('numero.legendKua')}</Text>
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#FF6B6B' }]} />
-            <Text style={styles.legendText}>Missing numbers</Text>
+            <Text style={styles.legendText}>{t('numero.legendMissing')}</Text>
           </View>
         </View>
       </View>
@@ -274,13 +309,13 @@ export default function Numerology() {
               style={[styles.compactNumberCard, expandedCard === 'birth' && styles.compactNumberCardActive]}
               activeOpacity={0.85}
               onPress={() => setExpandedCard((c) => (c === 'birth' ? null : 'birth'))}
-              accessibilityLabel="Birth number — tap for full meaning"
+              accessibilityLabel={t('numero.birthCardA11y')}
             >
               <Hash size={16} color="#69C779" />
               <Text style={styles.compactNumberLabel}>{t('numero.birth')}</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.birthNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
-                {numerologyReading.birthNumberMeaning}
+                {tx(numerologyReading.birthNumberMeaning)}
               </Text>
               <View style={styles.cardHint}>
                 {expandedCard === 'birth' ? (
@@ -289,7 +324,7 @@ export default function Numerology() {
                   <ChevronDown size={14} color="#8B88A0" />
                 )}
                 <Text style={styles.cardHintText}>
-                  {expandedCard === 'birth' ? 'less' : 'tap for more'}
+                  {expandedCard === 'birth' ? t('numero.less') : t('numero.tapForMore')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -298,13 +333,13 @@ export default function Numerology() {
               style={[styles.compactNumberCard, expandedCard === 'destiny' && styles.compactNumberCardActive]}
               activeOpacity={0.85}
               onPress={() => setExpandedCard((c) => (c === 'destiny' ? null : 'destiny'))}
-              accessibilityLabel="Destiny number — tap for full meaning"
+              accessibilityLabel={t('numero.destinyCardA11y')}
             >
               <Target size={16} color="#E8C87E" />
               <Text style={styles.compactNumberLabel}>{t('numero.destiny')}</Text>
               <Text style={styles.compactNumberValue}>{numerologyReading.destinyNumber}</Text>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
-                {numerologyReading.destinyNumberMeaning}
+                {tx(numerologyReading.destinyNumberMeaning)}
               </Text>
               <View style={styles.cardHint}>
                 {expandedCard === 'destiny' ? (
@@ -313,7 +348,7 @@ export default function Numerology() {
                   <ChevronDown size={14} color="#8B88A0" />
                 )}
                 <Text style={styles.cardHintText}>
-                  {expandedCard === 'destiny' ? 'less' : 'tap for more'}
+                  {expandedCard === 'destiny' ? t('numero.less') : t('numero.tapForMore')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -322,7 +357,7 @@ export default function Numerology() {
               style={[styles.compactNumberCard, expandedCard === 'kua' && styles.compactNumberCardActive]}
               activeOpacity={0.85}
               onPress={() => setExpandedCard((c) => (c === 'kua' ? null : 'kua'))}
-              accessibilityLabel="Kua number — tap for full meaning"
+              accessibilityLabel={t('numero.kuaCardA11y')}
             >
               <Compass size={16} color="#B49BE6" />
               <Text style={styles.compactNumberLabel}>{t('numero.kua')}</Text>
@@ -330,7 +365,7 @@ export default function Numerology() {
                 <Text style={styles.compactNumberValue}>{numerologyReading.kuaNumber}</Text>
               </View>
               <Text style={styles.compactNumberMeaning} numberOfLines={3}>
-                {numerologyReading.kuaNumberMeaning}
+                {tx(numerologyReading.kuaNumberMeaning)}
               </Text>
               <View style={styles.cardHint}>
                 {expandedCard === 'kua' ? (
@@ -339,7 +374,7 @@ export default function Numerology() {
                   <ChevronDown size={14} color="#8B88A0" />
                 )}
                 <Text style={styles.cardHintText}>
-                  {expandedCard === 'kua' ? 'less' : 'tap for more'}
+                  {expandedCard === 'kua' ? t('numero.less') : t('numero.tapForMore')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -349,48 +384,48 @@ export default function Numerology() {
             <View style={styles.expandedPanel}>
               <Text style={styles.expandedTitle}>
                 {expandedCard === 'birth'
-                  ? `Birth Number ${numerologyReading.birthNumber} · ${numerologyReading.birthNumberPlanet}`
+                  ? t('numero.birthNumberHeading', { number: numerologyReading.birthNumber, planet: numerologyReading.birthNumberPlanet })
                   : expandedCard === 'destiny'
-                  ? `Destiny Number ${numerologyReading.destinyNumber} · ${numerologyReading.destinyNumberPlanet}`
-                  : `Kua Number ${numerologyReading.kuaNumber}`}
+                  ? t('numero.destinyNumberHeading', { number: numerologyReading.destinyNumber, planet: numerologyReading.destinyNumberPlanet })
+                  : t('numero.kuaNumberHeading', { number: numerologyReading.kuaNumber })}
               </Text>
               <Text style={styles.expandedText}>
                 {expandedCard === 'birth'
-                  ? numerologyReading.birthNumberDetail
+                  ? tx(numerologyReading.birthNumberDetail)
                   : expandedCard === 'destiny'
-                  ? numerologyReading.destinyNumberDetail
-                  : numerologyReading.kuaNumberMeaning}
+                  ? tx(numerologyReading.destinyNumberDetail)
+                  : tx(numerologyReading.kuaNumberMeaning)}
               </Text>
             </View>
           )}
 
           <View style={styles.section}>
-            <SectionHeader icon={Grid3X3} title="Lo Shu Grid Analysis" iconColor="#69C779" />
+            <SectionHeader icon={Grid3X3} title={t('numero.loshuTitle')} iconColor="#69C779" />
             <View style={styles.loshuCard}>
               {renderLoshuGrid()}
             </View>
           </View>
 
           <View style={styles.section}>
-            <SectionHeader icon={Sparkles} title="Detailed Analysis" iconColor="#E8C87E" />
+            <SectionHeader icon={Sparkles} title={t('numero.detailedTitle')} iconColor="#E8C87E" />
             <View style={styles.analysisCard}>
               {numerologyReading.loshuAnalysis.length > 0 ? (
                 numerologyReading.loshuAnalysis.map((analysis: string, index: number) => (
                   <View key={index} style={styles.analysisRow}>
                     <View style={styles.analysisDot} />
-                    <Text style={styles.analysisText}>{analysis}</Text>
+                    <Text style={styles.analysisText}>{tx(analysis)}</Text>
                   </View>
                 ))
               ) : (
                 <Text style={styles.analysisText}>
-                  Your grid shows a unique pattern. Each missing or filled position represents different aspects of your personality that can be developed through awareness and practice.
+                  {t('numero.uniquePattern')}
                 </Text>
               )}
             </View>
           </View>
 
           <View style={styles.section}>
-            <SectionHeader icon={Star} title="Lucky Numbers" iconColor="#E8C87E" />
+            <SectionHeader icon={Star} title={t('home.luckyNumbers')} iconColor="#E8C87E" />
             <View style={styles.luckyNumbers}>
               {numerologyReading.luckyNumbers.map((number: number, index: number) => (
                 <View key={index} style={styles.luckyNumberCard}>
@@ -401,11 +436,11 @@ export default function Numerology() {
           </View>
 
           <View style={styles.section}>
-            <SectionHeader icon={Star} title="Remedies & Suggestions" iconColor="#E8C87E" />
+            <SectionHeader icon={Star} title={t('numero.remediesTitle')} iconColor="#E8C87E" />
             <View style={styles.chipGroup}>
               {numerologyReading.remedies.map((remedy: string, index: number) => (
                 <View key={index} style={styles.chip}>
-                  <Text style={styles.chipText}>{remedy}</Text>
+                  <Text style={styles.chipText}>{tx(remedy)}</Text>
                 </View>
               ))}
             </View>
@@ -413,16 +448,16 @@ export default function Numerology() {
 
           {numerologyReading.missingNumbers && numerologyReading.missingNumbers.length > 0 && (
             <View style={styles.section}>
-              <SectionHeader icon={Star} title="Remedies for your missing numbers" iconColor="#B49BE6" />
+              <SectionHeader icon={Star} title={t('numero.missingRemediesTitle')} iconColor="#B49BE6" />
               <View style={styles.missingRemediesCard}>
                 {numerologyReading.missingNumbers.map((num: number) => (
                   <View key={num} style={styles.analysisRow}>
                     <View style={styles.analysisDot} />
-                    <Text style={styles.analysisText}>{MISSING_NUMBER_REMEDIES[num]}</Text>
+                    <Text style={styles.analysisText}>{tx(MISSING_NUMBER_REMEDIES[num])}</Text>
                   </View>
                 ))}
                 <Text style={styles.missingNote}>
-                  These are supportive practices; consult a qualified astrologer before adopting gemstone remedies.
+                  {t('numero.missingNote')}
                 </Text>
               </View>
             </View>

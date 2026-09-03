@@ -45,13 +45,13 @@ export default function ChartsScreen() {
   const handleAdd = (profile: Profile) => {
     saveChart(profile);
     setModalVisible(false);
-    showToast(`${profile.firstName || 'Chart'} saved.`, 'success');
+    showToast(t('charts.savedToast', { name: profile.firstName || t('charts.chartFallback') }), 'success');
   };
 
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('charts.title')}</Text>
@@ -60,10 +60,10 @@ export default function ChartsScreen() {
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
         <Text style={styles.intro}>
-          Save charts for family and friends, then switch between them to read any one.
+          {t('charts.intro')}
         </Text>
 
-        <TouchableOpacity style={styles.addButton} onPress={() => { tap(); setModalVisible(true); }} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Add a chart">
+        <TouchableOpacity style={styles.addButton} onPress={() => { tap(); setModalVisible(true); }} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('charts.add')}>
           <Plus size={18} color="#0B0B1A" />
           <Text style={styles.addButtonText}>{t('charts.add')}</Text>
         </TouchableOpacity>
@@ -71,10 +71,10 @@ export default function ChartsScreen() {
         {ownProfile && (
           <>
             <Text style={styles.sectionLabel}>{t('charts.yours')}</Text>
-            <TouchableOpacity style={styles.card} onPress={viewOwn} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="View your chart">
+            <TouchableOpacity style={styles.card} onPress={viewOwn} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('charts.viewYourChart')}>
               <View style={styles.avatar}><User size={18} color="#E8C87E" /></View>
               <View style={styles.cardText}>
-                <Text style={styles.name}>{`${ownProfile.firstName} ${ownProfile.lastName}`.trim() || 'You'}</Text>
+                <Text style={styles.name}>{`${ownProfile.firstName} ${ownProfile.lastName}`.trim() || t('charts.you')}</Text>
                 <Text style={styles.meta}>{ownProfile.dateOfBirth}{ownProfile.placeOfBirth ? ` · ${ownProfile.placeOfBirth}` : ''}</Text>
               </View>
               <ChevronRight size={20} color="#8B88A0" />
@@ -84,18 +84,18 @@ export default function ChartsScreen() {
 
         <Text style={styles.sectionLabel}>{t('charts.saved')}</Text>
         {savedCharts.length === 0 ? (
-          <Text style={styles.empty}>No saved charts yet. Add one above, or save a chart from the "Explore another chart" bar on the reading screens.</Text>
+          <Text style={styles.empty}>{t('charts.empty')}</Text>
         ) : (
           savedCharts.map((c) => (
             <View key={c.id} style={styles.card}>
-              <TouchableOpacity style={styles.cardTap} onPress={() => viewChart(c.profile)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`View ${c.profile.firstName}'s chart`}>
+              <TouchableOpacity style={styles.cardTap} onPress={() => viewChart(c.profile)} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('charts.viewChartOf', { name: c.profile.firstName })}>
                 <View style={styles.avatar}><User size={18} color="#E8C87E" /></View>
                 <View style={styles.cardText}>
                   <Text style={styles.name}>{`${c.profile.firstName} ${c.profile.lastName}`.trim()}</Text>
                   <Text style={styles.meta}>{c.profile.dateOfBirth}{c.profile.placeOfBirth ? ` · ${c.profile.placeOfBirth}` : ''}</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => { tap(); deleteChart(c.id); }} hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }} accessibilityRole="button" accessibilityLabel={`Delete ${c.profile.firstName}'s chart`}>
+              <TouchableOpacity onPress={() => { tap(); deleteChart(c.id); }} hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }} accessibilityRole="button" accessibilityLabel={t('charts.deleteChartOf', { name: c.profile.firstName })}>
                 <Trash2 size={18} color="#8B88A0" />
               </TouchableOpacity>
             </View>
@@ -108,13 +108,13 @@ export default function ChartsScreen() {
           <View style={[styles.modalCard, kb > 0 && { marginBottom: kb }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('charts.add')}</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)} accessibilityLabel="Close">
+              <TouchableOpacity onPress={() => setModalVisible(false)} accessibilityLabel={t('common.close')}>
                 <X size={24} color="#C7C4D6" />
               </TouchableOpacity>
             </View>
             <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32, gap: 16 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <Text style={styles.modalCaption}>Saved on this device.</Text>
-              <BirthDetailsForm onSubmit={handleAdd} submitLabel="Save chart" />
+              <Text style={styles.modalCaption}>{t('charts.savedNote')}</Text>
+              <BirthDetailsForm onSubmit={handleAdd} submitLabel={t('charts.saveChart')} />
             </ScrollView>
           </View>
         </View>

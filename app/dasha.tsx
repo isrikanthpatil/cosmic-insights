@@ -74,7 +74,7 @@ export default function DashaScreen() {
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${pctElapsed(p, now)}%` }]} />
       </View>
-      <Text style={styles.levelPct}>{pctElapsed(p, now)}% elapsed</Text>
+      <Text style={styles.levelPct}>{t('dasha.pctElapsed', { pct: pctElapsed(p, now) })}</Text>
     </View>
   );
 
@@ -89,7 +89,7 @@ export default function DashaScreen() {
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('nav.dasha')}</Text>
@@ -99,25 +99,25 @@ export default function DashaScreen() {
       {!dasha || !maha ? (
         <View style={styles.center}>
           <Clock size={40} color="#E8C87E" />
-          <Text style={styles.emptyTitle}>Add your birth details</Text>
+          <Text style={styles.emptyTitle}>{t('common.addBirthTitle')}</Text>
           <Text style={styles.muted}>
-            Vimshottari Dasha is calculated from your natal Moon. Add your date and place of birth to see your current periods.
+            {t('dasha.emptyBody')}
           </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
-          <Text style={styles.introEyebrow}>YOU ARE HERE</Text>
+          <Text style={styles.introEyebrow}>{t('dasha.youAreHere')}</Text>
           <Text style={styles.intro}>
-            Your running Vimshottari period, nested from the major cycle down to the current sub-sub-period.
+            {t('dasha.intro')}
           </Text>
 
-          <Level tier="Mahadasha · major period" p={maha} />
-          {dasha.currentAntar && <Level tier="Antardasha · sub-period" p={dasha.currentAntar} />}
-          {dasha.currentPratyantar && <Level tier="Pratyantardasha · sub-sub-period" p={dasha.currentPratyantar} />}
+          <Level tier={t('dasha.mahaTier')} p={maha} />
+          {dasha.currentAntar && <Level tier={t('dasha.antarTier')} p={dasha.currentAntar} />}
+          {dasha.currentPratyantar && <Level tier={t('dasha.pratyantarTier')} p={dasha.currentPratyantar} />}
 
           {dasha.currentAntar && (
             <View style={styles.card}>
-              <Text style={styles.cardEyebrow}>ANTARDASHAS IN {maha.lord.toUpperCase()} MAHADASHA</Text>
+              <Text style={styles.cardEyebrow}>{t('dasha.antardashasIn', { lord: maha.lord.toUpperCase() })}</Text>
               {dasha.antardashas.map((a, i) => (
                 <ListRow key={i} p={a} active={a.lord === dasha.currentAntar!.lord} />
               ))}
@@ -126,7 +126,7 @@ export default function DashaScreen() {
 
           {dasha.currentPratyantar && dasha.currentAntar && (
             <View style={styles.card}>
-              <Text style={styles.cardEyebrow}>PRATYANTARDASHAS IN {dasha.currentAntar.lord.toUpperCase()} ANTARDASHA</Text>
+              <Text style={styles.cardEyebrow}>{t('dasha.pratyantardashasIn', { lord: dasha.currentAntar.lord.toUpperCase() })}</Text>
               {dasha.pratyantardashas.map((p, i) => (
                 <ListRow key={i} p={p} active={p.lord === dasha.currentPratyantar!.lord} />
               ))}
@@ -134,16 +134,14 @@ export default function DashaScreen() {
           )}
 
           <View style={styles.card}>
-            <Text style={styles.cardEyebrow}>MAHADASHA TIMELINE</Text>
+            <Text style={styles.cardEyebrow}>{t('dasha.timeline')}</Text>
             {dasha.mahadashas.map((m, i) => (
               <ListRow key={i} p={m} active={i === dasha.currentMahaIndex} />
             ))}
           </View>
 
           <Text style={styles.disclaimer}>
-            Vimshottari Dasha (120-year cycle) from your natal Moon nakshatra, sidereal
-            (Lahiri). If no birth time is set, noon is used — sub-period dates can shift.
-            Offered for guidance and reflection.
+            {t('dasha.disclaimer')}
           </Text>
         </ScrollView>
       )}

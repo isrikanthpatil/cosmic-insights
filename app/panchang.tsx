@@ -6,6 +6,7 @@ import { ArrowLeft, Sunrise, Sunset, AlertTriangle } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import ShareCardButton from '@/components/ShareCardButton';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedMap } from '@/utils/i18nContent';
 import { tap } from '@/utils/haptics';
 import { computePanchang, KalamPeriod } from '@/utils/jyotish/panchang';
 
@@ -47,7 +48,7 @@ const endsLabel = (from: Date, ends: Date | null): string => {
 export default function PanchangScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const now = useMemo(() => new Date(), []);
   const p = useMemo(() => {
@@ -58,6 +59,18 @@ export default function PanchangScreen() {
     }
   }, [now]);
 
+  // Localize the generated Panchang values (anga names, paksha, weekday, month,
+  // lord, "ends …" sub-labels, kalam names). tx(englishAtom) → localized atom.
+  const genStrings = p
+    ? ([
+        p.paksha, p.vara.lord, p.vara.english, MONTHS[toIST(now).getUTCMonth()],
+        p.tithi.name, p.nakshatra.name, p.yoga.name, p.karana.name, p.vara.name,
+        endsLabel(now, p.tithi.endsAt), endsLabel(now, p.nakshatra.endsAt),
+        p.rahuKalam?.name, p.yamaganda?.name, p.gulika?.name,
+      ].filter((s): s is string => typeof s === 'string' && s.trim().length > 0))
+    : [];
+  const tx = useTranslatedMap(genStrings, lang);
+
   const goBack = () => {
     if (router.canGoBack()) router.back();
     else router.replace('/(tabs)/more');
@@ -66,7 +79,7 @@ export default function PanchangScreen() {
   // Header date in IST, to match the IST-based weekday and timings.
   const istNow = toIST(now);
   const dateLine = p
-    ? `${p.vara.english}, ${istNow.getUTCDate()} ${MONTHS[istNow.getUTCMonth()]} ${istNow.getUTCFullYear()}`
+    ? `${tx(p.vara.english)}, ${istNow.getUTCDate()} ${tx(MONTHS[istNow.getUTCMonth()])} ${istNow.getUTCFullYear()}`
     : '';
 
   const rahuStr = p?.rahuKalam ? `${fmt(p.rahuKalam.start)}–${fmt(p.rahuKalam.end)}` : '—';
@@ -112,7 +125,7 @@ export default function PanchangScreen() {
   const KalamRow = ({ period, danger }: { period: KalamPeriod | null; danger?: boolean }) =>
     period ? (
       <View style={[styles.kalamRow, danger && styles.kalamRowDanger]}>
-        <Text style={[styles.kalamName, danger && styles.kalamNameDanger]}>{period.name}</Text>
+        <Text style={[styles.kalamName, danger && styles.kalamNameDanger]}>{tx(period.name)}</Text>
         <Text style={[styles.kalamTime, danger && styles.kalamTimeDanger]}>
           {fmt(period.start)} – {fmt(period.end)}
         </Text>
@@ -126,13 +139,13 @@ export default function PanchangScreen() {
           onPress={goBack}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessibilityRole="button"
-          accessibilityLabel="Back"
+          accessibilityLabel={t('common.back')}
         >
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('nav.panchang')}</Text>
         {panchangShareData ? (
-          <ShareCardButton data={panchangShareData} message={panchangShareMsg} label="Share" />
+          <ShareCardButton data={panchangShareData} message={panchangShareMsg} label={t('common.share')} />
         ) : (
           <View style={{ width: 24 }} />
         )}
@@ -141,7 +154,7 @@ export default function PanchangScreen() {
       {!p ? (
         <View style={styles.errorWrap}>
           <Text style={styles.errorText}>
-            Could not compute today's Panchang. Please try again.
+            {t('panchang.computeError')}
           </Text>
         </View>
       ) : (
@@ -151,7 +164,7 @@ export default function PanchangScreen() {
       >
         <Text style={styles.dateLine}>{dateLine}</Text>
         <Text style={styles.pakshaLine}>
-          {p.paksha} Paksha · Ruled by {p.vara.lord}
+          {t('panchang.pakshaRuledBy', { paksha: tx(p.paksha), lord: tx(p.vara.lord) })}
         </Text>
 
         {/* Five angas */}
@@ -159,17 +172,17 @@ export default function PanchangScreen() {
           <Text style={styles.cardEyebrow}>{t('panchang.fiveAngas')}</Text>
           <AngaRow
             label={t('panchang.tithi')}
-            value={`${p.tithi.name}`}
-            sub={`${p.paksha} · ${endsLabel(now, p.tithi.endsAt)}`.replace(/ · $/, '')}
+            value={tx(p.tithi.name)}
+            sub={`${tx(p.paksha)} · ${tx(endsLabel(now, p.tithi.endsAt))}`.replace(/ · $/, '')}
           />
           <View style={styles.divider} />
-          <AngaRow label={t('panchang.nakshatra')} value={p.nakshatra.name} sub={endsLabel(now, p.nakshatra.endsAt)} />
+          <AngaRow label={t('panchang.nakshatra')} value={tx(p.nakshatra.name)} sub={tx(endsLabel(now, p.nakshatra.endsAt))} />
           <View style={styles.divider} />
-          <AngaRow label={t('panchang.yoga')} value={p.yoga.name} />
+          <AngaRow label={t('panchang.yoga')} value={tx(p.yoga.name)} />
           <View style={styles.divider} />
-          <AngaRow label={t('panchang.karana')} value={p.karana.name} />
+          <AngaRow label={t('panchang.karana')} value={tx(p.karana.name)} />
           <View style={styles.divider} />
-          <AngaRow label={t('panchang.vara')} value={`${p.vara.name} (${p.vara.english})`} sub={`Lord · ${p.vara.lord}`} />
+          <AngaRow label={t('panchang.vara')} value={`${tx(p.vara.name)} (${tx(p.vara.english)})`} sub={t('panchang.lordValue', { lord: tx(p.vara.lord) })} />
         </View>
 
         {/* Sun timings */}
@@ -197,7 +210,7 @@ export default function PanchangScreen() {
             <Text style={styles.cardEyebrowInline}>{t('panchang.inauspicious')}</Text>
           </View>
           <Text style={styles.kalamNote}>
-            Traditionally avoided for starting important activities.
+            {t('panchang.kalamNote')}
           </Text>
           <KalamRow period={p.rahuKalam} danger />
           <KalamRow period={p.yamaganda} />
@@ -205,9 +218,7 @@ export default function PanchangScreen() {
         </View>
 
         <Text style={styles.disclaimer}>
-          Computed with the sidereal (Lahiri) system. Sun timings and periods use a
-          central-India reference (times shown in IST) and may vary by a few minutes
-          from your exact city. Offered for guidance and reflection.
+          {t('panchang.disclaimer')}
         </Text>
       </ScrollView>
       )}

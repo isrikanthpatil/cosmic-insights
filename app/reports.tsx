@@ -33,7 +33,7 @@ export default function ReportsScreen() {
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('reports.title')}</Text>
@@ -43,33 +43,33 @@ export default function ReportsScreen() {
       {!user ? (
         <View style={styles.gate}>
           <Sparkles size={40} color="#E8C87E" />
-          <Text style={styles.gateTitle}>Sign in to view reports</Text>
+          <Text style={styles.gateTitle}>{t('report.signInTitle')}</Text>
           <Text style={styles.gateText}>
-            Detailed astrology, numerology, gemstone and forecast reports are available to signed-in members. Sign in or create a free account to generate yours.
+            {t('reports.signInBody')}
           </Text>
           <TouchableOpacity
             style={styles.gateBtn}
             onPress={() => { tap(); router.push('/login'); }}
             accessibilityRole="button"
-            accessibilityLabel="Sign in"
+            accessibilityLabel={t('common.signIn')}
           >
-            <Text style={styles.gateBtnText}>Sign in / Sign up</Text>
+            <Text style={styles.gateBtnText}>{t('common.signInUp')}</Text>
           </TouchableOpacity>
         </View>
       ) : locked ? (
         <View style={styles.gate}>
           <Sparkles size={40} color="#E8C87E" />
-          <Text style={styles.gateTitle}>Unlock detailed reports</Text>
+          <Text style={styles.gateTitle}>{t('report.unlockTitle')}</Text>
           <Text style={styles.gateText}>
-            Reports are a premium feature — beautifully formatted, multi-page readings from your birth chart. Unlock them with a code, or with Astropanth Plus.
+            {t('reports.unlockBody')}
           </Text>
           <TouchableOpacity
             style={styles.gateBtn}
             onPress={() => { tap(); router.push('/premium'); }}
             accessibilityRole="button"
-            accessibilityLabel="Unlock reports"
+            accessibilityLabel={t('common.unlock')}
           >
-            <Text style={styles.gateBtnText}>Unlock reports</Text>
+            <Text style={styles.gateBtnText}>{t('common.unlock')}</Text>
           </TouchableOpacity>
         </View>
       ) : (

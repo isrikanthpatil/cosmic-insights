@@ -21,36 +21,26 @@ import { showToast } from '@/utils/toast';
 const GUEST_LIMIT = 'guest_limit';
 const DEFAULT_GUEST_LIMIT_MESSAGE =
   "You've used your 2 free questions for today. Sign in for unlimited AskAstro.";
-const GREETING_BODY =
-  "I'm AskAstro. Ask me anything about your chart, zodiac, or numerology — or add your birth details for a personalised reading.";
-const makeGreeting = (name?: string): Message => ({
+const makeGreeting = (
+  t: (key: string, params?: Record<string, string | number>) => string,
+  name?: string,
+): Message => ({
   id: '1',
-  text: name ? `Namaste ${name} 🙏 ${GREETING_BODY}` : `Namaste 🙏 ${GREETING_BODY}`,
+  text: name
+    ? t('ai.greetingNamed', { name, body: t('ai.greetingBody') })
+    : t('ai.greeting', { body: t('ai.greetingBody') }),
   isUser: false,
   timestamp: new Date(),
 });
 
-// Suggested follow-up questions shown as tappable chips after each reply, so the
-// chat feels like a guided conversation rather than a one-shot Q&A.
-const FOLLOWUP_POOL = [
-  'What about my career?',
-  'How is my love life?',
-  'Any remedies for me?',
-  'What does today hold?',
-  'My lucky numbers & colours?',
-  'What are my strengths?',
-  'Tell me about my Moon sign',
-  'Which planetary period am I in?',
-];
-
 // Deterministic per-turn pick of 3 follow-ups (stable across re-renders via the
 // message-count seed), excluding whatever was just asked.
-const pickFollowUps = (seed: number, exclude: string): string[] => {
+const pickFollowUps = (pool: string[], seed: number, exclude: string): string[] => {
   const ex = exclude.trim().toLowerCase();
-  const pool = FOLLOWUP_POOL.filter((q) => q.toLowerCase() !== ex);
+  const filtered = pool.filter((q) => q.toLowerCase() !== ex);
   const out: string[] = [];
-  for (let i = 0; out.length < 3 && i < pool.length; i++) {
-    out.push(pool[(seed + i) % pool.length]);
+  for (let i = 0; out.length < 3 && i < filtered.length; i++) {
+    out.push(filtered[(seed + i) % filtered.length]);
   }
   return out;
 };
@@ -103,8 +93,8 @@ function TypingDots() {
 }
 
 export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
-  const { lang } = useLanguage();
-  const [messages, setMessages] = useState<Message[]>([makeGreeting(userProfile?.firstName)]);
+  const { lang, t } = useLanguage();
+  const [messages, setMessages] = useState<Message[]>([makeGreeting(t, userProfile?.firstName)]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // True once a guest has hit the daily free-question limit; shows a sign-in
@@ -118,7 +108,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   // person's personalized answers, a stale greeting, and the "used your 2 free
   // questions" bubble linger under a header that now names someone else.
   useEffect(() => {
-    setMessages([makeGreeting(userProfile?.firstName)]);
+    setMessages([makeGreeting(t, userProfile?.firstName)]);
     setInputText('');
     setGuestLimitReached(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -650,7 +640,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
     const userId = userProfile?.firstName || 'anonymous';
     if (!rateLimiter.isAllowed(userId, 'ai-query')) {
       securityMonitor.logSuspiciousActivity('Rate limit exceeded for AI queries', { userId });
-      showToast('Please wait a moment before asking again.', 'info');
+      showToast(t('ai.rateLimit'), 'info');
       return;
     }
     const userMessage: Message = {
@@ -718,13 +708,26 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   };
 
   const suggestedQuestions = userProfile ? [
-    "What's my birth chart?",
-    "Tell me about my sun sign",
-    "What are my remedies?"
+    t('ai.suggestMyChart'),
+    t('ai.suggestMySunSign'),
+    t('ai.suggestMyRemedies')
   ] : [
-    "What is a birth chart?",
-    "What are the traits of Aries?",
-    "What do the houses represent?"
+    t('ai.suggestWhatChart'),
+    t('ai.suggestAriesTraits'),
+    t('ai.suggestHouses')
+  ];
+
+  // Suggested follow-up questions shown as tappable chips after each reply, so
+  // the chat feels like a guided conversation rather than a one-shot Q&A.
+  const followUpPool = [
+    t('ai.followupCareer'),
+    t('ai.followupLove'),
+    t('ai.followupRemedies'),
+    t('ai.followupToday'),
+    t('ai.followupLucky'),
+    t('ai.followupStrengths'),
+    t('ai.followupMoon'),
+    t('ai.followupPeriod'),
   ];
 
   // Follow-up chips after the latest reply (not the greeting, not while typing,
@@ -733,7 +736,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
   const lastUserText = [...messages].reverse().find((m) => m.isUser)?.text ?? '';
   const followUps =
     !isLoading && !guestLimitReached && messages.length > 1 && lastMsg && !lastMsg.isUser
-      ? pickFollowUps(messages.length, lastUserText)
+      ? pickFollowUps(followUpPool, messages.length, lastUserText)
       : [];
 
   return (
@@ -753,7 +756,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>AskAstro</Text>
           <Text style={styles.headerSubtitle}>
-            {userProfile ? `Personalized insights for ${userProfile.firstName}` : 'Ask me anything about astrology'}
+            {userProfile ? t('ai.personalizedFor', { name: userProfile.firstName }) : t('ai.askAnything')}
           </Text>
         </View>
       </View>
@@ -801,7 +804,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
                 <Sparkles size={15} color="#E8C87E" />
               </View>
               <View style={styles.aiRowBody}>
-                <Text style={styles.aiName}>AskAstro is typing…</Text>
+                <Text style={styles.aiName}>{t('ai.typing')}</Text>
                 <View style={[styles.messageBubble, styles.aiMessage, styles.typingBubble]}>
                   <TypingDots />
                 </View>
@@ -819,7 +822,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
                 onPress={() => handleSend(q)}
                 activeOpacity={0.85}
                 accessibilityRole="button"
-                accessibilityLabel={`Ask: ${q}`}
+                accessibilityLabel={t('ai.askLabel', { q })}
               >
                 <Text style={styles.followUpText}>{q}</Text>
               </TouchableOpacity>
@@ -829,7 +832,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
 
         {messages.length === 1 && (
           <View style={styles.suggestionsContainer}>
-            <Text style={styles.suggestionsTitle}>Try asking:</Text>
+            <Text style={styles.suggestionsTitle}>{t('ai.tryAsking')}</Text>
             <View style={styles.suggestionsGroup}>
               {suggestedQuestions.map((question, index) => (
                 <TouchableOpacity
@@ -838,7 +841,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
                   hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                   onPress={() => setInputText(question)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Ask: ${question}`}
+                  accessibilityLabel={t('ai.askLabel', { q: question })}
                 >
                   <Text style={styles.suggestionText}>{question}</Text>
                 </TouchableOpacity>
@@ -851,7 +854,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
       {guestLimitReached && (
         <View style={styles.limitBanner}>
           <Text style={styles.limitBannerText}>
-            {DEFAULT_GUEST_LIMIT_MESSAGE}
+            {t('ai.guestLimit')}
           </Text>
           <View style={styles.limitActions}>
             <TouchableOpacity
@@ -863,7 +866,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
               activeOpacity={0.85}
             >
               <LogIn size={16} color="#0B0B1A" />
-              <Text style={styles.limitSignInText}>Sign in</Text>
+              <Text style={styles.limitSignInText}>{t('common.signIn')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -872,7 +875,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
               }}
               activeOpacity={0.7}
             >
-              <Text style={styles.limitPlusLink}>Go Plus for unlimited</Text>
+              <Text style={styles.limitPlusLink}>{t('ai.goPlus')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -884,7 +887,7 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             style={styles.textInput}
             value={inputText}
             onChangeText={setInputText}
-            placeholder={userProfile ? "Ask about your chart..." : "Ask about astrology..."}
+            placeholder={userProfile ? t('ai.placeholderChart') : t('ai.placeholderAstro')}
             placeholderTextColor="#8B88A0"
             selectionColor="#E8C87E"
             multiline
@@ -916,13 +919,13 @@ export default function AstrologyAI({ userProfile }: AstrologyAIProps) {
             onPress={() => handleSend()}
             disabled={!inputText.trim() || isLoading}
             accessibilityRole="button"
-            accessibilityLabel="Send message"
+            accessibilityLabel={t('ai.sendMessage')}
           >
             <Send size={20} color={!inputText.trim() ? "#8B88A0" : "#0B0B1A"} />
           </TouchableOpacity>
         </View>
         <Text style={styles.disclaimer}>
-          For guidance and self-reflection — not professional advice.
+          {t('ai.disclaimer')}
         </Text>
       </View>
     </View>

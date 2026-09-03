@@ -45,7 +45,7 @@ export default function SadeSatiScreen() {
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('nav.sadeSati')}</Text>
@@ -55,29 +55,29 @@ export default function SadeSatiScreen() {
       {!result ? (
         <View style={styles.center}>
           <Orbit size={40} color="#E8C87E" />
-          <Text style={styles.emptyTitle}>Add your birth details</Text>
+          <Text style={styles.emptyTitle}>{t('common.addBirthTitle')}</Text>
           <Text style={styles.muted}>
-            Sade Sati is measured from your natal Moon sign. Add your date and place of birth to see your current Saturn phase.
+            {t('sadesati.emptyBody')}
           </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
           {/* Status hero */}
           <View style={[styles.hero, result.active ? styles.heroActive : result.dhaiya ? styles.heroDhaiya : styles.heroClear]}>
-            <Text style={styles.heroEyebrow}>SATURN &amp; YOUR MOON</Text>
+            <Text style={styles.heroEyebrow}>{t('sadesati.heroEyebrow')}</Text>
             <Text style={styles.heroTitle}>{result.title}</Text>
             <Text style={styles.heroSummary}>{result.summary}</Text>
             <View style={styles.chips}>
-              <View style={styles.chip}><Text style={styles.chipText}>Saturn · {result.saturnRashiName}</Text></View>
-              <View style={styles.chip}><Text style={styles.chipText}>Moon · {result.moonRashiName}</Text></View>
-              <View style={styles.chip}><Text style={styles.chipText}>House {result.houseFromMoon} from Moon</Text></View>
+              <View style={styles.chip}><Text style={styles.chipText}>{t('sadesati.saturnChip', { rashi: result.saturnRashiName })}</Text></View>
+              <View style={styles.chip}><Text style={styles.chipText}>{t('sadesati.moonChip', { rashi: result.moonRashiName })}</Text></View>
+              <View style={styles.chip}><Text style={styles.chipText}>{t('sadesati.houseChip', { house: result.houseFromMoon })}</Text></View>
             </View>
           </View>
 
           {/* Phase timeline when in Sade Sati */}
           {result.active && (
             <View style={styles.card}>
-              <Text style={styles.cardEyebrow}>THE THREE PHASES (~2.5 YEARS EACH)</Text>
+              <Text style={styles.cardEyebrow}>{t('sadesati.threePhases')}</Text>
               {PHASES.map((ph) => {
                 const isNow = ph === result.phase;
                 return (
@@ -85,17 +85,17 @@ export default function SadeSatiScreen() {
                     <View style={[styles.phaseDot, isNow && styles.phaseDotActive]} />
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.phaseName, isNow && styles.phaseNameActive]}>
-                        {ph}{ph === 'Rising' ? ' · 12th from Moon' : ph === 'Peak' ? ' · over Moon' : ' · 2nd from Moon'}
+                        {ph === 'Rising' ? t('sadesati.phaseRising') : ph === 'Peak' ? t('sadesati.phasePeak') : t('sadesati.phaseSetting')}
                       </Text>
                       {isNow && (
-                        <Text style={styles.phaseMeta}>Current phase · approx. ends {fmt(result.approxPhaseEnd)}</Text>
+                        <Text style={styles.phaseMeta}>{t('sadesati.currentPhaseEnds', { date: fmt(result.approxPhaseEnd) })}</Text>
                       )}
                     </View>
                   </View>
                 );
               })}
               <View style={styles.overallRow}>
-                <Text style={styles.overallLabel}>Whole Sade Sati ends around</Text>
+                <Text style={styles.overallLabel}>{t('sadesati.wholeEndsAround')}</Text>
                 <Text style={styles.overallValue}>{fmt(result.approxOverallEnd)}</Text>
               </View>
             </View>
@@ -105,25 +105,23 @@ export default function SadeSatiScreen() {
           {!result.active && result.approxNextStart && (
             <View style={styles.card}>
               <View style={styles.nextRow}>
-                <Text style={styles.overallLabel}>Next Sade Sati begins around</Text>
+                <Text style={styles.overallLabel}>{t('sadesati.nextBegins')}</Text>
                 <Text style={styles.overallValue}>{fmt(result.approxNextStart)}</Text>
               </View>
               {result.dhaiya && (
-                <Text style={styles.phaseMeta}>Current Dhaiya approx. ends {fmt(result.approxPhaseEnd)}</Text>
+                <Text style={styles.phaseMeta}>{t('sadesati.dhaiyaEnds', { date: fmt(result.approxPhaseEnd) })}</Text>
               )}
             </View>
           )}
 
           {/* Guidance */}
           <View style={styles.card}>
-            <Text style={styles.cardEyebrow}>WHAT IT MEANS</Text>
+            <Text style={styles.cardEyebrow}>{t('sadesati.whatItMeans')}</Text>
             <Text style={styles.guidance}>{result.guidance}</Text>
           </View>
 
           <Text style={styles.disclaimer}>
-            Phase dates are approximate — Saturn's retrograde motion shifts exact sign-change
-            timing by weeks. Computed with the sidereal (Lahiri) system, from your natal Moon
-            sign. Offered for guidance and reflection, not prediction.
+            {t('sadesati.disclaimer')}
           </Text>
         </ScrollView>
       )}

@@ -7,6 +7,7 @@ import * as Sharing from 'expo-sharing';
 import { Download } from 'lucide-react-native';
 import { showToast } from '@/utils/toast';
 import { tap } from '@/utils/haptics';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * Renders a report's HTML in a WebView and offers a Save/Share PDF action
@@ -16,6 +17,7 @@ import { tap } from '@/utils/haptics';
  */
 export default function ReportViewer({ html, fileName }: { html: string; fileName: string }) {
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const [busy, setBusy] = useState(false);
 
   const sharePdf = async () => {
@@ -31,10 +33,10 @@ export default function ReportViewer({ html, fileName }: { html: string; fileNam
           UTI: 'com.adobe.pdf',
         });
       } else {
-        showToast('Sharing is not available on this device.', 'info');
+        showToast(t('viewer.sharingUnavailable'), 'info');
       }
     } catch {
-      showToast('Could not generate the PDF. Please try again.', 'error');
+      showToast(t('viewer.pdfFailed'), 'error');
     } finally {
       setBusy(false);
     }
@@ -55,14 +57,14 @@ export default function ReportViewer({ html, fileName }: { html: string; fileNam
           disabled={busy}
           activeOpacity={0.85}
           accessibilityRole="button"
-          accessibilityLabel="Save or share as PDF"
+          accessibilityLabel={t('viewer.savePdfLabel')}
         >
           {busy ? (
             <ActivityIndicator color="#0B0B1A" />
           ) : (
             <>
               <Download size={18} color="#0B0B1A" />
-              <Text style={styles.btnText}>Save / Share PDF</Text>
+              <Text style={styles.btnText}>{t('viewer.savePdf')}</Text>
             </>
           )}
         </TouchableOpacity>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getAstrologyReading, getSignDetails, getWesternSunSign } from '@/utils/astrology';
+import { resolveAndCache, useCoordsNonce } from '@/utils/coords';
 import { Star, Sun, Moon, Heart, TrendingUp, TriangleAlert as AlertTriangle, Sparkles, MapPin, Book, Gem } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChart } from '@/contexts/ChartContext';
@@ -14,6 +15,7 @@ import SectionHeader from '@/components/SectionHeader';
 import Skeleton from '@/components/Skeleton';
 import ShareCardButton from '@/components/ShareCardButton';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedMap } from '@/utils/i18nContent';
 import { getZodiacGlyph } from '@/utils/zodiac';
 import { tap } from '@/utils/haptics';
 
@@ -38,9 +40,14 @@ export default function Astrology() {
   const { isLoading: loading } = useAuth();
   const { activeProfile: userProfile, isExploring, isGuest } = useChart();
   const [activeTab, setActiveTab] = useState('overview');
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [astrologyData, setAstrologyData] = useState<AstrologyData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  // Precise birthplace coordinates (accurate Ascendant); regenerate when ready.
+  const coordsNonce = useCoordsNonce();
+  useEffect(() => {
+    resolveAndCache(userProfile?.placeOfBirth);
+  }, [userProfile?.placeOfBirth]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -60,7 +67,8 @@ export default function Astrology() {
     // Return to the Overview tab when the subject changes, so we don't land the
     // new person on, say, the Remedies tab left open for someone else.
     setActiveTab('overview');
-  }, [userProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userProfile, coordsNonce]);
 
   const generateAstrologyData = () => {
     if (!userProfile) return;
@@ -82,6 +90,35 @@ export default function Astrology() {
     });
   };
 
+  // Collect every generated prose string this screen renders so it can be
+  // batch-translated for the active language. Must run unconditionally (before
+  // any early return); the memo returns [] when there's no reading yet.
+  const genStrings = useMemo(() => {
+    const out: string[] = [];
+    const d = astrologyData;
+    if (d) {
+      out.push(d.sunSign, d.moonSign, d.ascendant);
+      out.push(...(d.traits || []));
+      out.push(...(d.positivePoints || []));
+      out.push(...(d.negativePoints || []));
+      out.push(...(d.remedies || []));
+      out.push(...(d.locationInsights || []));
+      const da = d.detailedAnalysis || {};
+      const sd = da.sunSignData || {};
+      const md = da.moonSignData || {};
+      const ad = da.ascendantData || {};
+      if (sd.mythology) out.push(sd.mythology);
+      if (Array.isArray(sd.mantras)) out.push(...sd.mantras);
+      if (Array.isArray(sd.gemstones) && sd.gemstones.length) out.push(sd.gemstones.join(', '));
+      if (sd.element) out.push(sd.element);
+      if (md.element) out.push(md.element);
+      if (md.quality) out.push(md.quality);
+      if (ad.quality) out.push(ad.quality);
+    }
+    return out.filter((s) => typeof s === 'string' && s.trim().length > 0);
+  }, [astrologyData]);
+  const tx = useTranslatedMap(genStrings, lang);
+
   if (!loading && !userProfile && !isExploring) {
     return (
       <ScreenBackground style={styles.container}>
@@ -92,8 +129,8 @@ export default function Astrology() {
           </View>
           <View style={styles.guestEntryWrap}>
             <GuestEntryPrompt
-              title="Enter your birth details for a free reading"
-              message="Add your birth details to unlock your personalized astrology reading. No account needed."
+              title={t('astrology.guestTitle')}
+              message={t('astrology.guestMessage')}
             />
           </View>
         </ScrollView>
@@ -111,7 +148,7 @@ export default function Astrology() {
           <View style={styles.skeletonWrap}>
             <View style={styles.skeletonCaptionRow}>
               <Sparkles size={18} color="#E8C87E" />
-              <Text style={styles.skeletonCaption}>Calculating your cosmic blueprint…</Text>
+              <Text style={styles.skeletonCaption}>{t('astrology.calculating')}</Text>
             </View>
 
             {/* Sun-sign hero card */}
@@ -158,20 +195,20 @@ export default function Astrology() {
                 <View style={styles.signHeader}>
                   <Sun size={32} color="#E8C87E" />
                   <View style={styles.signInfo}>
-                    <Text style={styles.signTitle}>Sun Sign</Text>
+                    <Text style={styles.signTitle}>{t('astrology.sunSign')}</Text>
                     <View style={styles.signValueRow}>
-                      <Text style={styles.signValue}>{astrologyData.sunSign}</Text>
+                      <Text style={styles.signValue}>{tx(astrologyData.sunSign)}</Text>
                       <Text style={styles.signGlyph}>{getZodiacGlyph(astrologyData.sunSign)}</Text>
                     </View>
-                    <Text style={styles.signDescription}>Your core identity and life purpose</Text>
+                    <Text style={styles.signDescription}>{t('astrology.sunSignDesc')}</Text>
                     <Text style={styles.signDates}>
-                      Vedic (sidereal): {astrologyData.detailedAnalysis.sunSignData.dates}
+                      {t('astrology.vedicSidereal', { dates: astrologyData.detailedAnalysis.sunSignData.dates })}
                     </Text>
                     {(() => {
                       const w = getWesternSunSign(userProfile.dateOfBirth);
                       return w.sign ? (
                         <Text style={styles.westernNote}>
-                          Western (tropical): {w.sign} · {w.dates}
+                          {t('astrology.westernTropical', { sign: w.sign, dates: w.dates })}
                         </Text>
                       ) : null;
                     })()}
@@ -183,29 +220,29 @@ export default function Astrology() {
             <View style={styles.row}>
               <View style={styles.halfCard}>
                 <Moon size={24} color="#C0C0C0" />
-                <Text style={styles.halfCardTitle}>Moon Sign</Text>
-                <Text style={styles.halfCardValue}>{astrologyData.moonSign}</Text>
-                <Text style={styles.halfCardDesc}>Emotional nature</Text>
+                <Text style={styles.halfCardTitle}>{t('astrology.moonSign')}</Text>
+                <Text style={styles.halfCardValue}>{tx(astrologyData.moonSign)}</Text>
+                <Text style={styles.halfCardDesc}>{t('astrology.moonEmotional')}</Text>
                 <Text style={styles.halfCardElement}>
-                  {astrologyData.detailedAnalysis.moonSignData.element} • {astrologyData.detailedAnalysis.moonSignData.quality}
+                  {tx(astrologyData.detailedAnalysis.moonSignData.element)} • {tx(astrologyData.detailedAnalysis.moonSignData.quality)}
                 </Text>
               </View>
               <View style={styles.halfCard}>
                 <Star size={24} color="#B49BE6" />
-                <Text style={styles.halfCardTitle}>Ascendant</Text>
+                <Text style={styles.halfCardTitle}>{t('astrology.ascendant')}</Text>
                 {astrologyData.ascendant ? (
                   <>
-                    <Text style={styles.halfCardValue}>{astrologyData.ascendant}</Text>
-                    <Text style={styles.halfCardDesc}>How others see you</Text>
+                    <Text style={styles.halfCardValue}>{tx(astrologyData.ascendant)}</Text>
+                    <Text style={styles.halfCardDesc}>{t('astrology.howOthersSee')}</Text>
                     <Text style={styles.halfCardElement}>
-                      Ruled by {astrologyData.detailedAnalysis.ascendantData.ruler}
+                      {t('astrology.ruledBy', { ruler: astrologyData.detailedAnalysis.ascendantData.ruler })}
                     </Text>
                   </>
                 ) : (
                   <>
                     <Text style={styles.halfCardValue}>—</Text>
-                    <Text style={styles.halfCardDesc}>Add your birth time</Text>
-                    <Text style={styles.halfCardElement}>to reveal your Lagna</Text>
+                    <Text style={styles.halfCardDesc}>{t('astrology.addBirthTime')}</Text>
+                    <Text style={styles.halfCardElement}>{t('astrology.revealLagna')}</Text>
                   </>
                 )}
               </View>
@@ -215,47 +252,47 @@ export default function Astrology() {
               <View style={styles.coordinatesCard}>
                 <View style={styles.coordinatesHeader}>
                   <MapPin size={20} color="#69C779" />
-                  <Text style={styles.coordinatesTitle}>Birth Location</Text>
+                  <Text style={styles.coordinatesTitle}>{t('astrology.birthLocation')}</Text>
                 </View>
                 <Text style={styles.coordinatesText}>
                   {userProfile.placeOfBirth} ({astrologyData.coordinates.latitude.toFixed(2)}°N, {astrologyData.coordinates.longitude.toFixed(2)}°E)
                 </Text>
                 <Text style={styles.coordinatesDescription}>
-                  Used to compute your sidereal (Lahiri) chart — Moon sign, Ascendant, and planetary positions.
+                  {t('astrology.locationDesc')}
                 </Text>
               </View>
             )}
 
             <View style={styles.section}>
-              <SectionHeader icon={Sparkles} title="Integrated Personality Traits" iconColor="#E8C87E" />
+              <SectionHeader icon={Sparkles} title={t('astrology.traitsTitle')} iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
-                Based on your Sun in {astrologyData.sunSign}, Moon in {astrologyData.moonSign}
-                {astrologyData.ascendant ? `, and ${astrologyData.ascendant} Rising` : ''}
+                {t('astrology.traitsBasis', { sun: astrologyData.sunSign, moon: astrologyData.moonSign })}
+                {astrologyData.ascendant ? t('astrology.andRising', { sign: astrologyData.ascendant }) : ''}
               </Text>
               <View style={styles.chipGroup}>
                 {astrologyData.traits.map((trait, index) => (
                   <View key={index} style={styles.chip}>
-                    <Text style={styles.chipText}>{trait}</Text>
+                    <Text style={styles.chipText}>{tx(trait)}</Text>
                   </View>
                 ))}
               </View>
             </View>
 
             <View style={styles.section}>
-              <SectionHeader icon={Book} title="Astrological Elements" iconColor="#B49BE6" />
+              <SectionHeader icon={Book} title={t('astrology.elementsTitle')} iconColor="#B49BE6" />
               <View style={styles.elementsGrid}>
                 <View style={styles.elementCard}>
-                  <Text style={styles.elementLabel}>Sun Element</Text>
-                  <Text style={styles.elementValue}>{astrologyData.detailedAnalysis.sunSignData.element}</Text>
+                  <Text style={styles.elementLabel}>{t('astrology.sunElement')}</Text>
+                  <Text style={styles.elementValue}>{tx(astrologyData.detailedAnalysis.sunSignData.element)}</Text>
                 </View>
                 <View style={styles.elementCard}>
-                  <Text style={styles.elementLabel}>Moon Element</Text>
-                  <Text style={styles.elementValue}>{astrologyData.detailedAnalysis.moonSignData.element}</Text>
+                  <Text style={styles.elementLabel}>{t('astrology.moonElement')}</Text>
+                  <Text style={styles.elementValue}>{tx(astrologyData.detailedAnalysis.moonSignData.element)}</Text>
                 </View>
                 <View style={styles.elementCard}>
-                  <Text style={styles.elementLabel}>Rising Quality</Text>
+                  <Text style={styles.elementLabel}>{t('astrology.risingQuality')}</Text>
                   <Text style={styles.elementValue}>
-                    {astrologyData.ascendant ? astrologyData.detailedAnalysis.ascendantData.quality : '—'}
+                    {astrologyData.ascendant ? tx(astrologyData.detailedAnalysis.ascendantData.quality) : '—'}
                   </Text>
                 </View>
               </View>
@@ -263,11 +300,11 @@ export default function Astrology() {
 
             {astrologyData.locationInsights.length > 0 && (
               <View style={styles.section}>
-                <SectionHeader icon={MapPin} title="Location-Based Cosmic Insights" iconColor="#69C779" />
+                <SectionHeader icon={MapPin} title={t('astrology.locationInsightsTitle')} iconColor="#69C779" />
                 <View style={styles.chipGroup}>
                   {astrologyData.locationInsights.map((insight, index) => (
                     <View key={index} style={styles.chip}>
-                      <Text style={styles.chipText}>{insight}</Text>
+                      <Text style={styles.chipText}>{tx(insight)}</Text>
                     </View>
                   ))}
                 </View>
@@ -280,22 +317,22 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={TrendingUp} title="Your Cosmic Strengths" iconColor="#69C779" />
+              <SectionHeader icon={TrendingUp} title={t('astrology.strengthsTitle')} iconColor="#69C779" />
               <Text style={styles.sectionDescription}>
-                Based on authentic astrological knowledge from classical texts and verified sources
+                {t('astrology.strengthsDesc')}
               </Text>
               <View style={styles.chipGroup}>
                 {astrologyData.positivePoints.map((point, index) => (
                   <View key={index} style={styles.chip}>
-                    <Text style={styles.chipText}>{point}</Text>
+                    <Text style={styles.chipText}>{tx(point)}</Text>
                   </View>
                 ))}
               </View>
 
               <View style={styles.mythologyCard}>
-                <Text style={styles.mythologyTitle}>Ancient Wisdom</Text>
+                <Text style={styles.mythologyTitle}>{t('astrology.ancientWisdom')}</Text>
                 <Text style={styles.mythologyText}>
-                  {astrologyData.detailedAnalysis.sunSignData.mythology}
+                  {tx(astrologyData.detailedAnalysis.sunSignData.mythology)}
                 </Text>
               </View>
             </View>
@@ -306,22 +343,22 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={AlertTriangle} title="Areas for Conscious Growth" iconColor="#D9A441" />
+              <SectionHeader icon={AlertTriangle} title={t('astrology.growthTitle')} iconColor="#D9A441" />
               <Text style={styles.sectionDescription}>
-                Understanding these patterns helps you grow and evolve consciously. These are not permanent limitations but opportunities for development.
+                {t('astrology.growthDesc')}
               </Text>
               <View style={styles.chipGroup}>
                 {astrologyData.negativePoints.map((point, index) => (
                   <View key={index} style={styles.chip}>
-                    <Text style={styles.chipText}>{point}</Text>
+                    <Text style={styles.chipText}>{tx(point)}</Text>
                   </View>
                 ))}
               </View>
 
               <View style={styles.balanceCard}>
-                <Text style={styles.balanceTitle}>The Path of Balance</Text>
+                <Text style={styles.balanceTitle}>{t('astrology.balanceTitle')}</Text>
                 <Text style={styles.balanceText}>
-                  Every challenge contains the seed of growth. Your {astrologyData.sunSign} nature provides the strength to transform these patterns into wisdom.
+                  {t('astrology.balanceText', { sign: astrologyData.sunSign })}
                 </Text>
               </View>
             </View>
@@ -332,14 +369,14 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={Heart} title="Sacred Remedies & Practices" iconColor="#E8C87E" />
+              <SectionHeader icon={Heart} title={t('astrology.remediesTitle')} iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
-                Time-tested remedies from Vedic astrology and ancient wisdom traditions
+                {t('astrology.remediesDesc')}
               </Text>
               <View style={styles.chipGroup}>
                 {astrologyData.remedies.map((remedy, index) => (
                   <View key={index} style={styles.chip}>
-                    <Text style={styles.chipText}>{remedy}</Text>
+                    <Text style={styles.chipText}>{tx(remedy)}</Text>
                   </View>
                 ))}
               </View>
@@ -347,23 +384,23 @@ export default function Astrology() {
               <View style={styles.gemstoneCard}>
                 <View style={styles.gemstoneHeader}>
                   <Gem size={20} color="#B49BE6" />
-                  <Text style={styles.gemstoneTitle}>Recommended Gemstones</Text>
+                  <Text style={styles.gemstoneTitle}>{t('astrology.gemstonesTitle')}</Text>
                 </View>
                 <Text style={styles.gemstoneText}>
-                  {astrologyData.detailedAnalysis.sunSignData.gemstones.join(', ')}
+                  {tx(astrologyData.detailedAnalysis.sunSignData.gemstones.join(', '))}
                 </Text>
                 <Text style={styles.gemstoneDescription}>
-                  These gemstones resonate with your {astrologyData.sunSign} energy. Gemstones are powerful remedies — some (such as blue sapphire / neelam) can react strongly, so please consult a qualified astrologer before wearing one.
+                  {t('astrology.gemstonesDesc', { sign: astrologyData.sunSign })}
                 </Text>
               </View>
 
               <View style={styles.mantraCard}>
-                <Text style={styles.mantraTitle}>Sacred Mantras</Text>
+                <Text style={styles.mantraTitle}>{t('astrology.mantrasTitle')}</Text>
                 {astrologyData.detailedAnalysis.sunSignData.mantras.map((mantra: string, index: number) => (
-                  <Text key={index} style={styles.mantraText}>{mantra}</Text>
+                  <Text key={index} style={styles.mantraText}>{tx(mantra)}</Text>
                 ))}
                 <Text style={styles.mantraDescription}>
-                  Chant these mantras during meditation or daily practice for spiritual alignment.
+                  {t('astrology.mantrasDesc')}
                 </Text>
               </View>
             </View>
@@ -377,36 +414,56 @@ export default function Astrology() {
         return (
           <View style={styles.content}>
             <View style={styles.section}>
-              <SectionHeader icon={Sparkles} title="Cosmic Guidance & Insights" iconColor="#E8C87E" />
+              <SectionHeader icon={Sparkles} title={t('astrology.guidanceTitle')} iconColor="#E8C87E" />
               <Text style={styles.sectionDescription}>
-                Based on your birth chart, planetary positions, and ancient astrological wisdom
+                {t('astrology.guidanceDesc')}
               </Text>
-              
+
               <View style={styles.predictionCard}>
-                <Text style={styles.predictionTitle}>Current Planetary Influences</Text>
+                <Text style={styles.predictionTitle}>{t('astrology.predInfluencesTitle')}</Text>
                 <Text style={styles.predictionText}>
-                  Your {astrologyData.sunSign} Sun is currently being influenced by planetary transits that favor {lc(sd.keywords?.[0], 'growth')} and {lc(sd.keywords?.[1], 'balance')}. Your {astrologyData.moonSign} Moon suggests emotional clarity and {lc(md.keywords?.[0], 'intuition')} are coming into focus.
+                  {t('astrology.predInfluences', {
+                    sun: astrologyData.sunSign,
+                    k0: lc(sd.keywords?.[0], 'growth'),
+                    k1: lc(sd.keywords?.[1], 'balance'),
+                    moon: astrologyData.moonSign,
+                    k2: lc(md.keywords?.[0], 'intuition'),
+                  })}
                 </Text>
               </View>
 
               <View style={styles.predictionCard}>
-                <Text style={styles.predictionTitle}>Career & Life Path Guidance</Text>
+                <Text style={styles.predictionTitle}>{t('astrology.predCareerTitle')}</Text>
                 <Text style={styles.predictionText}>
-                  Your astrological combination suggests success in fields related to {lc(sd.career?.[0], 'your craft')}, {lc(sd.career?.[1], 'leadership')}, and {lc(sd.career?.[2], 'creative work')}.{astrologyData.ascendant ? ` The ${astrologyData.ascendant} Rising enhances your ability to present yourself professionally.` : ''}
+                  {t('astrology.predCareer', {
+                    c0: lc(sd.career?.[0], 'your craft'),
+                    c1: lc(sd.career?.[1], 'leadership'),
+                    c2: lc(sd.career?.[2], 'creative work'),
+                  })}{astrologyData.ascendant ? t('astrology.predCareerRising', { sign: astrologyData.ascendant }) : ''}
                 </Text>
               </View>
 
               <View style={styles.predictionCard}>
-                <Text style={styles.predictionTitle}>Health & Wellness Focus</Text>
+                <Text style={styles.predictionTitle}>{t('astrology.predHealthTitle')}</Text>
                 <Text style={styles.predictionText}>
-                  Pay special attention to {lc(sd.bodyParts?.[0], 'overall vitality')} and {lc(sd.bodyParts?.[1], 'rest')}. {sd.health?.[0] ?? ''} Regular practice of the recommended remedies will support your overall well-being.
+                  {t('astrology.predHealth', {
+                    b0: lc(sd.bodyParts?.[0], 'overall vitality'),
+                    b1: lc(sd.bodyParts?.[1], 'rest'),
+                    health: sd.health?.[0] ?? '',
+                  })}
                 </Text>
               </View>
 
               <View style={styles.predictionCard}>
-                <Text style={styles.predictionTitle}>Spiritual Evolution</Text>
+                <Text style={styles.predictionTitle}>{t('astrology.predSpiritualTitle')}</Text>
                 <Text style={styles.predictionText}>
-                  Your unique combination of {astrologyData.sunSign}{astrologyData.ascendant ? `, ${astrologyData.moonSign}, and ${astrologyData.ascendant}` : ` and ${astrologyData.moonSign}`} indicates a soul journey focused on developing {lc(sd.keywords?.[2], 'wisdom')} and {lc(sd.keywords?.[3], 'compassion')}. This lifetime offers opportunities for significant spiritual growth and self-realization.
+                  {t('astrology.predSpiritual', {
+                    combo: astrologyData.ascendant
+                      ? `${astrologyData.sunSign}, ${astrologyData.moonSign}, and ${astrologyData.ascendant}`
+                      : `${astrologyData.sunSign} and ${astrologyData.moonSign}`,
+                    k2: lc(sd.keywords?.[2], 'wisdom'),
+                    k3: lc(sd.keywords?.[3], 'compassion'),
+                  })}
                 </Text>
               </View>
             </View>
@@ -466,7 +523,7 @@ export default function Astrology() {
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
             accessibilityRole="button"
-            accessibilityLabel={`View ${tab.label}`}
+            accessibilityLabel={t('astrology.viewTab', { label: tab.label })}
             accessibilityState={{ selected: activeTab === tab.key }}
             onPress={() => {
               tap();
@@ -502,7 +559,7 @@ export default function Astrology() {
         )}
         {renderContent()}
         <Text style={styles.disclaimer}>
-          Astropanth offers Vedic astrology for guidance and self-reflection. It is not a substitute for professional medical, financial, or legal advice.
+          {t('astrology.disclaimer')}
         </Text>
       </ScrollView>
     </ScreenBackground>

@@ -110,7 +110,7 @@ export default function AuthScreen() {
   const handleForgotPassword = async () => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !SecurityUtils.validateEmail(trimmedEmail)) {
-      setNotice({ text: 'Enter your email address above first, then tap "Forgot password?" again.', kind: 'err' });
+      setNotice({ text: t('auth.enterEmailFirst'), kind: 'err' });
       return;
     }
     try {
@@ -118,7 +118,7 @@ export default function AuthScreen() {
       setNotice(null);
       await requestPasswordReset(trimmedEmail);
       setNotice({
-        text: `If an account exists for ${trimmedEmail}, a password reset link has been sent. Please check your email (and spam folder).`,
+        text: t('auth.resetSent', { email: trimmedEmail }),
         kind: 'ok',
       });
     } catch (error: any) {
@@ -135,15 +135,15 @@ export default function AuthScreen() {
     tap();
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password.trim()) {
-      notify('Error', 'Please enter your email and password');
+      notify(t('common.error'), t('auth.enterEmailPassword'));
       return;
     }
     if (!SecurityUtils.validateEmail(trimmedEmail)) {
-      notify('Error', 'Please enter a valid email address');
+      notify(t('common.error'), t('auth.invalidEmail'));
       return;
     }
     if (mode === 'signup' && password.length < 8) {
-      notify('Error', 'Password must be at least 8 characters long');
+      notify(t('common.error'), t('auth.passwordMin'));
       return;
     }
 
@@ -171,26 +171,26 @@ export default function AuthScreen() {
         !sanitizedProfile.dateOfBirth ||
         !sanitizedProfile.placeOfBirth
       ) {
-        notify('Error', 'Please fill in all required fields');
+        notify(t('common.error'), t('auth.fillRequired'));
         return;
       }
 
       if (!SecurityUtils.validateName(sanitizedProfile.firstName)) {
-        notify('Error', 'Please enter a valid first name');
+        notify(t('common.error'), t('auth.invalidFirstName'));
         return;
       }
       if (!SecurityUtils.validateName(sanitizedProfile.lastName)) {
-        notify('Error', 'Please enter a valid last name');
+        notify(t('common.error'), t('auth.invalidLastName'));
         return;
       }
       if (!SecurityUtils.validatePlace(sanitizedProfile.placeOfBirth)) {
-        notify('Error', 'Please enter a valid place of birth');
+        notify(t('common.error'), t('auth.invalidPlace'));
         return;
       }
 
       const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
       if (!dateRegex.test(sanitizedProfile.dateOfBirth)) {
-        notify('Error', 'Please enter date in DD/MM/YYYY format');
+        notify(t('common.error'), t('auth.invalidDate'));
         return;
       }
 
@@ -198,7 +198,7 @@ export default function AuthScreen() {
         sanitizedProfile.timeOfBirth &&
         !SecurityUtils.validateTime(sanitizedProfile.timeOfBirth)
       ) {
-        notify('Error', 'Please enter time in HH:MM (24-hour) format');
+        notify(t('common.error'), t('auth.invalidTime'));
         return;
       }
 
@@ -208,14 +208,14 @@ export default function AuthScreen() {
         // Avoid account enumeration: never surface the raw server message
         // (e.g. "email already exists") on the sign-up path.
         notify(
-          'Sign Up Failed',
-          'Could not create your account. Please check your details and try again.'
+          t('auth.signUpFailed'),
+          t('auth.signUpFailedBody')
         );
       } else {
         const message =
           error?.response?.message ||
           SecurityUtils.handleSecureError(error, 'auth');
-        notify('Sign In Failed', message);
+        notify(t('auth.signInFailed'), message);
       }
     } finally {
       setSubmitting(false);
@@ -245,7 +245,7 @@ export default function AuthScreen() {
         (p: any) => p.name === 'google'
       );
       if (!google) {
-        throw new Error('Google sign-in is unavailable right now. Please try again later.');
+        throw new Error(t('auth.googleUnavailable'));
       }
 
       const appReturn = 'cosmic-insights://oauth';
@@ -284,7 +284,7 @@ export default function AuthScreen() {
         return;
       }
       const message = rawMessage || SecurityUtils.handleSecureError(error, 'auth');
-      notify('Google Sign-In Failed', message);
+      notify(t('auth.googleSignInFailed'), message);
     } finally {
       setSubmitting(false);
     }
@@ -315,12 +315,12 @@ export default function AuthScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Email *</Text>
+              <Text style={styles.inputLabel}>{t('auth.emailLabel')}</Text>
               <TextInput
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
-                placeholder="you@example.com"
+                placeholder={t('auth.emailPlaceholder')}
                 placeholderTextColor="#8B88A0"
                 selectionColor="#E8C87E"
                 autoCapitalize="none"
@@ -331,13 +331,13 @@ export default function AuthScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Password *</Text>
+              <Text style={styles.inputLabel}>{t('auth.passwordLabel')}</Text>
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={styles.passwordInput}
                   value={password}
                   onChangeText={setPassword}
-                  placeholder="Enter your password"
+                  placeholder={t('auth.passwordPlaceholder')}
                   placeholderTextColor="#8B88A0"
                   selectionColor="#E8C87E"
                   secureTextEntry={!showPassword}
@@ -347,7 +347,7 @@ export default function AuthScreen() {
                 <TouchableOpacity
                   style={styles.eyeButton}
                   onPress={() => setShowPassword((s) => !s)}
-                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  accessibilityLabel={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                 >
                   {showPassword ? (
                     <EyeOff size={20} color="#C7C4D6" />
@@ -361,46 +361,46 @@ export default function AuthScreen() {
             {mode === 'signup' && (
               <>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>First Name *</Text>
+                  <Text style={styles.inputLabel}>{t('auth.firstNameLabel')}</Text>
                   <TextInput
                     style={styles.input}
                     value={firstName}
                     onChangeText={setFirstName}
-                    placeholder="Enter your first name"
+                    placeholder={t('auth.firstNamePlaceholder')}
                     placeholderTextColor="#8B88A0"
                     maxLength={50}
                   />
                 </View>
 
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Last Name *</Text>
+                  <Text style={styles.inputLabel}>{t('auth.lastNameLabel')}</Text>
                   <TextInput
                     style={styles.input}
                     value={lastName}
                     onChangeText={setLastName}
-                    placeholder="Enter your last name"
+                    placeholder={t('auth.lastNamePlaceholder')}
                     placeholderTextColor="#8B88A0"
                     maxLength={50}
                   />
                 </View>
 
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Date of Birth * (DD/MM/YYYY)</Text>
+                  <Text style={styles.inputLabel}>{t('auth.dobLabel')}</Text>
                   <DateField value={dateOfBirth} onChangeText={setDateOfBirth} />
                 </View>
 
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Time of Birth (HH:MM, 24-hour)</Text>
+                  <Text style={styles.inputLabel}>{t('auth.tobLabel')}</Text>
                   <TimeField value={timeOfBirth} onChangeText={setTimeOfBirth} />
                 </View>
 
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Place of Birth *</Text>
+                  <Text style={styles.inputLabel}>{t('auth.pobLabel')}</Text>
                   <TextInput
                     style={styles.input}
                     value={placeOfBirth}
                     onChangeText={handlePlaceSearch}
-                    placeholder="Mumbai, Maharashtra"
+                    placeholder={t('auth.pobPlaceholder')}
                     placeholderTextColor="#8B88A0"
                     maxLength={200}
                   />
@@ -420,7 +420,7 @@ export default function AuthScreen() {
                 </View>
 
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Gender *</Text>
+                  <Text style={styles.inputLabel}>{t('auth.genderLabel')}</Text>
                   <View style={styles.genderContainer}>
                     <TouchableOpacity
                       style={[
@@ -429,7 +429,7 @@ export default function AuthScreen() {
                       ]}
                       onPress={() => setGender('male')}
                       accessibilityRole="button"
-                      accessibilityLabel="Select male"
+                      accessibilityLabel={t('common.selectMale')}
                       accessibilityState={{ selected: gender === 'male' }}
                     >
                       <Text
@@ -438,7 +438,7 @@ export default function AuthScreen() {
                           gender === 'male' && styles.genderButtonTextActive,
                         ]}
                       >
-                        Male
+                        {t('common.male')}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -448,7 +448,7 @@ export default function AuthScreen() {
                       ]}
                       onPress={() => setGender('female')}
                       accessibilityRole="button"
-                      accessibilityLabel="Select female"
+                      accessibilityLabel={t('common.selectFemale')}
                       accessibilityState={{ selected: gender === 'female' }}
                     >
                       <Text
@@ -457,7 +457,7 @@ export default function AuthScreen() {
                           gender === 'female' && styles.genderButtonTextActive,
                         ]}
                       >
-                        Female
+                        {t('common.female')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -485,7 +485,7 @@ export default function AuthScreen() {
                 <ActivityIndicator size={20} color="#0B0B1A" />
               ) : (
                 <Text style={styles.submitButtonText}>
-                  {mode === 'login' ? 'Sign In' : 'Create Account'}
+                  {mode === 'login' ? t('auth.signIn') : t('auth.createAccount')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -496,16 +496,16 @@ export default function AuthScreen() {
                 onPress={handleForgotPassword}
                 disabled={submitting}
                 accessibilityRole="button"
-                accessibilityLabel="Reset password"
+                accessibilityLabel={t('auth.resetPassword')}
               >
-                <Text style={styles.forgotText}>Forgot password?</Text>
+                <Text style={styles.forgotText}>{t('auth.forgotPassword')}</Text>
               </TouchableOpacity>
             )}
 
             <>
               <View style={styles.dividerRow}>
                 <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or</Text>
+                <Text style={styles.dividerText}>{t('common.or')}</Text>
                 <View style={styles.dividerLine} />
               </View>
 
@@ -519,7 +519,7 @@ export default function AuthScreen() {
                 ) : (
                   <>
                     <Text style={styles.googleG}>G</Text>
-                    <Text style={styles.googleButtonText}>Continue with Google</Text>
+                    <Text style={styles.googleButtonText}>{t('auth.continueWithGoogle')}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -529,14 +529,14 @@ export default function AuthScreen() {
               style={styles.switchButton}
               onPress={switchMode}
               accessibilityRole="button"
-              accessibilityLabel={mode === 'login' ? 'Switch to sign up' : 'Switch to sign in'}
+              accessibilityLabel={mode === 'login' ? t('auth.switchToSignUp') : t('auth.switchToSignIn')}
             >
               <Text style={styles.switchText}>
                 {mode === 'login'
-                  ? "Don't have an account? "
-                  : 'Already have an account? '}
+                  ? t('auth.noAccount')
+                  : t('auth.haveAccount')}
                 <Text style={styles.switchTextAccent}>
-                  {mode === 'login' ? 'Sign Up' : 'Sign In'}
+                  {mode === 'login' ? t('auth.signUp') : t('auth.signIn')}
                 </Text>
               </Text>
             </TouchableOpacity>
@@ -566,16 +566,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 32,
     gap: 12,
-  },
-  brandIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(232, 200, 126, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(232, 200, 126, 0.25)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   brandMark: { alignSelf: 'center', marginBottom: 14 },
   brandTitle: {

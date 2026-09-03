@@ -5,14 +5,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, ScrollText, Sparkles, Sun, Orbit, Clock, Users, FileText, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Data-driven hub of "Other Features". Add a new object here to surface a new
 // feature card; set `route` for an active feature, or `comingSoon: true` to
 // render a muted, non-tappable placeholder.
 interface FeatureItem {
   key: string;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: LucideIcon;
   route?: Href;
   comingSoon?: boolean;
@@ -21,57 +22,57 @@ interface FeatureItem {
 const FEATURES: FeatureItem[] = [
   {
     key: 'panchang',
-    title: "Today's Panchang",
-    subtitle: 'Tithi, Nakshatra, Yoga & auspicious timings',
+    titleKey: 'more.panchangTitle',
+    subtitleKey: 'more.panchangSub',
     icon: Sun,
     route: '/panchang' as Href,
   },
   {
     key: 'reports',
-    title: 'Reports',
-    subtitle: 'Astrology, Numerology & Gemstone PDFs',
+    titleKey: 'reports.title',
+    subtitleKey: 'more.reportsSub',
     icon: FileText,
     route: '/reports' as Href,
   },
   {
     key: 'kundli-matching',
-    title: 'Kundli Matching',
-    subtitle: 'Compatibility · Ashtakoota Guna Milan',
+    titleKey: 'more.matchTitle',
+    subtitleKey: 'more.matchSub',
     icon: Heart,
     route: '/match',
   },
   {
     key: 'vedic-kundli',
-    title: 'Full Vedic Kundli',
-    subtitle: 'Planets, houses & Vimshottari Dasha',
+    titleKey: 'more.kundliTitle',
+    subtitleKey: 'more.kundliSub',
     icon: Sparkles,
     route: '/kundli' as Href,
   },
   {
     key: 'sade-sati',
-    title: 'Sade Sati',
-    subtitle: "Saturn's 7.5-year transit over your Moon",
+    titleKey: 'nav.sadeSati',
+    subtitleKey: 'more.sadeSatiSub',
     icon: Orbit,
     route: '/sade-sati' as Href,
   },
   {
     key: 'dasha',
-    title: 'Dasha Periods',
-    subtitle: 'Current Maha, Antar & Pratyantar dasha',
+    titleKey: 'nav.dasha',
+    subtitleKey: 'more.dashaSub',
     icon: Clock,
     route: '/dasha' as Href,
   },
   {
     key: 'saved-charts',
-    title: 'Saved Charts',
-    subtitle: 'Save & switch between family and friends',
+    titleKey: 'charts.title',
+    subtitleKey: 'more.chartsSub',
     icon: Users,
     route: '/charts' as Href,
   },
   {
     key: 'tarot-reading',
-    title: 'Tarot Reading',
-    subtitle: 'Daily card & three-card spread',
+    titleKey: 'more.tarotTitle',
+    subtitleKey: 'more.tarotSub',
     icon: ScrollText,
     route: '/tarot' as Href,
   },
@@ -80,12 +81,13 @@ const FEATURES: FeatureItem[] = [
 export default function More() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
 
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.title}>Other Features</Text>
-        <Text style={styles.subtitle}>More ways to explore your cosmic blueprint</Text>
+        <Text style={styles.title}>{t('more.title')}</Text>
+        <Text style={styles.subtitle}>{t('more.subtitle')}</Text>
       </View>
 
       <ScrollView
@@ -96,6 +98,8 @@ export default function More() {
         {FEATURES.map((feature) => {
           const Icon = feature.icon;
           const disabled = feature.comingSoon || !feature.route;
+          const title = t(feature.titleKey);
+          const subtitle = t(feature.subtitleKey);
 
           return (
             <TouchableOpacity
@@ -104,7 +108,7 @@ export default function More() {
               activeOpacity={0.85}
               disabled={disabled}
               accessibilityRole="button"
-              accessibilityLabel={disabled ? `${feature.title} — coming soon` : `Open ${feature.title}`}
+              accessibilityLabel={disabled ? t('more.comingSoonA11y', { title }) : t('more.openA11y', { title })}
               onPress={() => {
                 if (disabled || !feature.route) return;
                 tap();
@@ -117,15 +121,15 @@ export default function More() {
               <View style={styles.cardTextWrap}>
                 <View style={styles.cardTitleRow}>
                   <Text style={[styles.cardTitle, disabled && styles.cardTitleDisabled]}>
-                    {feature.title}
+                    {title}
                   </Text>
                   {disabled && (
                     <View style={styles.soonPill}>
-                      <Text style={styles.soonPillText}>Soon</Text>
+                      <Text style={styles.soonPillText}>{t('more.soon')}</Text>
                     </View>
                   )}
                 </View>
-                <Text style={styles.cardSubtitle}>{feature.subtitle}</Text>
+                <Text style={styles.cardSubtitle}>{subtitle}</Text>
               </View>
               {!disabled && <ChevronRight size={20} color="#8B88A0" />}
             </TouchableOpacity>

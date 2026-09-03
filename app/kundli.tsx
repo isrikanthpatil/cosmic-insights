@@ -9,6 +9,7 @@ import { registerPositiveMoment } from '@/utils/review';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useChart } from '@/contexts/ChartContext';
 import { getCoordinatesForPlace } from '@/utils/astrology';
+import { resolveAndCache, useCoordsNonce } from '@/utils/coords';
 import { computeKundli, Kundli, ChartGraha, NAKSHATRA_INFO } from '@/utils/jyotish/kundli';
 
 const GRAHA_ABBR: Record<string, string> = {
@@ -31,6 +32,13 @@ export default function KundliScreen() {
   const { activeProfile: profile } = useChart();
   const { t } = useLanguage();
 
+  // Resolve precise coordinates for the birthplace (accurate Lagna); recompute
+  // when they arrive.
+  const coordsNonce = useCoordsNonce();
+  useEffect(() => {
+    resolveAndCache(profile?.placeOfBirth);
+  }, [profile?.placeOfBirth]);
+
   const kundli: Kundli | null = useMemo(() => {
     if (!profile) return null;
     const coords = getCoordinatesForPlace(profile.placeOfBirth) ?? { latitude: 22, longitude: 79 };
@@ -44,7 +52,8 @@ export default function KundliScreen() {
     } catch {
       return null;
     }
-  }, [profile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, coordsNonce]);
 
   // Viewing a full Kundli is a high-satisfaction moment — a good time to (rarely)
   // ask for a Play rating. The helper self-gates so this fires at most once.
@@ -60,22 +69,27 @@ export default function KundliScreen() {
   const sunRashiName = kundli?.grahas.find((g) => g.name === 'Sun')?.rashiName ?? '—';
   const kundliShareData = kundli
     ? {
-        eyebrow: 'Vedic Kundli',
-        title: kundli.lagnaName ? `${kundli.lagnaName} Lagna` : `${kundli.moonRashiName} Moon`,
-        subtitle: `Moon in ${kundli.moonRashiName} · ${kundli.moonNakshatraName}`,
+        eyebrow: t('nav.kundli'),
+        title: kundli.lagnaName
+          ? t('kundli.lagnaTitle', { name: kundli.lagnaName })
+          : t('kundli.moonTitle', { name: kundli.moonRashiName }),
+        subtitle: t('kundli.shareSubtitle', { rashi: kundli.moonRashiName, nakshatra: kundli.moonNakshatraName }),
         body:
-          `${kundli.lagnaName ? `${kundli.lagnaName} ascendant. ` : ''}` +
-          `Sun in ${sunRashiName}, Moon in ${kundli.moonRashiName}, nakshatra ${kundli.moonNakshatraName}.`,
+          `${kundli.lagnaName ? t('kundli.ascendantPrefix', { name: kundli.lagnaName }) : ''}` +
+          t('kundli.shareBody', { sun: sunRashiName, moon: kundli.moonRashiName, nakshatra: kundli.moonNakshatraName }),
         chips: [
-          { label: 'Lagna', value: kundli.lagnaName ?? '—' },
-          { label: 'Moon', value: kundli.moonRashiName },
-          { label: 'Sun', value: sunRashiName },
+          { label: t('kundli.lagna'), value: kundli.lagnaName ?? '—' },
+          { label: t('label.moon'), value: kundli.moonRashiName },
+          { label: t('label.sun'), value: sunRashiName },
         ],
       }
     : null;
   const kundliShareMsg = kundli
-    ? `My Astropanth Kundli ✨ ${kundli.lagnaName ? `${kundli.lagnaName} Lagna, ` : ''}Moon in ${kundli.moonRashiName} (${kundli.moonNakshatraName})\n\n` +
-      `Get your free Kundli: https://www.astropanth.com`
+    ? t('kundli.shareMsg', {
+        lagnaPart: kundli.lagnaName ? t('kundli.shareMsgLagna', { name: kundli.lagnaName }) : '',
+        moon: kundli.moonRashiName,
+        nakshatra: kundli.moonNakshatraName,
+      })
     : '';
 
   const screenW = Dimensions.get('window').width;
@@ -84,34 +98,34 @@ export default function KundliScreen() {
   const grahasByRashi = (r: number): ChartGraha[] =>
     kundli ? kundli.grahas.filter((g) => g.rashi === r) : [];
 
-  const fmtYears = (y: number) => `${y.toFixed(1)} yrs`;
+  const fmtYears = (y: number) => t('kundli.yearsShort', { years: y.toFixed(1) });
   const fmtDate = (d: Date) => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('nav.kundli')}</Text>
         {kundliShareData ? (
-          <ShareCardButton data={kundliShareData} message={kundliShareMsg} label="Share" />
+          <ShareCardButton data={kundliShareData} message={kundliShareMsg} label={t('common.share')} />
         ) : (
           <View style={{ width: 24 }} />
         )}
       </View>
 
       {!profile ? (
-        <View style={styles.center}><Text style={styles.muted}>Add your birth details to see your Kundli.</Text></View>
+        <View style={styles.center}><Text style={styles.muted}>{t('kundli.emptyProfile')}</Text></View>
       ) : !kundli ? (
-        <View style={styles.center}><Text style={styles.muted}>Could not compute the chart. Please check your birth details.</Text></View>
+        <View style={styles.center}><Text style={styles.muted}>{t('kundli.computeError')}</Text></View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 40 }} showsVerticalScrollIndicator={false}>
-          <Text style={styles.subtitle}>D1 (Rashi) chart for {profile.firstName}</Text>
+          <Text style={styles.subtitle}>{t('kundli.d1For', { name: profile.firstName })}</Text>
 
           {kundli.lowConfidence && (
             <Text style={styles.note}>
-              No birth time set — the Ascendant (Lagna) and houses need an exact time. Planet signs and the Dasha use noon as an estimate. Add your birth time in Profile for a precise chart.
+              {t('kundli.noTimeNote')}
             </Text>
           )}
 
@@ -123,7 +137,7 @@ export default function KundliScreen() {
                 const isLabelCell = i === 5;
                 return (
                   <View key={i} style={[styles.cellCentre, { width: cell, height: cell }]}>
-                    {isLabelCell && <Text style={styles.centreLabel}>Rashi{'\n'}D1</Text>}
+                    {isLabelCell && <Text style={styles.centreLabel}>{t('kundli.centreLabel')}</Text>}
                   </View>
                 );
               }
@@ -148,16 +162,16 @@ export default function KundliScreen() {
           {/* Summary */}
           <View style={styles.summaryRow}>
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryLabel}>Lagna</Text>
+              <Text style={styles.summaryLabel}>{t('kundli.lagna')}</Text>
               <Text style={styles.summaryValue}>{kundli.lagnaName ?? '—'}</Text>
             </View>
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryLabel}>Moon Rashi</Text>
+              <Text style={styles.summaryLabel}>{t('kundli.moonRashi')}</Text>
               <Text style={styles.summaryValue}>{kundli.moonRashiName}</Text>
             </View>
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryLabel}>Nakshatra</Text>
-              <Text style={styles.summaryValueSm}>{kundli.moonNakshatraName} · pada {kundli.moonPada}</Text>
+              <Text style={styles.summaryLabel}>{t('panchang.nakshatra')}</Text>
+              <Text style={styles.summaryValueSm}>{t('kundli.nakshatraPada', { name: kundli.moonNakshatraName, pada: kundli.moonPada })}</Text>
             </View>
           </View>
 
@@ -167,9 +181,9 @@ export default function KundliScreen() {
             if (!info) return null;
             return (
               <View style={styles.nakCard}>
-                <Text style={styles.nakTitle}>Janma Nakshatra · {kundli.moonNakshatraName} (Pada {kundli.moonPada})</Text>
+                <Text style={styles.nakTitle}>{t('kundli.janmaNakshatra', { name: kundli.moonNakshatraName, pada: kundli.moonPada })}</Text>
                 <Text style={styles.nakMeta}>
-                  Deity {info.deity}  ·  Symbol {info.symbol}  ·  {info.gana} gana  ·  Lord {info.lord}
+                  {t('kundli.nakMeta', { deity: info.deity, symbol: info.symbol, gana: info.gana, lord: info.lord })}
                 </Text>
                 <Text style={styles.nakNature}>{info.nature}</Text>
               </View>
@@ -177,13 +191,13 @@ export default function KundliScreen() {
           })()}
 
           {/* Planet table */}
-          <Text style={styles.sectionTitle}>Graha Positions</Text>
+          <Text style={styles.sectionTitle}>{t('kundli.grahaPositions')}</Text>
           <View style={styles.table}>
             <View style={[styles.tr, styles.trHead]}>
-              <Text style={[styles.th, styles.colP]}>Graha</Text>
-              <Text style={[styles.th, styles.colR]}>Rashi</Text>
-              <Text style={[styles.th, styles.colH]}>House</Text>
-              <Text style={[styles.th, styles.colN]}>Nakshatra</Text>
+              <Text style={[styles.th, styles.colP]}>{t('kundli.graha')}</Text>
+              <Text style={[styles.th, styles.colR]}>{t('kundli.rashi')}</Text>
+              <Text style={[styles.th, styles.colH]}>{t('kundli.house')}</Text>
+              <Text style={[styles.th, styles.colN]}>{t('panchang.nakshatra')}</Text>
             </View>
             {kundli.grahas.map((g) => (
               <View key={g.name} style={styles.tr}>
@@ -194,25 +208,25 @@ export default function KundliScreen() {
               </View>
             ))}
           </View>
-          <Text style={styles.legend}>↺ = retrograde · Houses are whole-sign from the Lagna</Text>
+          <Text style={styles.legend}>{t('kundli.legend')}</Text>
 
           {/* Vimshottari Dasha */}
           {kundli.dasha && (
             <>
-              <Text style={styles.sectionTitle}>Vimshottari Dasha</Text>
+              <Text style={styles.sectionTitle}>{t('kundli.vimshottariDasha')}</Text>
               {(() => {
                 const d = kundli.dasha!;
                 const maha = d.mahadashas[d.currentMahaIndex];
                 return (
                   <View style={styles.dashaNow}>
-                    <Text style={styles.dashaNowLabel}>Running now</Text>
+                    <Text style={styles.dashaNowLabel}>{t('kundli.runningNow')}</Text>
                     <Text style={styles.dashaNowValue}>
-                      {maha.lord} Mahadasha
-                      {d.currentAntar ? `  ·  ${d.currentAntar.lord} Antardasha` : ''}
+                      {t('kundli.mahadashaLord', { lord: maha.lord })}
+                      {d.currentAntar ? `  ·  ${t('kundli.antardashaLord', { lord: d.currentAntar.lord })}` : ''}
                     </Text>
                     <Text style={styles.dashaNowSub}>
-                      {maha.lord} till {fmtDate(maha.end)}
-                      {d.currentAntar ? `   ·   ${d.currentAntar.lord} till ${fmtDate(d.currentAntar.end)}` : ''}
+                      {t('kundli.lordTill', { lord: maha.lord, date: fmtDate(maha.end) })}
+                      {d.currentAntar ? `   ·   ${t('kundli.lordTill', { lord: d.currentAntar.lord, date: fmtDate(d.currentAntar.end) })}` : ''}
                     </Text>
                   </View>
                 );
@@ -227,13 +241,13 @@ export default function KundliScreen() {
                 ))}
               </View>
               <Text style={styles.legend}>
-                The 120-year Vimshottari cycle, seeded by your Janma Nakshatra ({kundli.moonNakshatraName}).
+                {t('kundli.cycleLegend', { name: kundli.moonNakshatraName })}
               </Text>
             </>
           )}
 
           <Text style={styles.disclaimer}>
-            Sidereal (Lahiri ayanamsa {kundli.ayanamsa.toFixed(2)}°). For guidance and self-reflection, not a substitute for professional advice.
+            {t('kundli.disclaimer', { ayanamsa: kundli.ayanamsa.toFixed(2) })}
           </Text>
         </ScrollView>
       )}

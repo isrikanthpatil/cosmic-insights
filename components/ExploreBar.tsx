@@ -14,8 +14,10 @@ import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ExploreBar() {
+  const { t } = useLanguage();
   const { isExploring, exploreSubject, setExplore, clearExplore, saveChart, isChartSaved } = useChart();
   const saved = exploreSubject ? isChartSaved(exploreSubject) : false;
 
@@ -36,9 +38,9 @@ export default function ExploreBar() {
       {isExploring ? (
         <View style={styles.banner}>
           <View style={styles.bannerTextWrap}>
-            <Text style={styles.bannerEyebrow}>Exploring</Text>
+            <Text style={styles.bannerEyebrow}>{t('explore.exploring')}</Text>
             <Text style={styles.bannerTitle} numberOfLines={1}>
-              Viewing {exploreSubject?.firstName}'s chart
+              {t('explore.viewingChart', { name: exploreSubject?.firstName ?? '' })}
             </Text>
           </View>
           <TouchableOpacity
@@ -47,11 +49,11 @@ export default function ExploreBar() {
               if (saved || !exploreSubject) return;
               tap();
               saveChart(exploreSubject);
-              showToast(`${exploreSubject.firstName || 'Chart'} saved.`, 'success');
+              showToast(t('explore.chartSaved', { name: exploreSubject.firstName || t('common.chart') }), 'success');
             }}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
-            accessibilityLabel={saved ? 'Chart saved' : 'Save this chart'}
+            accessibilityLabel={saved ? t('explore.chartSavedLabel') : t('explore.saveThisChart')}
           >
             {saved ? <BookmarkCheck size={18} color="#E8C87E" /> : <Bookmark size={18} color="#E8C87E" />}
           </TouchableOpacity>
@@ -63,10 +65,10 @@ export default function ExploreBar() {
             }}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel="Back to my chart"
+            accessibilityLabel={t('explore.backToMyChart')}
           >
             <X size={16} color="#0B0B1A" />
-            <Text style={styles.backButtonText}>Back to my chart</Text>
+            <Text style={styles.backButtonText}>{t('explore.backToMyChart')}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -78,10 +80,10 @@ export default function ExploreBar() {
           }}
           activeOpacity={0.7}
           accessibilityRole="button"
-          accessibilityLabel="Explore another chart"
+          accessibilityLabel={t('explore.exploreAnother')}
         >
           <UserPlus size={18} color="#E8C87E" />
-          <Text style={styles.exploreButtonText}>Explore another chart</Text>
+          <Text style={styles.exploreButtonText}>{t('explore.exploreAnother')}</Text>
         </TouchableOpacity>
       )}
 
@@ -94,8 +96,8 @@ export default function ExploreBar() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, kb > 0 && { marginBottom: kb }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Explore another chart</Text>
-              <TouchableOpacity onPress={closeModal} accessibilityLabel="Close">
+              <Text style={styles.modalTitle}>{t('explore.exploreAnother')}</Text>
+              <TouchableOpacity onPress={closeModal} accessibilityLabel={t('common.close')}>
                 <X size={24} color="#C7C4D6" />
               </TouchableOpacity>
             </View>
@@ -107,11 +109,11 @@ export default function ExploreBar() {
               keyboardShouldPersistTaps="handled"
             >
               {modalVisible && (
-                <BirthDetailsForm onSubmit={handleSubmit} submitLabel="View chart" />
+                <BirthDetailsForm onSubmit={handleSubmit} submitLabel={t('explore.viewChart')} />
               )}
 
               <TouchableOpacity style={styles.cancelButton} onPress={closeModal}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>

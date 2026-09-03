@@ -2,11 +2,13 @@ import { Link, Stack } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { gradientColors, colors, fonts } from '@/constants/theme';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function NotFoundScreen() {
+  const { t } = useLanguage();
   return (
     <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
+      <Stack.Screen options={{ title: t('notfound.oops') }} />
       <LinearGradient
         colors={gradientColors}
         style={styles.container}
@@ -14,10 +16,10 @@ export default function NotFoundScreen() {
         end={{ x: 0, y: 1 }}
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Page Not Found</Text>
-          <Text style={styles.message}>This screen doesn't exist.</Text>
+          <Text style={styles.title}>{t('notfound.title')}</Text>
+          <Text style={styles.message}>{t('notfound.message')}</Text>
           <Link href="/" style={styles.link}>
-            <Text style={styles.linkText}>Go to home screen</Text>
+            <Text style={styles.linkText}>{t('notfound.link')}</Text>
           </Link>
         </View>
       </LinearGradient>

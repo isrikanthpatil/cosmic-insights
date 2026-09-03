@@ -14,6 +14,7 @@ import { tap } from '@/utils/haptics';
 import { showToast } from '@/utils/toast';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import BirthDetailsForm from '@/components/BirthDetailsForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface GuestEntryPromptProps {
   /** Heading for the friendly empty-state card. */
@@ -29,9 +30,12 @@ interface GuestEntryPromptProps {
  * reading renders immediately and survives restarts.
  */
 export default function GuestEntryPrompt({
-  title = 'Get your free reading',
-  message = 'Enter your birth details to unlock your personalized astrology and numerology — no account needed.',
+  title,
+  message,
 }: GuestEntryPromptProps) {
+  const { t } = useLanguage();
+  const resolvedTitle = title ?? t('guest.freeReadingTitle');
+  const resolvedMessage = message ?? t('guest.freeReadingMessage');
   const { setGuestProfile } = useChart();
   const { user, updateProfile } = useAuth();
   const authed = !!user;
@@ -45,26 +49,26 @@ export default function GuestEntryPrompt({
       try {
         await updateProfile(profile);
         setModalVisible(false);
-        showToast('Birth details saved to your account.', 'success');
+        showToast(t('guest.savedAccount'), 'success');
       } catch {
-        showToast('Could not save. Please try again.', 'error');
+        showToast(t('guest.saveFailed'), 'error');
       }
     } else {
       setGuestProfile(profile);
       setModalVisible(false);
-      showToast('Birth details saved on this device.', 'success');
+      showToast(t('guest.savedDevice'), 'success');
     }
   };
 
   // A signed-in user is completing their own profile, so drop the guest-only
   // "no account needed" framing in favour of account-appropriate copy.
-  const effectiveTitle = authed ? 'Complete your birth details' : title;
+  const effectiveTitle = authed ? t('guest.completeTitle') : resolvedTitle;
   const effectiveMessage = authed
-    ? 'Add your birth details to unlock your personalized astrology and numerology.'
-    : message;
+    ? t('guest.completeMessage')
+    : resolvedMessage;
   const modalCaption = authed
-    ? 'Saved to your account.'
-    : 'For a free reading. Saved on this device only.';
+    ? t('guest.captionAccount')
+    : t('guest.captionDevice');
 
   return (
     <>
@@ -80,9 +84,9 @@ export default function GuestEntryPrompt({
           }}
           activeOpacity={0.85}
           accessibilityRole="button"
-          accessibilityLabel="Enter birth details"
+          accessibilityLabel={t('guest.enterBirthDetails')}
         >
-          <Text style={styles.buttonText}>Enter birth details</Text>
+          <Text style={styles.buttonText}>{t('guest.enterBirthDetails')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -95,10 +99,10 @@ export default function GuestEntryPrompt({
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, kb > 0 && { marginBottom: kb }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Your birth details</Text>
+              <Text style={styles.modalTitle}>{t('guest.yourBirthDetails')}</Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
-                accessibilityLabel="Close"
+                accessibilityLabel={t('common.close')}
               >
                 <X size={24} color="#C7C4D6" />
               </TouchableOpacity>
@@ -111,12 +115,12 @@ export default function GuestEntryPrompt({
               keyboardShouldPersistTaps="handled"
             >
               <Text style={styles.modalCaption}>{modalCaption}</Text>
-              <BirthDetailsForm onSubmit={handleSubmit} submitLabel="Get my reading" />
+              <BirthDetailsForm onSubmit={handleSubmit} submitLabel={t('guest.getMyReading')} />
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>

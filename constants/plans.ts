@@ -71,6 +71,13 @@ export const PRODUCTS = {
   reports_all: { id: 'reports_all', label: 'Unlock all reports', price: '₹149' },
 } as const;
 
+// Master switch for in-app language switching. Kept FALSE until localization is
+// complete across all screens AND generated content, so users never see a
+// half-translated app. When false: the picker is hidden and the app stays in
+// English regardless of any saved choice or server `languages` rows. Flip to
+// true only once every language is verified end-to-end.
+export const LOCALIZATION_ENABLED = true;
+
 // Feature gating toggle. When true, the detailed Reports require a `reports`
 // (or `plus`) entitlement — obtained via a promo code today, and via Razorpay/
 // Play once billing is wired. Set to false to make reports free for all

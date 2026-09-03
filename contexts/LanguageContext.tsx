@@ -2,6 +2,7 @@ import React, { createContext, useContext, useCallback, useEffect, useState } fr
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { pb } from '@/utils/pocketbase';
 import { DICTS, LANGUAGES, Lang } from '@/i18n/strings';
+import { LOCALIZATION_ENABLED } from '@/constants/plans';
 
 // Localization engine. English (+ Hindi/Marathi) ship in the app as an offline
 // fallback. Additional languages and edits are served over-the-air from two
@@ -43,14 +44,21 @@ function mergeLangs(server: LangOption[]): LangOption[] {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<string>('en');
+  // While localization is gated off, expose English only so the picker stays
+  // hidden and nothing switches. When enabled, start from the bundled list and
+  // merge server languages on top.
   const [availableLangs, setAvailableLangs] = useState<LangOption[]>(
-    LANGUAGES.map((l) => ({ code: l.code, native: l.native, label: l.label })),
+    LOCALIZATION_ENABLED
+      ? LANGUAGES.map((l) => ({ code: l.code, native: l.native, label: l.label }))
+      : [{ code: 'en', native: 'English', label: 'English' }],
   );
   // Fetched string overrides per language (merged over the bundled dictionaries).
   const [overrides, setOverrides] = useState<Record<string, Record<string, string>>>({});
 
   // Load the saved language + any cached data immediately (offline-first).
   useEffect(() => {
+    // Localization gated off: stay in English, skip all saved/server loading.
+    if (!LOCALIZATION_ENABLED) return;
     (async () => {
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
@@ -96,6 +104,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { fetchTranslations(lang); }, [lang, fetchTranslations]);
 
   const setLang = useCallback((l: string) => {
+    if (!LOCALIZATION_ENABLED) return; // locked to English until localization ships
     setLangState(l);
     AsyncStorage.setItem(STORAGE_KEY, l).catch(() => {});
   }, []);

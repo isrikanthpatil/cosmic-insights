@@ -83,13 +83,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(232,200,126,0.20)',
   },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  spark: {
-    width: 26, height: 26, borderRadius: 8,
-    alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(232,200,126,0.12)',
-    borderWidth: 1, borderColor: 'rgba(232,200,126,0.35)',
-  },
-  sparkGlyph: { color: GOLD, fontSize: 14, lineHeight: 16 },
   brand: { color: '#E8E6F0', fontSize: 17, fontFamily: 'PlayfairDisplay-Bold' },
   gold: { color: GOLD },
 

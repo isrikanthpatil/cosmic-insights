@@ -13,6 +13,7 @@ import { searchPlaces } from '@/utils/places';
 import { tap } from '@/utils/haptics';
 import DateField from '@/components/DateField';
 import TimeField from '@/components/TimeField';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BirthDetailsFormProps {
   /** Called with a validated, sanitized profile when the form is submitted. */
@@ -31,9 +32,11 @@ interface BirthDetailsFormProps {
  */
 export default function BirthDetailsForm({
   onSubmit,
-  submitLabel = 'View chart',
+  submitLabel,
   initial,
 }: BirthDetailsFormProps) {
+  const { t } = useLanguage();
+  const resolvedSubmitLabel = submitLabel ?? t('birth.viewChart');
   const [firstName, setFirstName] = useState(initial?.firstName ?? '');
   const [lastName, setLastName] = useState(initial?.lastName ?? '');
   const [dateOfBirth, setDateOfBirth] = useState(initial?.dateOfBirth ?? '');
@@ -93,31 +96,31 @@ export default function BirthDetailsForm({
     };
 
     if (!sanitized.firstName || !sanitized.dateOfBirth || !sanitized.placeOfBirth) {
-      notify('Error', 'Please fill in first name, date of birth, and place of birth');
+      notify(t('common.error'), t('birth.fillRequired'));
       return;
     }
 
     if (!SecurityUtils.validateName(sanitized.firstName)) {
-      notify('Error', 'Please enter a valid first name');
+      notify(t('common.error'), t('birth.invalidFirstName'));
       return;
     }
     if (sanitized.lastName && !SecurityUtils.validateName(sanitized.lastName)) {
-      notify('Error', 'Please enter a valid last name');
+      notify(t('common.error'), t('birth.invalidLastName'));
       return;
     }
     if (!SecurityUtils.validatePlace(sanitized.placeOfBirth)) {
-      notify('Error', 'Please enter a valid place of birth');
+      notify(t('common.error'), t('birth.invalidPlace'));
       return;
     }
 
     const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateRegex.test(sanitized.dateOfBirth)) {
-      notify('Error', 'Please enter date in DD/MM/YYYY format');
+      notify(t('common.error'), t('birth.invalidDate'));
       return;
     }
 
     if (sanitized.timeOfBirth && !SecurityUtils.validateTime(sanitized.timeOfBirth)) {
-      notify('Error', 'Please enter time in HH:MM (24-hour) format');
+      notify(t('common.error'), t('birth.invalidTime'));
       return;
     }
 
@@ -127,46 +130,46 @@ export default function BirthDetailsForm({
   return (
     <View style={styles.form}>
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>First Name *</Text>
+        <Text style={styles.inputLabel}>{t('birth.firstNameLabel')}</Text>
         <TextInput
           style={styles.input}
           value={firstName}
           onChangeText={setFirstName}
-          placeholder="Enter first name"
+          placeholder={t('birth.firstNamePlaceholder')}
           placeholderTextColor="#8B88A0"
           maxLength={50}
         />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Last Name</Text>
+        <Text style={styles.inputLabel}>{t('birth.lastNameLabel')}</Text>
         <TextInput
           style={styles.input}
           value={lastName}
           onChangeText={setLastName}
-          placeholder="Enter last name (optional)"
+          placeholder={t('birth.lastNamePlaceholder')}
           placeholderTextColor="#8B88A0"
           maxLength={50}
         />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Date of Birth * (DD/MM/YYYY)</Text>
+        <Text style={styles.inputLabel}>{t('birth.dobLabel')}</Text>
         <DateField value={dateOfBirth} onChangeText={setDateOfBirth} />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Time of Birth (HH:MM, 24-hour)</Text>
+        <Text style={styles.inputLabel}>{t('birth.tobLabel')}</Text>
         <TimeField value={timeOfBirth} onChangeText={setTimeOfBirth} />
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Place of Birth *</Text>
+        <Text style={styles.inputLabel}>{t('birth.pobLabel')}</Text>
         <TextInput
           style={styles.input}
           value={placeOfBirth}
           onChangeText={handlePlaceSearch}
-          placeholder="Mumbai, Maharashtra"
+          placeholder={t('birth.pobPlaceholder')}
           placeholderTextColor="#8B88A0"
           maxLength={200}
         />
@@ -186,13 +189,13 @@ export default function BirthDetailsForm({
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Gender *</Text>
+        <Text style={styles.inputLabel}>{t('birth.genderLabel')}</Text>
         <View style={styles.genderContainer}>
           <TouchableOpacity
             style={[styles.genderButton, gender === 'male' && styles.genderButtonActive]}
             onPress={() => setGender('male')}
             accessibilityRole="button"
-            accessibilityLabel="Select male"
+            accessibilityLabel={t('common.selectMale')}
             accessibilityState={{ selected: gender === 'male' }}
           >
             <Text
@@ -201,14 +204,14 @@ export default function BirthDetailsForm({
                 gender === 'male' && styles.genderButtonTextActive,
               ]}
             >
-              Male
+              {t('common.male')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.genderButton, gender === 'female' && styles.genderButtonActive]}
             onPress={() => setGender('female')}
             accessibilityRole="button"
-            accessibilityLabel="Select female"
+            accessibilityLabel={t('common.selectFemale')}
             accessibilityState={{ selected: gender === 'female' }}
           >
             <Text
@@ -217,7 +220,7 @@ export default function BirthDetailsForm({
                 gender === 'female' && styles.genderButtonTextActive,
               ]}
             >
-              Female
+              {t('common.female')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -228,9 +231,9 @@ export default function BirthDetailsForm({
         onPress={handleSubmit}
         activeOpacity={0.85}
         accessibilityRole="button"
-        accessibilityLabel={submitLabel}
+        accessibilityLabel={resolvedSubmitLabel}
       >
-        <Text style={styles.submitButtonText}>{submitLabel}</Text>
+        <Text style={styles.submitButtonText}>{resolvedSubmitLabel}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,6 +1,7 @@
 import { parseDDMMYYYY } from './dateUtils';
 import { ZODIAC_KNOWLEDGE, PLANETARY_KNOWLEDGE, HOUSE_KNOWLEDGE, ZodiacSignData } from './astrologyKnowledge';
 import { computeEphemeris } from './jyotish/ephemeris';
+import { getCachedCoords } from './coords';
 
 export interface AstrologyReading {
   sunSign: string;
@@ -88,6 +89,11 @@ export const getCoordinatesForPlace = (place: string): { latitude: number; longi
   // Guard against undefined/empty input (e.g. a profile with no place set) so
   // callers can pass it directly without a null check.
   if (!place || typeof place !== 'string') return null;
+  // Prefer precise coordinates resolved from the `places` collection (populated
+  // by the GeoNames import) when available — this gives an accurate Lagna. Falls
+  // through to the city/state table below when not yet resolved.
+  const precise = getCachedCoords(place);
+  if (precise) return precise;
   // This is a simplified mapping. In a real app, you'd use a geocoding service
   const placeCoordinates: { [key: string]: { latitude: number; longitude: number } } = {
     'mumbai': { latitude: 19.0760, longitude: 72.8777 },

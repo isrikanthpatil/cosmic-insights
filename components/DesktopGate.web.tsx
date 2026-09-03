@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, Pressable, Linking } from 'react-native';
 import BrandLogo from '@/components/BrandLogo';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.astropanth.cosmicinsights';
 const SITE_URL = 'https://astropanth.com';
@@ -21,6 +22,7 @@ const DESKTOP_MIN_WIDTH = 900;
  */
 export default function DesktopGate({ children }: { children: React.ReactNode }) {
   const { width } = useWindowDimensions();
+  const { t } = useLanguage();
 
   if (width < DESKTOP_MIN_WIDTH) {
     return <>{children}</>;
@@ -36,25 +38,23 @@ export default function DesktopGate({ children }: { children: React.ReactNode })
           </Text>
         </View>
 
-        <Text style={styles.headline}>Your stars, read right.</Text>
+        <Text style={styles.headline}>{t('desktop.headline')}</Text>
         <Text style={styles.sub}>
-          Astropanth is built for your phone — genuine Vedic (sidereal) astrology and
-          numerology, in your pocket. Use it live in the frame here, or get the app for
-          the full experience with daily notifications.
+          {t('desktop.pitch')}
         </Text>
 
         <Pressable style={styles.cta} onPress={() => Linking.openURL(PLAY_URL)}>
-          <Text style={styles.ctaText}>Get it on Google Play</Text>
+          <Text style={styles.ctaText}>{t('desktop.getOnPlay')}</Text>
         </Pressable>
 
         <Pressable onPress={() => Linking.openURL(SITE_URL)} style={styles.linkWrap}>
-          <Text style={styles.link}>Learn more at astropanth.com →</Text>
+          <Text style={styles.link}>{t('desktop.learnMore')}</Text>
         </Pressable>
       </View>
 
       <View style={styles.phoneCol}>
         <View style={styles.phone}>{children}</View>
-        <Text style={styles.caption}>Astropanth, running live — best on mobile</Text>
+        <Text style={styles.caption}>{t('desktop.caption')}</Text>
       </View>
     </View>
   );
@@ -76,13 +76,6 @@ const styles = StyleSheet.create({
   },
   pitch: { maxWidth: 460, flexShrink: 1 },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 22 },
-  spark: {
-    width: 34, height: 34, borderRadius: 10,
-    alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(232,200,126,0.12)',
-    borderWidth: 1, borderColor: 'rgba(232,200,126,0.35)',
-  },
-  sparkGlyph: { color: '#E8C87E', fontSize: 18, lineHeight: 20 },
   brand: { color: '#E8E6F0', fontSize: 22, fontFamily: 'PlayfairDisplay-Bold' },
   brandGold: { color: '#E8C87E' },
   headline: {

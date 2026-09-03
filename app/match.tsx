@@ -32,13 +32,14 @@ import ScreenBackground from '@/components/ScreenBackground';
 import SectionHeader from '@/components/SectionHeader';
 import ShareCardButton from '@/components/ShareCardButton';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedMap } from '@/utils/i18nContent';
 
-// Map the engine's 4 bands to a neutral one-line descriptor.
-const BAND_DESCRIPTOR: Record<AshtakootaResult['band'], string> = {
-  Excellent: 'A strong traditional match across most kootas.',
-  Good: 'A favourable match by the classical count.',
-  Average: 'A moderate match — some kootas align, others less so.',
-  'Not recommended': 'Few kootas align by the classical count.',
+// Map the engine's 4 bands to a neutral one-line descriptor (translation keys).
+const BAND_DESCRIPTOR_KEY: Record<AshtakootaResult['band'], string> = {
+  Excellent: 'match.bandExcellent',
+  Good: 'match.bandGood',
+  Average: 'match.bandAverage',
+  'Not recommended': 'match.bandNotRecommended',
 };
 
 interface MatchResult {
@@ -128,15 +129,15 @@ export default function MatchScreen() {
 
     const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!dateRegex.test(bDate)) {
-      setError("Enter the second person's date of birth in DD/MM/YYYY format.");
+      setError(t('match.errDob'));
       return;
     }
     if (!bPlace || !SecurityUtils.validatePlace(bPlace)) {
-      setError("Enter the second person's place of birth.");
+      setError(t('match.errPlace'));
       return;
     }
     if (bTime && !SecurityUtils.validateTime(bTime)) {
-      setError('Enter the time of birth in HH:MM (24-hour) format.');
+      setError(t('match.errTime'));
       return;
     }
 
@@ -146,13 +147,13 @@ export default function MatchScreen() {
 
     if (!coordsA) {
       setError(
-        `We couldn't find coordinates for your birth place ("${activeProfile.placeOfBirth}"). Try a nearby major city.`,
+        t('match.errCoordsA', { place: activeProfile.placeOfBirth }),
       );
       return;
     }
     if (!coordsB) {
       setError(
-        `We couldn't find coordinates for "${bPlace}". Try a nearby major city.`,
+        t('match.errCoordsB', { place: bPlace }),
       );
       return;
     }
@@ -201,16 +202,14 @@ export default function MatchScreen() {
       setMatch({
         result,
         lowConfidence: ephA.lowConfidence || ephB.lowConfidence,
-        personAName: activeProfile.firstName || 'You',
-        personBName: firstName.trim() || 'Partner',
+        personAName: activeProfile.firstName || t('common.you'),
+        personBName: firstName.trim() || t('match.partner'),
       });
       // Scroll the shared ScrollView back to the top so the hero score is
       // visible instead of leaving the view parked at the button.
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     } catch (e) {
-      setError(
-        'Something went wrong calculating the match. Please double-check the birth details and try again.',
-      );
+      setError(t('match.errCalc'));
     } finally {
       setSubmitting(false);
     }
@@ -236,7 +235,7 @@ export default function MatchScreen() {
               router.replace('/(tabs)/more');
             }
           }}
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('common.goBack')}
         >
           <ArrowLeft size={22} color="#E8C87E" />
         </TouchableOpacity>
@@ -259,19 +258,18 @@ export default function MatchScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.heading}>
-            <Text style={styles.title}>Kundli Matching</Text>
+            <Text style={styles.title}>{t('match.title')}</Text>
             <Text style={styles.subtitle}>
-              Ashtakoota Guna Milan · 36 Gunas
+              {t('match.subtitle')}
             </Text>
           </View>
 
           {!personAReady ? (
             <View style={styles.noticeCard}>
               <AlertCircle size={28} color="#E8C87E" />
-              <Text style={styles.noticeTitle}>Add your birth details first</Text>
+              <Text style={styles.noticeTitle}>{t('match.noticeTitle')}</Text>
               <Text style={styles.noticeText}>
-                Kundli matching uses your own birth chart as the first person.
-                Add your date and place of birth to continue.
+                {t('match.noticeText')}
               </Text>
               <TouchableOpacity
                 style={styles.primaryButton}
@@ -285,7 +283,7 @@ export default function MatchScreen() {
                 }}
                 activeOpacity={0.85}
               >
-                <Text style={styles.primaryButtonText}>Add birth details</Text>
+                <Text style={styles.primaryButtonText}>{t('match.addBirthButton')}</Text>
               </TouchableOpacity>
             </View>
           ) : match ? (
@@ -293,10 +291,10 @@ export default function MatchScreen() {
           ) : (
             <>
               {/* Person A — read-only from active profile. */}
-              <SectionHeader icon={User} title="Person A · You" />
+              <SectionHeader icon={User} title={t('match.personA')} />
               <View style={styles.personCard}>
                 <Text style={styles.personName}>
-                  {activeProfile?.firstName || 'Your chart'}
+                  {activeProfile?.firstName || t('home.yourChart')}
                 </Text>
                 <Text style={styles.personMeta}>
                   {activeProfile?.dateOfBirth}
@@ -309,15 +307,15 @@ export default function MatchScreen() {
 
               {/* Person B — form. */}
               <View style={styles.sectionSpacer} />
-              <SectionHeader icon={Heart} title="Person B · Partner" />
+              <SectionHeader icon={Heart} title={t('match.personB')} />
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>First Name</Text>
+                <Text style={styles.inputLabel}>{t('match.firstName')}</Text>
                 <TextInput
                   style={styles.input}
                   value={firstName}
                   onChangeText={setFirstName}
-                  placeholder="Enter first name (optional)"
+                  placeholder={t('match.firstNamePlaceholder')}
                   placeholderTextColor="#8B88A0"
                   selectionColor="#E8C87E"
                   maxLength={50}
@@ -325,25 +323,25 @@ export default function MatchScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Date of Birth * (DD/MM/YYYY)</Text>
+                <Text style={styles.inputLabel}>{t('match.dobLabel')}</Text>
                 <DateField value={dateOfBirth} onChangeText={setDateOfBirth} />
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Time of Birth (HH:MM, 24-hour)</Text>
+                <Text style={styles.inputLabel}>{t('match.tobLabel')}</Text>
                 <TimeField value={timeOfBirth} onChangeText={setTimeOfBirth} />
                 <Text style={styles.inputHint}>
-                  Optional — a birth time improves accuracy.
+                  {t('match.tobHint')}
                 </Text>
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Place of Birth *</Text>
+                <Text style={styles.inputLabel}>{t('match.pobLabel')}</Text>
                 <TextInput
                   style={styles.input}
                   value={placeOfBirth}
                   onChangeText={handlePlaceSearch}
-                  placeholder="Mumbai, Maharashtra"
+                  placeholder={t('match.pobPlaceholder')}
                   placeholderTextColor="#8B88A0"
                   selectionColor="#E8C87E"
                   maxLength={200}
@@ -378,7 +376,7 @@ export default function MatchScreen() {
                 {submitting ? (
                   <ActivityIndicator size={20} color="#0B0B1A" />
                 ) : (
-                  <Text style={styles.primaryButtonText}>Check compatibility</Text>
+                  <Text style={styles.primaryButtonText}>{t('match.checkButton')}</Text>
                 )}
               </TouchableOpacity>
             </>
@@ -409,6 +407,7 @@ function ResultView({
   match: MatchResult;
   onReset: () => void;
 }) {
+  const { t, lang } = useLanguage();
   const { result, lowConfidence, personAName, personBName } = match;
   const kootas: KootaScore[] = [
     result.varna,
@@ -421,17 +420,27 @@ function ResultView({
     result.nadi,
   ];
 
+  // Localize the generated match prose: overall band + each koota's name/note.
+  const genStrings = [
+    result.band,
+    ...kootas.flatMap((k) => [k?.name, k?.note]),
+  ].filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+  const tx = useTranslatedMap(genStrings, lang);
+
   const accent = bandColor(result.band);
 
   const matchShareData = {
-    eyebrow: 'Kundli match',
+    eyebrow: t('match.shareEyebrow'),
     title: `${result.total} / 36`,
     subtitle: `${personAName} & ${personBName}`,
-    body: `${result.band} — ${BAND_DESCRIPTOR[result.band]}`,
+    body: `${result.band} — ${t(BAND_DESCRIPTOR_KEY[result.band])}`,
   };
-  const matchShareMsg =
-    `Our Astropanth compatibility ✨ ${personAName} & ${personBName}: ${result.total}/36 (${result.band})\n\n` +
-    `Check yours free: https://www.astropanth.com`;
+  const matchShareMsg = t('match.shareMessage', {
+    a: personAName,
+    b: personBName,
+    total: result.total,
+    band: result.band,
+  });
 
   return (
     <View>
@@ -444,36 +453,35 @@ function ResultView({
           <Text style={styles.heroScore}>{result.total}</Text>
           <Text style={styles.heroScoreMax}> / 36</Text>
         </View>
-        <Text style={[styles.heroBand, { color: accent }]}>{result.band}</Text>
+        <Text style={[styles.heroBand, { color: accent }]}>{tx(result.band)}</Text>
         <Text style={styles.heroDescriptor}>
-          {BAND_DESCRIPTOR[result.band]}
+          {t(BAND_DESCRIPTOR_KEY[result.band])}
         </Text>
         <View style={styles.heroShareRow}>
-          <ShareCardButton data={matchShareData} message={matchShareMsg} label="Share result" />
+          <ShareCardButton data={matchShareData} message={matchShareMsg} label={t('match.shareResult')} />
         </View>
       </View>
 
       {lowConfidence && (
         <View style={styles.noteCard}>
           <Text style={styles.noteText}>
-            Add birth times for the most precise result. The Moon can change
-            nakshatra within a single day, so a missing time lowers confidence.
+            {t('match.lowConfidenceNote')}
           </Text>
         </View>
       )}
 
       {/* Per-koota breakdown */}
       <View style={styles.sectionSpacer} />
-      <SectionHeader icon={Sparkles} title="Guna breakdown" />
+      <SectionHeader icon={Sparkles} title={t('match.gunaBreakdown')} />
       <View style={styles.kootaGrid}>
         {kootas.map((k) => (
           <View key={k.name} style={styles.kootaCard}>
-            <Text style={styles.kootaName}>{k.name}</Text>
+            <Text style={styles.kootaName}>{tx(k.name)}</Text>
             <Text style={styles.kootaPoints}>
               {k.points} <Text style={styles.kootaMax}>/ {k.max}</Text>
             </Text>
             <Text style={styles.kootaNote} numberOfLines={2}>
-              {k.note}
+              {tx(k.note)}
             </Text>
           </View>
         ))}
@@ -481,40 +489,39 @@ function ResultView({
 
       {/* Dosha flags */}
       <View style={styles.sectionSpacer} />
-      <SectionHeader icon={Heart} title="Dosha checks" />
+      <SectionHeader icon={Heart} title={t('match.doshaChecks')} />
       <View style={styles.badgeRow}>
         <DoshaBadge
           present={result.doshas.nadiDosha}
-          presentLabel="Nadi dosha present"
-          clearLabel="No Nadi dosha"
+          presentLabel={t('match.nadiPresent')}
+          clearLabel={t('match.nadiClear')}
         />
         <DoshaBadge
           present={result.doshas.bhakootDosha}
-          presentLabel={`Bhakoot dosha${
+          presentLabel={`${t('match.bhakootPresent')}${
             result.doshas.bhakootPair ? ` (${result.doshas.bhakootPair})` : ''
           }`}
-          clearLabel="No Bhakoot dosha"
+          clearLabel={t('match.bhakootClear')}
         />
         <DoshaBadge
           present={result.doshas.mangalDoshaMale}
-          presentLabel="Mangal (groom)"
-          clearLabel="No Mangal (groom)"
+          presentLabel={t('match.mangalGroom')}
+          clearLabel={t('match.mangalGroomClear')}
         />
         <DoshaBadge
           present={result.doshas.mangalDoshaFemale}
-          presentLabel="Mangal (bride)"
-          clearLabel="No Mangal (bride)"
+          presentLabel={t('match.mangalBride')}
+          clearLabel={t('match.mangalBrideClear')}
         />
       </View>
       <Text style={styles.mangalRef}>
-        Mangal dosha checked from the {result.doshas.mangalReference}.
+        {t('match.mangalRef', { reference: result.doshas.mangalReference })}
       </Text>
 
       {/* Disclaimer */}
       <View style={styles.disclaimerCard}>
         <Text style={styles.disclaimerText}>
-          Guna Milan is one traditional factor in compatibility, not a verdict —
-          consider a full reading.
+          {t('match.disclaimer')}
         </Text>
       </View>
 
@@ -523,7 +530,7 @@ function ResultView({
         onPress={onReset}
         activeOpacity={0.85}
       >
-        <Text style={styles.secondaryButtonText}>Check another match</Text>
+        <Text style={styles.secondaryButtonText}>{t('match.checkAnother')}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import ScreenBackground from '@/components/ScreenBackground';
 import { completeGoogleAuth } from '@/utils/googleAuth';
 import { showToast } from '@/utils/toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * OAuth return route. The server redirect page deep-links here as
@@ -14,6 +15,7 @@ import { showToast } from '@/utils/toast';
 export default function OAuthRedirect() {
   const { code, error } = useLocalSearchParams<{ code?: string; error?: string }>();
   const router = useRouter();
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
@@ -27,7 +29,7 @@ export default function OAuthRedirect() {
       if (!cancelled) {
         // Cold-start edge case: if the app was killed during the browser step the
         // PKCE verifier is gone, so the exchange can't complete — tell the user.
-        if (!ok) showToast('Could not finish Google sign-in. Please try again.', 'info');
+        if (!ok) showToast(t('oauth.signInFailed'), 'info');
         try { if (router.canDismiss()) router.dismissAll(); } catch {}
         router.replace('/(tabs)');
       }
@@ -41,7 +43,7 @@ export default function OAuthRedirect() {
   return (
     <ScreenBackground style={styles.container}>
       <ActivityIndicator size="large" color="#E8C87E" />
-      <Text style={styles.text}>Signing you in…</Text>
+      <Text style={styles.text}>{t('oauth.signingIn')}</Text>
     </ScreenBackground>
   );
 }

@@ -15,6 +15,8 @@ import { tap } from '@/utils/haptics';
 import { registerPositiveMoment } from '@/utils/review';
 import { getOrStartDelivery, formatReadyBy } from '@/utils/reportDelivery';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslatedHtml } from '@/utils/i18nContent';
+import { resolveAndCache, useCoordsNonce } from '@/utils/coords';
 
 const isReportType = (t: unknown): t is ReportType =>
   t === 'astrology' || t === 'numerology' || t === 'gemstone';
@@ -25,7 +27,7 @@ export default function ReportScreen() {
   const { activeProfile: profile } = useChart();
   const { user } = useAuth();
   const { hasReports } = usePremium();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const locked = REPORTS_REQUIRE_ENTITLEMENT && !hasReports;
   const params = useLocalSearchParams<{ type?: string; period?: string }>();
 
@@ -34,6 +36,13 @@ export default function ReportScreen() {
   const type: ReportType = isReportType(rawType) ? rawType : 'astrology';
   const [period, setPeriod] = useState<Period>(params.period === 'yearly' ? 'yearly' : 'monthly');
 
+  // Resolve precise birthplace coordinates so the report's Ascendant is accurate;
+  // rebuild when they arrive.
+  const coordsNonce = useCoordsNonce();
+  useEffect(() => {
+    resolveAndCache(profile?.placeOfBirth);
+  }, [profile?.placeOfBirth]);
+
   const html = useMemo(() => {
     if (!profile?.dateOfBirth) return null;
     try {
@@ -41,7 +50,13 @@ export default function ReportScreen() {
     } catch {
       return null;
     }
-  }, [isForecast, type, period, profile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isForecast, type, period, profile, coordsNonce]);
+
+  // Localize the generated report for non-English languages (text nodes only;
+  // layout/markup untouched). Shows English first, swaps in the translation when
+  // ready; results are cached on-device + server so re-opens are instant.
+  const { html: displayHtml } = useTranslatedHtml(html ?? '', lang);
 
   const title = isForecast
     ? (period === 'yearly' ? 'Yearly Forecast' : 'Monthly Forecast')
@@ -173,7 +188,7 @@ export default function ReportScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <ReportViewer html={html} fileName={fileName} />
+        <ReportViewer html={displayHtml} fileName={fileName} />
       )}
     </ScreenBackground>
   );

@@ -13,12 +13,12 @@ const todayKey = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-const SPREAD_POSITIONS = ['Past', 'Present', 'Future'];
-
 export default function TarotScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useLanguage();
+
+  const spreadPositions = [t('tarot.past'), t('tarot.present'), t('tarot.future')];
 
   const daily = useMemo(() => getDailyCard(todayKey()), []);
   const [spread, setSpread] = useState<{ card: TarotCard; reversed: boolean }[] | null>(null);
@@ -37,10 +37,10 @@ export default function TarotScreen() {
     <View style={styles.card}>
       {position && <Text style={styles.position}>{position}</Text>}
       <Text style={styles.cardName}>
-        {card.name}{reversed ? '  (Reversed)' : ''}
+        {card.name}{reversed ? t('tarot.reversedSuffix') : ''}
       </Text>
       <Text style={styles.cardMeta}>
-        {card.arcana === 'major' ? 'Major Arcana' : `${card.suit ? card.suit[0].toUpperCase() + card.suit.slice(1) : ''} · Minor Arcana`}
+        {card.arcana === 'major' ? t('tarot.majorArcana') : t('tarot.minorArcana', { suit: card.suit ? card.suit[0].toUpperCase() + card.suit.slice(1) : '' })}
       </Text>
       <View style={styles.keywords}>
         {card.keywords.slice(0, 4).map((k) => (
@@ -54,7 +54,7 @@ export default function TarotScreen() {
   return (
     <ScreenBackground style={styles.container}>
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
-        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+        <TouchableOpacity onPress={goBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <ArrowLeft size={24} color="#E8C87E" />
         </TouchableOpacity>
         <Text style={styles.topTitle}>{t('tarot.title')}</Text>
@@ -66,26 +66,26 @@ export default function TarotScreen() {
           <Sparkles size={18} color="#E8C87E" />
           <Text style={styles.headerTitle}>{t('tarot.cardOfDay')}</Text>
         </View>
-        <Text style={styles.headerSub}>A single card to reflect on today — the same for you all day.</Text>
+        <Text style={styles.headerSub}>{t('tarot.dailySub')}</Text>
         <CardBlock card={daily} reversed={false} />
 
         <View style={[styles.header, { marginTop: 24 }]}>
           <Shuffle size={18} color="#E8C87E" />
-          <Text style={styles.headerTitle}>Three-Card Spread</Text>
+          <Text style={styles.headerTitle}>{t('tarot.threeCardSpread')}</Text>
         </View>
-        <Text style={styles.headerSub}>Past · Present · Future. Take a breath, hold your question, and draw.</Text>
+        <Text style={styles.headerSub}>{t('tarot.spreadSub')}</Text>
 
-        <TouchableOpacity style={styles.drawButton} onPress={draw} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Draw three cards">
+        <TouchableOpacity style={styles.drawButton} onPress={draw} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('tarot.drawThreeCards')}>
           <Shuffle size={18} color="#0B0B1A" />
-          <Text style={styles.drawButtonText}>{spread ? 'Draw again' : 'Draw three cards'}</Text>
+          <Text style={styles.drawButtonText}>{spread ? t('tarot.drawAgain') : t('tarot.drawThreeCards')}</Text>
         </TouchableOpacity>
 
         {spread?.map((s, i) => (
-          <CardBlock key={`${s.card.id}-${i}`} card={s.card} reversed={s.reversed} position={SPREAD_POSITIONS[i]} />
+          <CardBlock key={`${s.card.id}-${i}`} card={s.card} reversed={s.reversed} position={spreadPositions[i]} />
         ))}
 
         <Text style={styles.disclaimer}>
-          Tarot is offered for reflection and self-insight, drawn from the {TAROT_DECK.length}-card Rider–Waite–Smith tradition. It is not a substitute for professional advice.
+          {t('tarot.disclaimer', { count: TAROT_DECK.length })}
         </Text>
       </ScrollView>
     </ScreenBackground>

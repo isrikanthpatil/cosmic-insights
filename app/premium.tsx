@@ -56,7 +56,7 @@ export default function PremiumScreen() {
   // Plus isn't live yet — capture interest instead of a dead Subscribe button.
   const handleNotify = () => {
     tap();
-    showToast("Thanks! We'll let you know when Astropanth Plus is ready.", 'success');
+    showToast(t('premium.notifyToast'), 'success');
   };
 
   const handleRedeem = async () => {
@@ -88,11 +88,11 @@ export default function PremiumScreen() {
             }
           }}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('common.goBack')}
         >
           <ArrowLeft size={22} color="#E8C87E" />
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Astropanth Plus</Text>
+        <Text style={styles.topBarTitle}>{t('premium.planTitle')}</Text>
         <View style={styles.backButton} />
       </View>
 
@@ -106,18 +106,16 @@ export default function PremiumScreen() {
           <BrandLogo size={46} showWordmark={false} style={styles.heroMark} />
           <Text style={styles.heroTitle}>{plusTagline}</Text>
           <Text style={styles.heroSubtitle}>
-            Go deeper with {plusPlanName} — unlimited guidance and detailed
-            reports.
+            {t('premium.heroSubtitle', { plan: plusPlanName })}
           </Text>
         </View>
 
         {isPremium ? (
           // Already entitled — show the member state instead of a CTA.
           <View style={styles.memberCard}>
-            <Text style={styles.memberTitle}>You're on Astropanth Plus ✦</Text>
+            <Text style={styles.memberTitle}>{t('premium.memberTitle')}</Text>
             <Text style={styles.memberText}>
-              Thank you for supporting Astropanth. All Plus features are
-              unlocked on this device.
+              {t('premium.memberText')}
             </Text>
           </View>
         ) : null}
@@ -148,10 +146,10 @@ export default function PremiumScreen() {
                     disabled={buying}
                     activeOpacity={0.85}
                     accessibilityRole="button"
-                    accessibilityLabel="Buy Astropanth Plus yearly"
+                    accessibilityLabel={t('premium.buyYearlyLabel')}
                   >
                     <Text style={styles.primaryButtonText}>
-                      {buying ? 'Opening…' : `Get Plus — ${PRODUCTS.plus_yearly.price}`}
+                      {buying ? t('premium.opening') : t('premium.getPlus', { price: PRODUCTS.plus_yearly.price })}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -160,14 +158,14 @@ export default function PremiumScreen() {
                     disabled={buying}
                     activeOpacity={0.85}
                     accessibilityRole="button"
-                    accessibilityLabel="Buy Astropanth Plus monthly"
+                    accessibilityLabel={t('premium.buyMonthlyLabel')}
                   >
-                    <Text style={styles.secondaryButtonText}>Or {PRODUCTS.plus_monthly.price}</Text>
+                    <Text style={styles.secondaryButtonText}>{t('premium.orPrice', { price: PRODUCTS.plus_monthly.price })}</Text>
                   </TouchableOpacity>
                 </>
               ) : (
                 <Text style={styles.placeholderNote}>
-                  Subscribe to Astropanth Plus on the web at astropanth.com. In-app purchases on Android are coming soon.
+                  {t('premium.webNote')}
                 </Text>
               )
             ) : (
@@ -179,7 +177,7 @@ export default function PremiumScreen() {
                   onPress={handleNotify}
                   activeOpacity={0.85}
                   accessibilityRole="button"
-                  accessibilityLabel="Notify me when Astropanth Plus launches"
+                  accessibilityLabel={t('premium.notifyLabel')}
                 >
                   <Text style={styles.primaryButtonText}>{t('premium.notify')}</Text>
                 </TouchableOpacity>
@@ -207,7 +205,7 @@ export default function PremiumScreen() {
                   onPress={handleRedeem}
                   disabled={!code.trim() || redeeming}
                   accessibilityRole="button"
-                  accessibilityLabel="Redeem code"
+                  accessibilityLabel={t('premium.redeemLabel')}
                 >
                   <Text style={styles.codeButtonText}>{redeeming ? '…' : t('premium.redeem')}</Text>
                 </TouchableOpacity>
