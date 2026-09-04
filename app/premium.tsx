@@ -25,6 +25,7 @@ import {
   plusPlanName,
   plusTagline,
   BILLING_ENABLED,
+  LAUNCH_PRICING,
   PRODUCTS,
 } from '@/constants/plans';
 
@@ -137,21 +138,29 @@ export default function PremiumScreen() {
             pricing or a dead Subscribe button. */}
         {!isPremium && (
           <>
-            {BILLING_ENABLED ? (
-              Platform.OS === 'web' ? (
-                <>
-                  <TouchableOpacity
-                    style={[styles.primaryButton, buying && styles.primaryButtonDisabled]}
-                    onPress={() => handleBuy(PRODUCTS.plus_yearly.id)}
-                    disabled={buying}
-                    activeOpacity={0.85}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('premium.buyYearlyLabel')}
-                  >
-                    <Text style={styles.primaryButtonText}>
-                      {buying ? t('premium.opening') : t('premium.getPlus', { price: PRODUCTS.plus_yearly.price })}
-                    </Text>
-                  </TouchableOpacity>
+            {/* Buy buttons only on WEB. On Android (and when billing is off) we
+                never show or link to a web purchase — Play policy forbids
+                steering to out-of-app payment for digital goods; Play Billing is
+                a separate future task. Android sees the coming-soon state. */}
+            {BILLING_ENABLED && Platform.OS === 'web' ? (
+              <>
+                <TouchableOpacity
+                  style={[styles.primaryButton, buying && styles.primaryButtonDisabled]}
+                  onPress={() => handleBuy(LAUNCH_PRICING ? PRODUCTS.plus_launch.id : PRODUCTS.plus_yearly.id)}
+                  disabled={buying}
+                  activeOpacity={0.85}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('premium.buyYearlyLabel')}
+                >
+                  <Text style={styles.primaryButtonText}>
+                    {buying
+                      ? t('premium.opening')
+                      : t('premium.getPlus', { price: LAUNCH_PRICING ? PRODUCTS.plus_launch.price : PRODUCTS.plus_yearly.price })}
+                  </Text>
+                </TouchableOpacity>
+                {LAUNCH_PRICING ? (
+                  <Text style={styles.launchNote}>{t('premium.launchNote')}</Text>
+                ) : (
                   <TouchableOpacity
                     style={styles.secondaryButton}
                     onPress={() => handleBuy(PRODUCTS.plus_monthly.id)}
@@ -162,12 +171,8 @@ export default function PremiumScreen() {
                   >
                     <Text style={styles.secondaryButtonText}>{t('premium.orPrice', { price: PRODUCTS.plus_monthly.price })}</Text>
                   </TouchableOpacity>
-                </>
-              ) : (
-                <Text style={styles.placeholderNote}>
-                  {t('premium.webNote')}
-                </Text>
-              )
+                )}
+              </>
             ) : (
               <>
                 <Text style={styles.comingSoonHeadline}>{t('premium.comingSoon')}</Text>
@@ -391,6 +396,13 @@ const styles = StyleSheet.create({
     color: '#8B88A0',
     textAlign: 'center',
     marginTop: 8,
+  },
+  launchNote: {
+    fontSize: 13,
+    fontFamily: 'Inter-Medium',
+    color: '#E8C87E',
+    textAlign: 'center',
+    marginTop: 10,
   },
   primaryButton: {
     alignItems: 'center',

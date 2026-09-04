@@ -61,7 +61,7 @@ export const plusTagline = 'Unlock the full cosmos';
 // Master switch for showing real "Buy" buttons (Razorpay on web). Keep false
 // until you're ready to charge — the checkout route is built and testable by
 // flipping this to true (promo codes work regardless).
-export const BILLING_ENABLED = false;
+export const BILLING_ENABLED = true;
 
 // Purchasable items. `id` maps to the server-side catalog in razorpay.pb.js
 // (which holds the authoritative amounts so the client can't tamper with price).
@@ -69,7 +69,13 @@ export const PRODUCTS = {
   plus_monthly: { id: 'plus_monthly', label: 'Astropanth Plus — Monthly', price: '₹99/mo' },
   plus_yearly: { id: 'plus_yearly', label: 'Astropanth Plus — Yearly', price: '₹499/yr' },
   reports_all: { id: 'reports_all', label: 'Unlock all reports', price: '₹149' },
+  // Launch offer — Astropanth Plus for ₹1 (30 days) while we grow the user base.
+  plus_launch: { id: 'plus_launch', label: 'Astropanth Plus — Launch', price: '₹1' },
 } as const;
+
+// When true, the paywall sells the ₹1 launch product instead of the regular
+// monthly/yearly prices. Flip to false to switch to standard pricing.
+export const LAUNCH_PRICING = true;
 
 // Master switch for in-app language switching. Kept FALSE until localization is
 // complete across all screens AND generated content, so users never see a

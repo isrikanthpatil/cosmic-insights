@@ -532,5 +532,6 @@
   "panchang.computeError": "Could not compute today's Panchang. Please try again.",
   "panchang.kalamNote": "Traditionally avoided for starting important activities.",
   "panchang.disclaimer": "Computed with the sidereal (Lahiri) system. Sun timings and periods use a central-India reference (times shown in IST) and may vary by a few minutes from your exact city. Offered for guidance and reflection.",
-  "common.translating": "Translating…"
+  "common.translating": "Translating…",
+  "premium.launchNote": "Launch offer — 30 days of Plus for ₹1."
 }
