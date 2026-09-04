@@ -103,9 +103,12 @@ routerAdd("POST", "/api/translate", (e) => {
       const i = missIdx[g + k];
       const src = group[k];
       const val = (arr && typeof arr[k] === "string" && arr[k].trim()) ? arr[k] : null;
-      out[i] = (val && val !== src) ? val : src; // English fallback if failed
-      // Cache ONLY a real translation, so failures are retried next time.
-      if (val && val !== src) {
+      // Return null when we could NOT translate — the client keeps English and
+      // retries later, so a failure never sticks. A real result (even one that
+      // equals English, e.g. a proper noun) is returned and cached, so it is not
+      // re-translated on every request.
+      out[i] = val;
+      if (val) {
         try {
           const c = $app.findCollectionByNameOrId("translation_cache");
           $app.save(new Record(c, { h: hash(src), lang, en: src.slice(0, 4000), tr: val }));

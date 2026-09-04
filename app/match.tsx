@@ -141,22 +141,13 @@ export default function MatchScreen() {
       return;
     }
 
-    // Resolve coordinates for both people from their place names.
-    const coordsA = getCoordinatesForPlace(activeProfile.placeOfBirth);
-    const coordsB = getCoordinatesForPlace(bPlace);
-
-    if (!coordsA) {
-      setError(
-        t('match.errCoordsA', { place: activeProfile.placeOfBirth }),
-      );
-      return;
-    }
-    if (!coordsB) {
-      setError(
-        t('match.errCoordsB', { place: bPlace }),
-      );
-      return;
-    }
+    // Resolve coordinates for both people from their place names. Guna Milan is
+    // Moon-based (nakshatra/rashi are effectively location-independent across
+    // India), so a place we can't geocode must NOT block the match — fall back
+    // to the India reference centroid instead of erroring.
+    const DEFAULT_COORDS = { latitude: 22, longitude: 79 };
+    const coordsA = getCoordinatesForPlace(activeProfile.placeOfBirth) ?? DEFAULT_COORDS;
+    const coordsB = getCoordinatesForPlace(bPlace) ?? DEFAULT_COORDS;
 
     setSubmitting(true);
     try {
