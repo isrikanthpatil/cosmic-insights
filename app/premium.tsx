@@ -173,6 +173,11 @@ export default function PremiumScreen() {
                   </TouchableOpacity>
                 )}
               </>
+            ) : BILLING_ENABLED ? (
+              // Billing is live (on web) but Android can't sell digital goods
+              // in-app without Play Billing (Play policy). Don't say "coming
+              // soon" or link to web payment — point to the code path (allowed).
+              <Text style={styles.androidNote}>{t('premium.androidNote')}</Text>
             ) : (
               <>
                 <Text style={styles.comingSoonHeadline}>{t('premium.comingSoon')}</Text>
@@ -403,6 +408,15 @@ const styles = StyleSheet.create({
     color: '#E8C87E',
     textAlign: 'center',
     marginTop: 10,
+  },
+  androidNote: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#C7C4D6',
+    textAlign: 'center',
+    lineHeight: 21,
+    marginTop: 4,
+    marginBottom: 4,
   },
   primaryButton: {
     alignItems: 'center',

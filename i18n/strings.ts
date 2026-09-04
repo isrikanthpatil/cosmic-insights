@@ -552,7 +552,8 @@ const en: Dict = {
   "panchang.kalamNote": "Traditionally avoided for starting important activities.",
   "panchang.disclaimer": "Computed with the sidereal (Lahiri) system. Sun timings and periods use a central-India reference (times shown in IST) and may vary by a few minutes from your exact city. Offered for guidance and reflection.",
   "common.translating": "Translating…",
-  "premium.launchNote": "Launch offer — 30 days of Plus for ₹1."
+  "premium.launchNote": "Launch offer — 30 days of Plus for ₹1.",
+  "premium.androidNote": "In-app purchase is coming to Android soon. Have a code? Redeem it below to unlock Plus now."
 };
 
 const hi: Dict = {
@@ -1090,7 +1091,8 @@ const hi: Dict = {
   "panchang.kalamNote": "परंपरागत रूप से महत्वपूर्ण कार्य आरंभ करने के लिए वर्जित।",
   "panchang.disclaimer": "सायडेरियल (लाहिरी) पद्धति से गणना। सूर्य समय व काल मध्य-भारत के संदर्भ पर आधारित हैं (समय IST में) और आपके सटीक शहर से कुछ मिनट भिन्न हो सकते हैं। मार्गदर्शन व चिंतन हेतु।",
   "common.translating": "अनुवाद हो रहा है…",
-  "premium.launchNote": "लॉन्च ऑफ़र — ₹1 में 30 दिन का Plus।"
+  "premium.launchNote": "लॉन्च ऑफ़र — ₹1 में 30 दिन का Plus।",
+  "premium.androidNote": "ऐप में खरीदारी जल्द ही Android पर आ रही है। कोई कोड है? Plus अभी अनलॉक करने के लिए नीचे रिडीम करें।"
 };
 
 const mr: Dict = {
@@ -1628,7 +1630,8 @@ const mr: Dict = {
   "panchang.kalamNote": "महत्त्वाची कामे सुरू करण्यासाठी परंपरेने टाळले जाते.",
   "panchang.disclaimer": "सायडेरियल (लाहिरी) पद्धतीने गणना. सूर्य वेळा व काल मध्य-भारताच्या संदर्भावर आधारित आहेत (वेळा IST मध्ये) आणि तुमच्या नेमक्या शहरापेक्षा काही मिनिटे बदलू शकतात. मार्गदर्शन व चिंतनासाठी.",
   "common.translating": "भाषांतर होत आहे…",
-  "premium.launchNote": "लॉन्च ऑफर — ₹1 मध्ये 30 दिवसांचा Plus."
+  "premium.launchNote": "लॉन्च ऑफर — ₹1 मध्ये 30 दिवसांचा Plus.",
+  "premium.androidNote": "अ‍ॅपमधील खरेदी लवकरच Android वर येत आहे. कोड आहे का? Plus आत्ता अनलॉक करण्यासाठी खाली रिडीम करा."
 };
 
 const kn: Dict = {
@@ -2166,7 +2169,8 @@ const kn: Dict = {
   "panchang.kalamNote": "ಮುಖ್ಯ ಕಾರ್ಯಗಳನ್ನು ಆರಂಭಿಸಲು ಸಂಪ್ರದಾಯದಂತೆ ವರ್ಜಿಸಲಾಗಿದೆ.",
   "panchang.disclaimer": "ಸೈಡಿರಿಯಲ್ (ಲಾಹಿರಿ) ಪದ್ಧತಿಯಲ್ಲಿ ಲೆಕ್ಕಹಾಕಲಾಗಿದೆ. ಸೂರ್ಯ ಸಮಯ ಮತ್ತು ಕಾಲಗಳು ಮಧ್ಯ-ಭಾರತದ ಉಲ್ಲೇಖವನ್ನು ಆಧರಿಸಿವೆ (ಸಮಯ IST ನಲ್ಲಿ) ಮತ್ತು ನಿಮ್ಮ ನಿಖರ ನಗರದಿಂದ ಕೆಲವು ನಿಮಿಷಗಳಷ್ಟು ಬದಲಾಗಬಹುದು. ಮಾರ್ಗದರ್ಶನ ಮತ್ತು ಚಿಂತನೆಗಾಗಿ.",
   "common.translating": "ಅನುವಾದವಾಗುತ್ತಿದೆ…",
-  "premium.launchNote": "ಲಾಂಚ್ ಆಫರ್ — ₹1 ಗೆ 30 ದಿನಗಳ Plus."
+  "premium.launchNote": "ಲಾಂಚ್ ಆಫರ್ — ₹1 ಗೆ 30 ದಿನಗಳ Plus.",
+  "premium.androidNote": "ಆ್ಯಪ್‌ನಲ್ಲಿ ಖರೀದಿ ಶೀಘ್ರದಲ್ಲೇ Android ಗೆ ಬರುತ್ತಿದೆ. ಕೋಡ್ ಇದೆಯೇ? Plus ಈಗ ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಕೆಳಗೆ ರಿಡೀಮ್ ಮಾಡಿ."
 };
 
 const ta: Dict = {
@@ -2704,7 +2708,8 @@ const ta: Dict = {
   "panchang.kalamNote": "முக்கியமான செயல்களைத் தொடங்க பாரம்பரியமாக தவிர்க்கப்படுகிறது.",
   "panchang.disclaimer": "சைடீரியல் (லாஹிரி) முறையில் கணக்கிடப்பட்டது. சூரிய நேரங்களும் காலங்களும் மத்திய இந்தியாவை அடிப்படையாகக் கொண்டவை (நேரம் IST இல்) மற்றும் உங்கள் சரியான நகரத்திலிருந்து சில நிமிடங்கள் மாறுபடலாம். வழிகாட்டுதலுக்கும் சிந்தனைக்கும் மட்டுமே.",
   "common.translating": "மொழிபெயர்க்கிறது…",
-  "premium.launchNote": "தொடக்க சலுகை — ₹1-க்கு 30 நாட்கள் Plus."
+  "premium.launchNote": "தொடக்க சலுகை — ₹1-க்கு 30 நாட்கள் Plus.",
+  "premium.androidNote": "ஆப்-க்குள் வாங்குதல் விரைவில் Android-க்கு வருகிறது. கோட் உள்ளதா? Plus-ஐ இப்போது திறக்க கீழே ரிடீம் செய்யவும்."
 };
 
 const te: Dict = {
@@ -3242,7 +3247,8 @@ const te: Dict = {
   "panchang.kalamNote": "ముఖ్యమైన పనులు ప్రారంభించడానికి సంప్రదాయంగా నివారించబడుతుంది.",
   "panchang.disclaimer": "సైడీరియల్ (లాహిరి) పద్ధతిలో లెక్కించబడింది. సూర్య సమయాలు మరియు కాలాలు మధ్య-భారత ప్రామాణికం ఆధారంగా ఉన్నాయి (సమయం IST లో) మరియు మీ ఖచ్చితమైన నగరం నుండి కొన్ని నిమిషాలు మారవచ్చు. మార్గదర్శనం మరియు ఆలోచన కోసం.",
   "common.translating": "అనువదిస్తోంది…",
-  "premium.launchNote": "లాంచ్ ఆఫర్ — ₹1కి 30 రోజుల Plus."
+  "premium.launchNote": "లాంచ్ ఆఫర్ — ₹1కి 30 రోజుల Plus.",
+  "premium.androidNote": "యాప్‌లో కొనుగోలు త్వరలో Androidకి వస్తోంది. కోడ్ ఉందా? Plus ఇప్పుడు అన్‌లాక్ చేయడానికి క్రింద రిడీమ్ చేయండి."
 };
 
 export const DICTS: Record<Lang, Dict> = { en, hi, mr, kn, ta, te };
