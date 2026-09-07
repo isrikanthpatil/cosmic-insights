@@ -71,6 +71,7 @@ export default function Numerology() {
       if (r.kuaNumberMeaning) out.push(r.kuaNumberMeaning);
       if (r.birthNumberDetail) out.push(r.birthNumberDetail);
       if (r.destinyNumberDetail) out.push(r.destinyNumberDetail);
+      if (r.combinationInsight) out.push(r.combinationInsight);
       out.push(...(r.loshuAnalysis || []));
       out.push(...(r.remedies || []));
       if (r.gridMeanings) {
@@ -398,6 +399,14 @@ export default function Numerology() {
               </Text>
             </View>
           )}
+
+          {numerologyReading.combinationInsight ? (
+            <View style={styles.section}>
+              <View style={styles.loshuCard}>
+                <Text style={styles.expandedText}>{tx(numerologyReading.combinationInsight)}</Text>
+              </View>
+            </View>
+          ) : null}
 
           <View style={styles.section}>
             <SectionHeader icon={Grid3X3} title={t('numero.loshuTitle')} iconColor="#69C779" />

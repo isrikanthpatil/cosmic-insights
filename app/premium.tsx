@@ -471,7 +471,9 @@ const styles = StyleSheet.create({
     color: '#F4F1E8',
     fontFamily: 'Inter-Medium',
     fontSize: 15,
-    letterSpacing: 1,
+    // NOTE: do NOT add letterSpacing here — on Android a TextInput with a custom
+    // font + letterSpacing renders typed text invisibly (caret moves, glyphs
+    // don't show). Keep letter-spacing off for inputs.
   },
   codeButton: {
     height: 46,

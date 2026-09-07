@@ -35,6 +35,7 @@ import BrandLogo from '@/components/BrandLogo';
 import { shareCardImage } from '@/utils/shareCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslatedMap } from '@/utils/i18nContent';
+import { tokenizeName, restoreName } from '@/utils/nameToken';
 import { getZodiacGlyph } from '@/utils/zodiac';
 
 const NOTIF_KEY = 'settings_notifications';
@@ -150,20 +151,25 @@ export default function Home() {
   // Localize the generated horoscope prose (daily + weekly) for non-English
   // languages. tx(englishString) returns the translation once ready, English
   // meanwhile. Labels/numbers/colours stay as-is (handled elsewhere).
+  // Swap the user's name for a {name} token so the sentence is identical across
+  // users — shared server cache + pre-warmable — then restore the name at render.
+  const nm = profile?.firstName;
   const horoscopeStrings = useMemo(() => {
     const out: string[] = [];
     if (horoscope) {
-      if (horoscope.mainPrediction) out.push(horoscope.mainPrediction);
-      if (horoscope.advice) out.push(horoscope.advice);
+      if (horoscope.mainPrediction) out.push(tokenizeName(horoscope.mainPrediction, nm));
+      if (horoscope.advice) out.push(tokenizeName(horoscope.advice, nm));
     }
     if (weeklyHoroscope) {
-      if (weeklyHoroscope.overview) out.push(weeklyHoroscope.overview);
-      out.push(...(weeklyHoroscope.highlights || []));
-      out.push(...(weeklyHoroscope.focusAreas || []));
+      if (weeklyHoroscope.overview) out.push(tokenizeName(weeklyHoroscope.overview, nm));
+      out.push(...(weeklyHoroscope.highlights || []).map((s) => tokenizeName(s, nm)));
+      out.push(...(weeklyHoroscope.focusAreas || []).map((s) => tokenizeName(s, nm)));
     }
     return out;
-  }, [horoscope, weeklyHoroscope]);
-  const tx = useTranslatedMap(horoscopeStrings, lang);
+  }, [horoscope, weeklyHoroscope, nm]);
+  const txRaw = useTranslatedMap(horoscopeStrings, lang);
+  // tx(englishString): tokenize -> translate -> restore the real name.
+  const tx = (s: string) => restoreName(txRaw(tokenizeName(s, nm)), nm);
 
   // Full chart (Sun/Moon/Ascendant) using the same util the Astrology screen uses.
   const chart = useMemo(

@@ -459,63 +459,78 @@ export const getAstrologyReading = (dateOfBirth: string, placeOfBirth: string, t
   const moonSignData = ZODIAC_KNOWLEDGE[moonSign.toLowerCase()];
   const ascendantData = hasAsc ? ZODIAC_KNOWLEDGE[ascendant.toLowerCase()] : undefined;
 
+  // Per-user deterministic seed — stable for a person (derived from their birth
+  // data) but different across people, so two same-sign users get different
+  // (fixed-for-them) selections from the curated pools instead of one identical
+  // block. A natal reading should be stable over time, so we do NOT mix in the
+  // date — only the person's own chart inputs.
+  const seed = `${dateOfBirth}|${placeOfBirth}|${timeOfBirth || ''}`;
+  const pick = (arr: string[] | undefined, i: number, fallback: string): string => {
+    if (!arr || arr.length === 0) return fallback;
+    return arr[((i % arr.length) + arr.length) % arr.length];
+  };
+  const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+  // Seeded pick: deterministic per (user, field key) — varies across users.
+  const sPick = (arr: string[] | undefined, key: string, fallback: string): string =>
+    pick(arr, arr && arr.length ? seededIndex(`${seed}-${key}`, arr.length) : 0, fallback);
+  // Seeded rotation: up to k unique entries starting at a seeded offset.
+  const sRotate = (arr: string[] | undefined, key: string, k: number): string[] => {
+    if (!arr || arr.length === 0) return [];
+    const off = seededIndex(`${seed}-${key}`, arr.length);
+    const out: string[] = [];
+    for (let i = 0; i < Math.min(k, arr.length); i++) out.push(arr[(off + i) % arr.length]);
+    return out;
+  };
+
   // Combine traits (Ascendant line only when a birth time gave us a Lagna).
   const combinedTraits = [
-    `Core Identity (Sun in ${sunSign}): ${sunSignData?.traits[0] || 'Strong character'}`,
-    `Emotional Nature (Moon in ${moonSign}): ${moonSignData?.traits[1] || 'Deep feelings'}`,
-    ...(hasAsc ? [`Outer Personality (${ascendant} Rising): ${ascendantData?.traits[2] || 'Unique approach'}`] : []),
+    `Core Identity (Sun in ${sunSign}): ${sPick(sunSignData?.traits, 'tr-sun', 'Strong character')}`,
+    `Emotional Nature (Moon in ${moonSign}): ${sPick(moonSignData?.traits, 'tr-moon', 'Deep feelings')}`,
+    ...(hasAsc ? [`Outer Personality (${ascendant} Rising): ${sPick(ascendantData?.traits, 'tr-asc', 'Unique approach')}`] : []),
   ];
 
   const combinedStrengths = [
-    `Sun in ${sunSign}: ${sunSignData?.strengths[0] || 'Core strength'}`,
-    `Moon in ${moonSign}: ${moonSignData?.strengths[1] || 'Emotional strength'}`,
-    ...(hasAsc ? [`${ascendant} Rising: ${ascendantData?.strengths[2] || 'Social strength'}`] : []),
-    ...(sunSignData?.strengths.slice(3, 7) || []),
-    ...(moonSignData?.strengths.slice(2, 4) || []),
+    `Sun in ${sunSign}: ${sPick(sunSignData?.strengths, 'st-sun', 'Core strength')}`,
+    `Moon in ${moonSign}: ${sPick(moonSignData?.strengths, 'st-moon', 'Emotional strength')}`,
+    ...(hasAsc ? [`${ascendant} Rising: ${sPick(ascendantData?.strengths, 'st-asc', 'Social strength')}`] : []),
+    ...sRotate(sunSignData?.strengths, 'st-sun-x', 3),
+    ...sRotate(moonSignData?.strengths, 'st-moon-x', 2),
   ];
 
   const combinedChallenges = [
-    `Sun in ${sunSign}: ${sunSignData?.challenges[0] || 'Core challenge'}`,
-    `Moon in ${moonSign}: ${moonSignData?.challenges[1] || 'Emotional challenge'}`,
-    ...(hasAsc ? [`${ascendant} Rising: ${ascendantData?.challenges[2] || 'Social challenge'}`] : []),
-    ...(sunSignData?.challenges.slice(3, 7) || []),
-    ...(moonSignData?.challenges.slice(2, 4) || []),
+    `Sun in ${sunSign}: ${sPick(sunSignData?.challenges, 'ch-sun', 'Core challenge')}`,
+    `Moon in ${moonSign}: ${sPick(moonSignData?.challenges, 'ch-moon', 'Emotional challenge')}`,
+    ...(hasAsc ? [`${ascendant} Rising: ${sPick(ascendantData?.challenges, 'ch-asc', 'Social challenge')}`] : []),
+    ...sRotate(sunSignData?.challenges, 'ch-sun-x', 3),
+    ...sRotate(moonSignData?.challenges, 'ch-moon-x', 2),
   ];
 
   const combinedRemedies = [
-    `For ${sunSign} Sun: ${sunSignData?.remedies[0] || 'Practice self-awareness'}`,
-    `For ${moonSign} Moon: ${moonSignData?.remedies[1] || 'Balance emotions'}`,
-    ...(hasAsc ? [`For ${ascendant} Rising: ${ascendantData?.remedies[2] || 'Align expression'}`] : []),
-    ...(sunSignData?.remedies.slice(3, 7) || []),
-    ...(moonSignData?.remedies.slice(2, 4) || []),
+    `For ${sunSign} Sun: ${sPick(sunSignData?.remedies, 'rm-sun', 'Practice self-awareness')}`,
+    `For ${moonSign} Moon: ${sPick(moonSignData?.remedies, 'rm-moon', 'Balance emotions')}`,
+    ...(hasAsc ? [`For ${ascendant} Rising: ${sPick(ascendantData?.remedies, 'rm-asc', 'Align expression')}`] : []),
+    ...sRotate(sunSignData?.remedies, 'rm-sun-x', 3),
+    ...sRotate(moonSignData?.remedies, 'rm-moon-x', 2),
   ];
-
-  // Helpers to safely pull a curated attribute (bounds-safe, lower-cased for
-  // natural mid-sentence insertion).
-  const pick = (arr: string[] | undefined, i: number, fallback: string): string => {
-    if (!arr || arr.length === 0) return fallback;
-    return arr[i % arr.length];
-  };
-  const lower = (s: string): string => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
   // Generate personalized predictions grounded in curated attributes. The
   // Ascendant-based line is only included when a birth time yielded a Lagna;
-  // otherwise a Moon-based line takes its place.
+  // otherwise a Moon-based line takes its place. All picks are seeded per user.
   const pastPredictions = [
-    `Your ${sunSign} Sun gave you ${lower(pick(sunSignData?.strengths, 0, 'inner strength'))}, which carried you through the past year.`,
-    `With the Moon in ${moonSign}, you grew by working through ${lower(pick(moonSignData?.challenges, 1, 'old emotional patterns'))}; ${lower(pick(moonSignData?.remedies, 1, 'tending to your feelings'))} steadied you.`,
+    `Your ${sunSign} Sun gave you ${lower(sPick(sunSignData?.strengths, 'p1', 'inner strength'))}, which carried you through the past year.`,
+    `With the Moon in ${moonSign}, you grew by working through ${lower(sPick(moonSignData?.challenges, 'p2', 'old emotional patterns'))}; ${lower(sPick(moonSignData?.remedies, 'p3', 'tending to your feelings'))} steadied you.`,
     hasAsc
-      ? `Your ${ascendant} Rising shaped how others saw you, leaning on ${lower(pick(ascendantData?.strengths, 2, 'your social poise'))} when it mattered most.`
-      : `Your ${moonSign} Moon shaped how you connected with others, leaning on ${lower(pick(moonSignData?.strengths, 2, 'your emotional insight'))} when it mattered most.`,
-    `Drawing on ${lower(pick(sunSignData?.strengths, 3, 'your core gifts'))}, you turned recent setbacks into lasting lessons.`
+      ? `Your ${ascendant} Rising shaped how others saw you, leaning on ${lower(sPick(ascendantData?.strengths, 'p4', 'your social poise'))} when it mattered most.`
+      : `Your ${moonSign} Moon shaped how you connected with others, leaning on ${lower(sPick(moonSignData?.strengths, 'p4b', 'your emotional insight'))} when it mattered most.`,
+    `Drawing on ${lower(sPick(sunSignData?.strengths, 'p5', 'your core gifts'))}, you turned recent setbacks into lasting lessons.`
   ];
 
   const futurePredictions = [
-    `The months ahead favor your ${sunSign} gift of ${lower(pick(sunSignData?.strengths, 1, 'steady focus'))} — let it lead your biggest decisions.`,
-    `Your ${moonSign} Moon points to warmer relationships; watch for ${lower(pick(moonSignData?.challenges, 0, 'guardedness'))}, and ${lower(pick(moonSignData?.remedies, 0, 'stay open'))}.`,
-    `Career momentum builds where you apply ${lower(pick(sunSignData?.strengths, 2, 'your determination'))}; growth in ${lower(pick(sunSignData?.career, 0, 'your chosen field'))} is well-aspected.`,
+    `The months ahead favor your ${sunSign} gift of ${lower(sPick(sunSignData?.strengths, 'f1', 'steady focus'))} — let it lead your biggest decisions.`,
+    `Your ${moonSign} Moon points to warmer relationships; watch for ${lower(sPick(moonSignData?.challenges, 'f2', 'guardedness'))}, and ${lower(sPick(moonSignData?.remedies, 'f3', 'stay open'))}.`,
+    `Career momentum builds where you apply ${lower(sPick(sunSignData?.strengths, 'f4', 'your determination'))}; growth in ${lower(sPick(sunSignData?.career, 'f5', 'your chosen field'))} is well-aspected.`,
     hasAsc
-      ? `To keep the ${ascendant} Rising challenge of ${lower(pick(ascendantData?.challenges, 2, 'self-doubt'))} in check, ${lower(pick(ascendantData?.remedies, 2, 'align your actions with your values'))}.`
+      ? `To keep the ${ascendant} Rising challenge of ${lower(sPick(ascendantData?.challenges, 'f6', 'self-doubt'))} in check, ${lower(sPick(ascendantData?.remedies, 'f7', 'align your actions with your values'))}.`
       : `Add your exact birth time to your profile to unlock your Ascendant (Lagna) and a more precise reading.`
   ];
 

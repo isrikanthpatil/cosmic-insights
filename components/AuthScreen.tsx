@@ -17,6 +17,7 @@ import { Eye, EyeOff } from 'lucide-react-native';
 import { useAuth, Profile } from '@/contexts/AuthContext';
 import { pb } from '@/utils/pocketbase';
 import { beginGoogleAuth, completeGoogleAuth, GOOGLE_SERVER_REDIRECT } from '@/utils/googleAuth';
+import { isAppleAuthAvailable, signInWithApple } from '@/utils/appleAuth';
 import { SecurityUtils } from '@/utils/security';
 import { notify } from '@/utils/notify';
 import { tap } from '@/utils/haptics';
@@ -37,6 +38,8 @@ export default function AuthScreen() {
   const kb = useKeyboardHeight();
   const [mode, setMode] = useState<Mode>('login');
   const [submitting, setSubmitting] = useState(false);
+  // iOS-only: whether Sign in with Apple can be offered on this device (Guideline 4.8).
+  const [appleAvailable, setAppleAvailable] = useState(false);
   // Inline notice — toasts render behind this modal screen, so feedback here
   // (e.g. the password-reset confirmation) must be shown inline to be visible.
   const [notice, setNotice] = useState<{ text: string; kind: 'ok' | 'err' } | null>(null);
@@ -217,6 +220,44 @@ export default function AuthScreen() {
           SecurityUtils.handleSecureError(error, 'auth');
         notify(t('auth.signInFailed'), message);
       }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Probe Apple sign-in availability once (iOS device only).
+  useEffect(() => {
+    let alive = true;
+    isAppleAuthAvailable().then((ok) => {
+      if (alive) setAppleAvailable(ok);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const handleApple = async () => {
+    tap();
+    try {
+      setSubmitting(true);
+      const ok = await signInWithApple();
+      if (ok) {
+        // Same explicit exit as Google — the auth-state effect can miss firing
+        // the moment the native sheet closes.
+        try { if (router.canDismiss()) router.dismissAll(); } catch {}
+        router.replace('/(tabs)');
+      }
+    } catch (error: any) {
+      const rawMessage = error?.response?.message || error?.message || '';
+      // User cancelled Apple's sheet — fail quietly, no scary error.
+      if (
+        error?.code === 'ERR_REQUEST_CANCELED' ||
+        /cancel|dismiss|1001/i.test(rawMessage)
+      ) {
+        return;
+      }
+      const message = rawMessage || SecurityUtils.handleSecureError(error, 'auth');
+      notify(t('auth.appleSignInFailed'), message);
     } finally {
       setSubmitting(false);
     }
@@ -509,6 +550,19 @@ export default function AuthScreen() {
                 <View style={styles.dividerLine} />
               </View>
 
+              {appleAvailable && (
+                <TouchableOpacity
+                  style={styles.appleButton}
+                  onPress={handleApple}
+                  disabled={submitting}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('auth.continueWithApple')}
+                >
+                  <Text style={styles.appleLogo}>{''}</Text>
+                  <Text style={styles.appleButtonText}>{t('auth.continueWithApple')}</Text>
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity
                 style={styles.googleButton}
                 onPress={handleGoogle}
@@ -737,6 +791,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Inter-SemiBold',
     color: '#1A1A2E',
+  },
+  appleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+    paddingVertical: 16,
+    borderRadius: 12,
+    gap: 8,
+    marginBottom: 12,
+  },
+  appleLogo: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    marginTop: -2,
+  },
+  appleButtonText: {
+    fontSize: 15,
+    fontFamily: 'Inter-SemiBold',
+    color: '#FFFFFF',
   },
   forgotButton: {
     alignItems: 'center',

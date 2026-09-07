@@ -2,15 +2,24 @@
   "expo": {
     "name": "Astropanth",
     "slug": "astropanth",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "cosmic-insights",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.astropanth.cosmicinsights"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.astropanth.cosmicinsights",
+      "buildNumber": "1",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Astropanth uses the camera so you can set a profile photo.",
+        "NSPhotoLibraryUsageDescription": "Astropanth accesses your photo library so you can choose a profile photo.",
+        "NSPhotoLibraryAddUsageDescription": "Astropanth saves images, such as your reports and Panchang cards, to your photo library when you choose to.",
+        "NSUserTrackingUsageDescription": "Your activity is used to show more relevant ads.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.astropanth.cosmicinsights",
@@ -34,6 +43,7 @@
       "expo-font",
       "expo-web-browser",
       "expo-notifications",
+      "expo-apple-authentication",
       [
         "expo-splash-screen",
         {

@@ -12,6 +12,9 @@ export interface NumerologyReading {
   destinyNumberDetail: string;
   birthNumberPlanet: string;
   destinyNumberPlanet: string;
+  /** Combination-aware note on the Mulank × Bhagyank interplay — varies by the pair,
+   *  so it isn't the same generic per-number blurb shown to everyone. */
+  combinationInsight: string;
   loshuAnalysis: string[];
   luckyNumbers: number[];
   remedies: string[];
@@ -356,6 +359,10 @@ export const getNumerologyReading = (firstName: string, lastName: string, dateOf
     destinyNumberDetail: NUMBER_KNOWLEDGE[destinyNumber]?.detail ?? '',
     birthNumberPlanet: NUMBER_KNOWLEDGE[birthNumber]?.planet ?? '',
     destinyNumberPlanet: NUMBER_KNOWLEDGE[destinyNumber]?.planet ?? '',
+    combinationInsight:
+      birthNumber === destinyNumber
+        ? `Your Mulank and Bhagyank are both ${birthNumber}, ruled by ${NUMBER_KNOWLEDGE[birthNumber]?.planet ?? 'its graha'} — a focused, single-minded signature where your instincts and your life path pull in the same direction. Its strength is concentration; the caution is one-sidedness.`
+        : `Your Mulank ${birthNumber} (${NUMBER_KNOWLEDGE[birthNumber]?.planet ?? 'its graha'}) shapes your instincts and everyday nature, while your Bhagyank ${destinyNumber} (${NUMBER_KNOWLEDGE[destinyNumber]?.planet ?? 'its graha'}) shapes your larger life path and destiny. You come into your own by blending the two — leading with your ${NUMBER_KNOWLEDGE[birthNumber]?.planet ?? 'core'} nature while growing toward your ${NUMBER_KNOWLEDGE[destinyNumber]?.planet ?? 'destiny'} path.`,
     kuaNumberMeaning: kuaMeanings[kuaNumber as keyof typeof kuaMeanings] || 'Unique energy pattern',
     loshuAnalysis,
     luckyNumbers: generateUniqueLuckyNumbers(birthNumber, destinyNumber, kuaNumber),

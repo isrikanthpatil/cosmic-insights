@@ -31,26 +31,27 @@ export interface PlanPrice {
   id: 'monthly' | 'yearly';
   /** User-facing billing cadence label. */
   period: string;
-  /** Display price string. PLACEHOLDER — not a real charge. */
+  /** Display price string. */
   displayPrice: string;
   /** Optional secondary note (e.g. effective monthly price for yearly). */
   note?: string;
 }
 
-// PLACEHOLDER PRICING — amounts below are illustrative TODOs and are NOT wired
-// to any payment provider. Replace with real store/RevenueCat product prices
-// once a billing provider is chosen.
+// Final pricing. On web these display strings back the Razorpay catalog; the
+// authoritative charge amounts live server-side in pocketbase/pb_hooks/razorpay.pb.js.
+// On Android/iOS the store (Play / App Store via RevenueCat) is the source of the
+// actual localized price — set the same amounts there.
 export const plusPrices: PlanPrice[] = [
   {
     id: 'monthly',
     period: 'per month',
-    displayPrice: '₹199/mo', // TODO(placeholder): real price from billing provider
+    displayPrice: '₹149/mo',
   },
   {
     id: 'yearly',
     period: 'per year',
-    displayPrice: '₹1,499/yr', // TODO(placeholder): real price from billing provider
-    note: 'Best value — about ₹125/mo',
+    displayPrice: '₹999/yr',
+    note: 'Best value — about ₹83/mo',
   },
 ];
 
@@ -66,9 +67,9 @@ export const BILLING_ENABLED = true;
 // Purchasable items. `id` maps to the server-side catalog in razorpay.pb.js
 // (which holds the authoritative amounts so the client can't tamper with price).
 export const PRODUCTS = {
-  plus_monthly: { id: 'plus_monthly', label: 'Astropanth Plus — Monthly', price: '₹99/mo' },
-  plus_yearly: { id: 'plus_yearly', label: 'Astropanth Plus — Yearly', price: '₹499/yr' },
-  reports_all: { id: 'reports_all', label: 'Unlock all reports', price: '₹149' },
+  plus_monthly: { id: 'plus_monthly', label: 'Astropanth Plus — Monthly', price: '₹149/mo' },
+  plus_yearly: { id: 'plus_yearly', label: 'Astropanth Plus — Yearly', price: '₹999/yr' },
+  reports_all: { id: 'reports_all', label: 'Unlock all reports', price: '₹199' },
   // Launch offer — Astropanth Plus for ₹1 (30 days) while we grow the user base.
   plus_launch: { id: 'plus_launch', label: 'Astropanth Plus — Launch', price: '₹1' },
 } as const;

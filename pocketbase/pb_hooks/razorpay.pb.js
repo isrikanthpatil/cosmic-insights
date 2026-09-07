@@ -21,9 +21,9 @@ routerAdd("POST", "/create-order", (e) => {
  try {
   // Authoritative catalog. amount in paise (₹1 = 100). days: 0 = permanent.
   const PRODUCTS = {
-    plus_monthly:   { plan: "plus",    days: 30,  amount: 9900,  name: "Astropanth Plus (Monthly)" },
-    plus_yearly:    { plan: "plus",    days: 365, amount: 49900, name: "Astropanth Plus (Yearly)" },
-    reports_all:    { plan: "reports", days: 0,   amount: 14900, name: "Astropanth Reports" },
+    plus_monthly:   { plan: "plus",    days: 30,  amount: 14900, name: "Astropanth Plus (Monthly)" },
+    plus_yearly:    { plan: "plus",    days: 365, amount: 99900, name: "Astropanth Plus (Yearly)" },
+    reports_all:    { plan: "reports", days: 0,   amount: 19900, name: "Astropanth Reports" },
     plus_launch:    { plan: "plus",    days: 30,  amount: 100,   name: "Astropanth Plus (Launch)" },
     reports_launch: { plan: "reports", days: 0,   amount: 100,   name: "Astropanth Reports (Launch)" },
   };
@@ -146,9 +146,30 @@ routerAdd("POST", "/verify-payment", (e) => {
   if (ores.json.status !== "paid") {
     return e.json(400, { ok: false, message: "Payment not captured yet." });
   }
-  const item = String((ores.json.notes && ores.json.notes.item) || "");
+  const notes = ores.json.notes || {};
+  const item = String(notes.item || "");
   const p = PRODUCTS[item];
   if (!p) return e.json(400, { ok: false, message: "Unknown item." });
+
+  // Best-effort server-side ledger of who paid (never blocks the grant). Needs a
+  // `purchases` collection; if it doesn't exist this silently no-ops.
+  try {
+    const c = $app.findCollectionByNameOrId("purchases");
+    const paise = ores.json.amount || 0;
+    $app.save(new Record(c, {
+      provider: "razorpay",
+      status: "paid",
+      userId: String(notes.userId || ""),
+      item: item,
+      plan: p.plan,
+      durationDays: p.days,
+      orderId: orderId,
+      paymentId: paymentId,
+      amount_paise: paise,              // raw integer, source of truth (₹1 = 100)
+      amount_inr: paise / 100,          // human rupee value (normalizes vs Play's micros)
+      currency: ores.json.currency || "INR",
+    }));
+  } catch (_) {}
 
   return e.json(200, { ok: true, plan: p.plan, durationDays: p.days });
  } catch (err) {

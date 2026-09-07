@@ -290,7 +290,7 @@ export function buildGemstoneReportHtml(p: Profile): string {
       <li>A budget substitute (listed with each stone) carries a gentler version of the same energy.</li>
       <li>Start on a trial basis and observe the effects over a few weeks.</li>
     </ul></div>
-  <div class="section"><div class="caution"><b>Important:</b> Gemstones are considered powerful in Jyotish and are not one-size-fits-all. Blue Sapphire (Neelam) in particular is very fast-acting and must be trialled carefully. Please consult a qualified astrologer with your full chart before wearing any gemstone.</div></div>`;
+  <div class="section"><div class="caution"><b>Important:</b> Gemstones are considered powerful in Jyotish and are not one-size-fits-all. Blue Sapphire (Neelam) in particular is very fast-acting and should be trialled carefully. Please consult a qualified astrologer with your full chart before wearing any gemstone, and wear only a good-quality, natural and properly certified stone of adequate weight.</div></div>`;
   return shell('Gemstone Recommendation', p, body);
 }
 

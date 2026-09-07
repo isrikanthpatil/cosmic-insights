@@ -99,6 +99,16 @@ routerAdd("POST", "/api/translate", (e) => {
     const group = missText.slice(g, g + GROUP);
     let arr = translateGroup(group);
     if (!arr) arr = translateGroup(group); // one retry
+    if (!arr && group.length > 1) {
+      // The whole group failed — usually ONE malformed item (bad JSON / wrong
+      // array length) nulls the batch, which is why some strings could get stuck.
+      // Fall back to translating each item on its own so the good ones succeed
+      // and only a genuinely-hard item stays English.
+      arr = group.map((item) => {
+        const one = translateGroup([item]);
+        return one && typeof one[0] === "string" ? one[0] : null;
+      });
+    }
     for (let k = 0; k < group.length; k++) {
       const i = missIdx[g + k];
       const src = group[k];

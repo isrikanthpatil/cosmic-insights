@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import { pb } from '@/utils/pocketbase';
+import { bundleGet, localizeFromBundle } from '@/utils/contentBundle';
 
 // Runtime translation for GENERATED content (readings, horoscopes, report HTML)
 // — the dynamic prose that isn't in the bundled UI dictionaries. Calls the
@@ -70,7 +71,11 @@ export async function translateList(texts: string[], lang: string): Promise<stri
   );
   await loadPersisted(lang, unique);
 
-  const misses = unique.filter((s) => !mem.has(cacheKey(lang, s)));
+  // Bundled finite strings (terms, knowledge phrases, labeled reading lines) are
+  // resolved offline/instantly and never sent to the server.
+  const misses = unique.filter(
+    (s) => !mem.has(cacheKey(lang, s)) && bundleGet(lang, s) == null,
+  );
 
   // Translate misses in small chunks so each request returns quickly (the
   // server further splits these into tiny Groq calls for reliability).
@@ -107,7 +112,8 @@ export async function translateList(texts: string[], lang: string): Promise<stri
 
   return texts.map((t) => {
     if (typeof t !== 'string' || !/[A-Za-z]/.test(t)) return t;
-    return mem.get(cacheKey(lang, t)) ?? t;
+    // Offline bundle wins first, then the on-device/server cache, then English.
+    return bundleGet(lang, t) ?? mem.get(cacheKey(lang, t)) ?? t;
   });
 }
 
@@ -185,7 +191,8 @@ export async function translateHtml(html: string, lang: string): Promise<string>
  * English input immediately, then re-renders with translations when ready.
  */
 export function useTranslatedList(texts: string[], lang: string): string[] {
-  const [out, setOut] = useState<string[]>(texts);
+  // Seed from the offline bundle so finite content is in-language on first paint.
+  const [out, setOut] = useState<string[]>(() => localizeFromBundle(texts, lang));
   const key = `${lang}:${texts.length}:${texts.join('|')}`;
   const keyRef = useRef(key);
   keyRef.current = key;
@@ -196,7 +203,7 @@ export function useTranslatedList(texts: string[], lang: string): string[] {
       setOut(texts);
       return;
     }
-    setOut(texts); // show English while translating
+    setOut(localizeFromBundle(texts, lang)); // bundled instantly; prose still translating
     translateList(texts, lang).then((res) => {
       if (alive && keyRef.current === key) setOut(res);
     });

@@ -23,10 +23,23 @@
         "EXPO_PUBLIC_PB_URL": "https://api.astropanth.com"
       }
     },
+    "ios-simulator": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": true,
+        "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_PB_URL": "https://api.astropanth.com"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
+      },
+      "ios": {
+        "image": "latest"
       },
       "env": {
         "EXPO_PUBLIC_PB_URL": "https://api.astropanth.com"

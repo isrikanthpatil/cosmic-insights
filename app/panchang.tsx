@@ -7,7 +7,6 @@ import ScreenBackground from '@/components/ScreenBackground';
 import ShareCardButton from '@/components/ShareCardButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslatedMap } from '@/utils/i18nContent';
-import { tap } from '@/utils/haptics';
 import { computePanchang, KalamPeriod } from '@/utils/jyotish/panchang';
 
 const MONTHS = [

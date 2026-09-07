@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { usePremium } from '@/contexts/PremiumContext';
 
@@ -15,6 +15,9 @@ const UNIT_ID = __DEV__ ? TestIds.BANNER : PROD_UNIT_ID;
  */
 export default function AdBanner() {
   const { isPremium, isLoading } = usePremium();
+  // v1 iOS launches ad-free (skips AdMob-iOS + App Tracking Transparency review
+  // friction). Remove this guard once an iOS AdMob app id + ATT flow are set up.
+  if (Platform.OS === 'ios') return null;
   if (isLoading || isPremium) return null; // ad-free for Plus; wait until known
 
   return (

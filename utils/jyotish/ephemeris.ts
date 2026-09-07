@@ -83,9 +83,6 @@ function norm360(x: number): number {
 function sinDeg(x: number): number {
   return Math.sin(x * DEG2RAD);
 }
-function cosDeg(x: number): number {
-  return Math.cos(x * DEG2RAD);
-}
 
 /**
  * Julian Day for a UT calendar date (Gregorian). Meeus ch.7.
