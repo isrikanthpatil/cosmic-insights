@@ -24,6 +24,22 @@ Keep this list short: move an item to "Done" (or delete it) once shipped.
 - [ ] **Rebuild the web app** so the paywall shows the new ₹149/₹999 display prices
       (from `constants/plans.ts`).
 
+## ⚠️ Expo SDK 53 → 57 upgrade (done in code — affects BOTH platforms)
+
+Upgraded to Expo SDK 57 / RN 0.86 / React 19.2 to build on Xcode 26 (Apple now
+requires the iOS 26 SDK; RN 0.79 wouldn't compile). Code changes: removed
+`newArchEnabled` + Android `edgeToEdgeEnabled` from app.json (now defaults),
+added `react-native-worklets` (reanimated 4 peer), switched two
+`@react-navigation/bottom-tabs` imports to expo-router's vendored copy
+(`expo-router/build/react-navigation/bottom-tabs`). tsc clean; iOS simulator
+build runs on iOS 26 and Sign in with Apple verified.
+
+- [ ] **Android regression before the next Play release.** The live Play build is
+      still SDK 53; the *next* Android build will be SDK 57 (new RN). Smoke-test the
+      Android build (all screens, ads, notifications, Google login, purchases)
+      before promoting it — don't ship the Android update blind on the back of the
+      iOS work.
+
 ## Next app build (Android + first iOS)
 
 These ride the next `eas build`; nothing to do until then.

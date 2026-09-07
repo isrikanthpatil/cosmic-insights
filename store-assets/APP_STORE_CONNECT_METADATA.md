@@ -95,8 +95,10 @@ First release on iPhone. Pure Vedic astrology, numerology, Panchang and Kundli m
 
 ## 4. Screenshots (upload)
 
-- **Required:** 6.7" iPhone — **1290 × 2796 px** (iPhone 15/16 Pro Max). Min 3, up to 10.
-- Optional but recommended: 6.5" — **1242 × 2688 px**.
+- **Required:** 6.9" iPhone — **1320 × 2868 px** (portrait), captured from the
+  **iPhone 17 Pro Max** simulator (Cmd+S saves at exactly this size). Min 3, up to 10.
+  (6.9" also accepts 1290 × 2796; either is fine.)
+- Optional fallback: 6.5" — **1242 × 2688 px**.
 - **No iPad** screenshots needed (`supportsTablet:false`).
 - Suggested shots (reuse Play captures if same aspect, else re-capture on iOS sim):
   1. Home — daily horoscope

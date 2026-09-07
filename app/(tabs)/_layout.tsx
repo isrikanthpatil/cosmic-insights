@@ -1,6 +1,9 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
-import { BottomTabBar } from '@react-navigation/bottom-tabs';
+import { Text, ColorValue } from 'react-native';
+// expo-router (SDK 56+) vendors its own react-navigation; import the tab bar from
+// its vendored copy so we share the same navigation instance (importing the
+// standalone @react-navigation/bottom-tabs package is now blocked).
+import { BottomTabBar } from 'expo-router/build/react-navigation/bottom-tabs';
 import { House, Sparkles, Grid3x3, MessageCircle, LayoutGrid, User } from 'lucide-react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +16,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 // auto-shrink, which previously made "Numerology" look smaller). allowFontScaling
 // is off so OS font-size settings can't shrink one label relative to the rest.
 function tabLabel(title: string) {
-  return ({ color }: { focused: boolean; color: string }) => (
+  return ({ color }: { focused: boolean; color: ColorValue }) => (
     <Text
       numberOfLines={1}
       allowFontScaling={false}
