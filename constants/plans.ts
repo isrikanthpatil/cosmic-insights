@@ -59,10 +59,19 @@ export const plusPrices: PlanPrice[] = [
 export const plusPlanName = 'Astropanth Plus';
 export const plusTagline = 'Unlock the full cosmos';
 
-// Master switch for showing real "Buy" buttons (Razorpay on web). Keep false
-// until you're ready to charge — the checkout route is built and testable by
-// flipping this to true (promo codes work regardless).
+// Master switch for the in-app monetisation UI (Android note / paywall states).
+// Promo codes work regardless of this flag.
 export const BILLING_ENABLED = true;
+
+// COMPLIANCE GATE — direct web sales via Razorpay.
+// Selling digital goods directly to Indian consumers on the web makes US the
+// seller of record, which triggers GST registration immediately (OIDAR, no
+// threshold). To stay compliant while we defer GST, keep this FALSE: no web
+// checkout is offered. Android in-app purchases go through Google Play Billing
+// (Google is the merchant of record and remits the consumer GST), so those are
+// unaffected. Flip this back to true only AFTER a GSTIN is registered and web
+// sales are meant to resume. The Razorpay code + server hook stay in place.
+export const WEB_BILLING_ENABLED = false;
 
 // Purchasable items. `id` maps to the server-side catalog in razorpay.pb.js
 // (which holds the authoritative amounts so the client can't tamper with price).

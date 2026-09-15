@@ -123,17 +123,78 @@ PAGES = {
         ],
         "cta": "Get your free numerology",
     },
+    "mobile-number-numerology": {
+        "title": "Mobile Number Numerology — Lucky Number Calculator | Astropanth",
+        "desc": "Check your mobile number's numerology free — its single-digit vibration and whether it suits your Mulank (birth number), using classical Indian number friendship. In 6 Indian languages.",
+        "keywords": "mobile number numerology, lucky mobile number, phone number numerology, mobile number calculator, number vibration, mulank",
+        "h1": "Mobile Number Numerology",
+        "crumb": "Home › Mobile Number Numerology",
+        "lead": "Every mobile number carries a single-digit <strong>vibration</strong> — the sum of its digits reduced to 1–9. Astropanth shows that number, its meaning, and whether it's friendly to your own <strong>Mulank</strong> (birth number).",
+        "sections": [
+            ("How it's calculated", "Add every digit of the number and reduce to a single digit 1–9. That root carries the planet and qualities linked to the number — for example 5 (Mercury) is communicative and business-friendly, 6 (Venus) is warm and social."),
+            ("Friendly, neutral or challenging", "The root is then compared with your Mulank using classical graha-maitri (planetary friendship). A friendly number is considered supportive; a challenging one isn't 'bad', but many prefer a friendlier total."),
+            ("Best used with your chart", "Numbers work best alongside your full birth chart. Sign in to Astropanth to see how any number sits with your Mulank."),
+        ],
+        "faqs": [
+            ("How do I calculate my mobile number's number?", "Add all the digits and keep reducing until you reach a single digit from 1 to 9 — that is your mobile number's root vibration."),
+            ("Which mobile number is lucky for me?", "There's no universally lucky number; what matters is whether the root is friendly to your own birth number (Mulank). Astropanth checks this for you."),
+            ("Is this real numerology?", "Yes — it uses the classical 1–9 planet system and traditional number friendship, offered as guidance, not a guarantee."),
+        ],
+        "cta": "Check your mobile number",
+    },
+    "business-name-numerology": {
+        "title": "Business Name Numerology — Name Number Calculator | Astropanth",
+        "desc": "Free business name numerology — the Chaldean number of your brand or company name and whether it's favourable for business. In 6 Indian languages.",
+        "keywords": "business name numerology, company name numerology, brand name numerology, name number calculator, chaldean numerology",
+        "h1": "Business Name Numerology",
+        "crumb": "Home › Business Name Numerology",
+        "lead": "A business name carries a number too. Astropanth totals the letters using the traditional <strong>Chaldean</strong> system, reduces them to a single digit, and tells you whether that number is considered favourable for business.",
+        "sections": [
+            ("Chaldean letter values", "Each letter has a value from 1 to 8 in the Chaldean system (9 is left sacred). Astropanth sums your name's letters and reduces to a single digit."),
+            ("Favourable business numbers", "Numbers like 1, 3, 5, 6 and 9 are traditionally seen as favourable for business and visibility; 4 and 8 are hard-working numbers used more carefully. It's guidance, not a rule."),
+            ("Match it to your Mulank", "Sign in to also see how a name's number sits with your own birth number."),
+        ],
+        "faqs": [
+            ("How is a business name number calculated?", "Each letter is given its Chaldean value, the values are summed, and the total is reduced to a single digit 1–9."),
+            ("Which numbers are good for a business name?", "Traditionally 1, 3, 5, 6 and 9 are considered favourable; 4 and 8 are used with more care. Weigh it alongside your own Mulank."),
+            ("Is business name numerology reliable?", "It's a traditional guidance system, best used alongside sound business judgement — not a substitute for it."),
+        ],
+        "cta": "Check your business name",
+    },
+    "vehicle-number-numerology": {
+        "title": "Vehicle Number Numerology — Lucky Car & Bike Number | Astropanth",
+        "desc": "Free vehicle number numerology — the number of your car or bike registration and whether it suits your Mulank (birth number). In 6 Indian languages.",
+        "keywords": "vehicle number numerology, car number numerology, lucky vehicle number, bike number numerology, registration number numerology",
+        "h1": "Vehicle Number Numerology",
+        "crumb": "Home › Vehicle Number Numerology",
+        "lead": "Your vehicle's registration — letters and digits together — reduces to a single-digit <strong>vibration</strong>. Astropanth calculates it and shows whether it's a friendly number for you.",
+        "sections": [
+            ("Letters and digits together", "Astropanth adds the Chaldean value of the letters to the sum of the digits in your registration, then reduces to a single digit 1–9."),
+            ("A friendly, active number", "Active numbers are generally considered fine for vehicles; some traditions use 4 and 8 more carefully. What matters most is how the number sits with your Mulank."),
+            ("Personalise it", "Sign in to compare a vehicle number with your own birth number."),
+        ],
+        "faqs": [
+            ("How do I find my vehicle number's numerology?", "Convert the letters to their Chaldean values, add the digits, sum everything, and reduce to a single digit 1–9."),
+            ("Which vehicle number is lucky?", "One that's friendly to your own birth number (Mulank). Astropanth checks the relationship for you."),
+            ("Does the state code count?", "Astropanth includes all letters and digits shown on the plate in the calculation."),
+        ],
+        "cta": "Check your vehicle number",
+    },
 }
 
 RELATED = [
     ("/kundli/", "Free Kundli"),
     ("/kundli-matching/", "Kundli Matching"),
     ("/numerology/", "Numerology"),
+    ("/mobile-number-numerology/", "Mobile Number"),
+    ("/business-name-numerology/", "Business Name"),
+    ("/vehicle-number-numerology/", "Vehicle Number"),
     ("/panchang/", "Daily Panchang"),
     ("/blog/", "Blog"),
 ]
 
-LANDING_SLUGS = ["kundli", "kundli-matching", "numerology"]
+LANDING_SLUGS = ["kundli", "kundli-matching", "numerology",
+                 "mobile-number-numerology", "business-name-numerology", "vehicle-number-numerology"]
 UILABELS = {
     "en": {"explore": "Explore more:", "panchang": "Daily Panchang",
            "footer": "Astropanth — free Vedic astrology, Kundli, Panchang & Numerology for India, in 6 languages.",
@@ -143,8 +204,8 @@ UILABELS = {
            "priv": "गोपनीयता", "terms": "शर्तें", "faq": "अक्सर पूछे जाने वाले प्रश्न"},
 }
 RELATED_LABELS = {
-    "en": {"kundli": "Free Kundli", "kundli-matching": "Kundli Matching", "numerology": "Numerology", "panchang": "Daily Panchang", "blog": "Blog"},
-    "hi": {"kundli": "मुफ्त कुंडली", "kundli-matching": "कुंडली मिलान", "numerology": "अंक ज्योतिष", "panchang": "दैनिक पंचांग", "blog": "ब्लॉग"},
+    "en": {"kundli": "Free Kundli", "kundli-matching": "Kundli Matching", "numerology": "Numerology", "mobile-number-numerology": "Mobile Number", "business-name-numerology": "Business Name", "vehicle-number-numerology": "Vehicle Number", "panchang": "Daily Panchang", "blog": "Blog"},
+    "hi": {"kundli": "मुफ्त कुंडली", "kundli-matching": "कुंडली मिलान", "numerology": "अंक ज्योतिष", "mobile-number-numerology": "मोबाइल नंबर", "business-name-numerology": "व्यवसाय नाम", "vehicle-number-numerology": "वाहन नंबर", "panchang": "दैनिक पंचांग", "blog": "ब्लॉग"},
 }
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Heart, ScrollText, Sparkles, Sun, Orbit, Clock, Users, FileText, ChevronRight, type LucideIcon } from 'lucide-react-native';
+import { Heart, ScrollText, Sparkles, Sun, Orbit, Clock, Users, FileText, Hash, ChevronRight, type LucideIcon } from 'lucide-react-native';
 import ScreenBackground from '@/components/ScreenBackground';
 import { tap } from '@/utils/haptics';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -75,6 +75,13 @@ const FEATURES: FeatureItem[] = [
     subtitleKey: 'more.tarotSub',
     icon: ScrollText,
     route: '/tarot' as Href,
+  },
+  {
+    key: 'numerology-tools',
+    titleKey: 'more.numToolsTitle',
+    subtitleKey: 'more.numToolsSub',
+    icon: Hash,
+    route: '/numerology-tools' as Href,
   },
 ];
 

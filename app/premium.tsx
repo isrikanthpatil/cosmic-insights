@@ -25,6 +25,7 @@ import {
   plusPlanName,
   plusTagline,
   BILLING_ENABLED,
+  WEB_BILLING_ENABLED,
   LAUNCH_PRICING,
   PRODUCTS,
 } from '@/constants/plans';
@@ -138,11 +139,12 @@ export default function PremiumScreen() {
             pricing or a dead Subscribe button. */}
         {!isPremium && (
           <>
-            {/* Buy buttons only on WEB. On Android (and when billing is off) we
-                never show or link to a web purchase — Play policy forbids
-                steering to out-of-app payment for digital goods; Play Billing is
-                a separate future task. Android sees the coming-soon state. */}
-            {BILLING_ENABLED && Platform.OS === 'web' ? (
+            {/* Buy buttons only on WEB, and only when WEB_BILLING_ENABLED (off for
+                now — see the compliance note in constants/plans.ts: direct web
+                sales trigger immediate GST). On Android we never show or link to a
+                web purchase — Play policy forbids steering to out-of-app payment;
+                Play Billing is a separate future task. */}
+            {WEB_BILLING_ENABLED && Platform.OS === 'web' ? (
               <>
                 <TouchableOpacity
                   style={[styles.primaryButton, buying && styles.primaryButtonDisabled]}
@@ -173,10 +175,9 @@ export default function PremiumScreen() {
                   </TouchableOpacity>
                 )}
               </>
-            ) : BILLING_ENABLED ? (
-              // Billing is live (on web) but Android can't sell digital goods
-              // in-app without Play Billing (Play policy). Don't say "coming
-              // soon" or link to web payment — point to the code path (allowed).
+            ) : BILLING_ENABLED && Platform.OS !== 'web' ? (
+              // Native (Android): in-app purchases require Play Billing (a future
+              // task). Don't link to web payment — just invite a promo code.
               <Text style={styles.androidNote}>{t('premium.androidNote')}</Text>
             ) : (
               <>

@@ -55,6 +55,7 @@ function RootNavigator() {
           <Stack.Screen name="reports" options={{ headerShown: false }} />
           <Stack.Screen name="report" options={{ headerShown: false }} />
           <Stack.Screen name="premium" options={{ headerShown: false }} />
+          <Stack.Screen name="numerology-tools" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </PremiumProvider>

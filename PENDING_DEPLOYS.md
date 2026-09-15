@@ -19,10 +19,20 @@ Keep this list short: move an item to "Done" (or delete it) once shipped.
 ## Web / marketing (Netlify — astropanth.com)
 
 - [ ] **Re-upload `marketing-site/`** — includes the blog articles, Hindi landing
-      pages (hreflang), and the Panchang calendar-grid hub. Then in Google Search
+      pages (hreflang), the Panchang calendar-grid hub, and the **3 new numerology
+      calculator landing pages** (`/mobile-number-numerology/`,
+      `/business-name-numerology/`, `/vehicle-number-numerology/`) — regenerate with
+      `python3 scripts/seo/generate_landing_pages.py` first. Then in Google Search
       Console, submit the updated `sitemap.xml`.
-- [ ] **Rebuild the web app** so the paywall shows the new ₹149/₹999 display prices
-      (from `constants/plans.ts`).
+- [x] **Legal pages updated in source** (`marketing-site/`): `/pricing` (Play-only,
+      correct prices), `/privacy` (DPDP-aligned), `/terms` (18+, Apple, Play billing),
+      `/refund` (Google Play refunds). **→ Redeploy the marketing site** to publish
+      (drag `marketing-site/` onto Netlify, or `npx netlify-cli deploy --prod --dir marketing-site`).
+- [ ] **Rebuild the web app** — picks up the new ₹149/₹999 display prices AND the
+      compliance change: `WEB_BILLING_ENABLED = false` disables the Razorpay web
+      checkout (web now shows "coming soon / redeem a code"). See LEGAL_COMPLIANCE.md.
+      Note: the razorpay.pb.js price redeploy above is now moot for web until web
+      sales are re-enabled (post-GST), but harmless to deploy.
 
 ## ⚠️ Expo SDK 53 → 57 upgrade (done in code — affects BOTH platforms)
 
@@ -46,6 +56,9 @@ These ride the next `eas build`; nothing to do until then.
 
 - [ ] Localization bundle + content-variety fixes (Fix 1/2) + gemstone disclaimer
       + name-tokenized horoscopes — all in `constants/`, `utils/`, `i18n/`.
+- [ ] **Numerology Calculators** (lucky mobile / business-name / vehicle number) —
+      new screen `app/numerology-tools.tsx` + `utils/numerologyTools.ts`, linked from
+      the More tab. Fully localized in all 6 languages; dynamic results auto-translate.
 - [ ] Sign in with Apple client + iOS config (see IOS_SETUP.md); run
       `npx expo install expo-apple-authentication` first.
 - [ ] New prices in `constants/plans.ts` (display) ship automatically.
